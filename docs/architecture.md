@@ -2,7 +2,9 @@
 
 > **Purpose**: The Map — system structure, boundaries, and relationships.
 >
-> For operational details (APIs, env vars, security, costs), see [operations.md](./operations.md).
+> Related docs:
+> - [operations.md](./operations.md) — APIs, env vars, security, costs
+> - [adr/](./adr/README.md) — Decision records with full context
 
 This document uses the [C4 model](https://c4model.com/):
 - **Level 1: System Context** — How Food Plan fits into the world
@@ -153,10 +155,13 @@ sequenceDiagram
 
 ## Key Architectural Decisions
 
-| Decision | Rationale |
-|----------|-----------|
-| **Single deployable (Next.js)** | Frontend + API in one package, simpler than separate services |
-| **localStorage for prototype** | Zero infrastructure, fast iteration |
-| **Serverless for production** | No server management, scales to zero |
-| **PostgreSQL over NoSQL** | Relational data model (users → plans → meals) |
-| **GPT-4o-mini over GPT-4** | Sufficient quality at 90% lower cost |
+See [ADRs](./adr/README.md) for detailed decision records. Summary:
+
+| ADR | Decision |
+|-----|----------|
+| [001](./adr/001-prototype-first-approach.md) | Prototype-first development |
+| [002](./adr/002-nextjs-single-deployable.md) | Next.js as single deployable |
+| [003](./adr/003-localstorage-for-prototype.md) | localStorage for prototype |
+| [004](./adr/004-postgresql-for-production.md) | PostgreSQL for production |
+| [005](./adr/005-gpt4o-mini-for-ai.md) | GPT-4o-mini for AI |
+| [006](./adr/006-vercel-serverless-hosting.md) | Vercel serverless hosting |

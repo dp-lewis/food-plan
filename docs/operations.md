@@ -2,7 +2,9 @@
 
 > **Purpose**: The Guidebook — how to build, run, and operate the system.
 >
-> For system structure and diagrams, see [architecture.md](./architecture.md).
+> Related docs:
+> - [architecture.md](./architecture.md) — System structure and diagrams
+> - [adr/](./adr/README.md) — Decision records (esp. [005](./adr/005-gpt4o-mini-for-ai.md), [006](./adr/006-vercel-serverless-hosting.md))
 
 ---
 

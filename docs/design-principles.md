@@ -1,5 +1,15 @@
 # Food Plan - Design Principles
 
+> **Purpose**: UI/UX guidelines, target user, and design philosophy.
+>
+> Related ADRs:
+> - [ADR-007](./adr/007-target-user-budget-families.md) — Target user decision
+> - [ADR-008](./adr/008-minimal-design-philosophy.md) — Minimal design philosophy
+> - [ADR-009](./adr/009-single-accent-color-light-mode.md) — Color and theme decisions
+> - [ADR-010](./adr/010-css-custom-properties-design-tokens.md) — Design tokens approach
+
+---
+
 ## Target User: Budget-Conscious Families
 
 ### User Profile
