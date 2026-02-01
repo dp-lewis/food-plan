@@ -34,3 +34,88 @@ body {
 .primary-button:active {
   background-color: var(--color-accent-active);
 }
+
+/* Stepper buttons (+/-) */
+.stepper-button {
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  border-radius: var(--border-radius-sm);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-primary);
+  font-size: var(--font-size-heading);
+  color: var(--color-text-primary);
+  transition: all var(--transition-fast);
+}
+
+.stepper-button:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Day selector buttons */
+.day-button {
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  border-radius: var(--border-radius-sm);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-primary);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.day-button:hover {
+  border-color: var(--color-accent);
+}
+
+.day-button-active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text-inverse);
+}
+
+/* Meal type toggle buttons */
+.meal-button {
+  padding: var(--space-2) var(--space-4);
+  min-height: var(--touch-target-min);
+  border-radius: var(--border-radius-sm);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-primary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.meal-button:hover {
+  border-color: var(--color-accent);
+}
+
+.meal-button-active {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Budget selector buttons */
+.budget-button {
+  flex: 1;
+  padding: var(--space-2) var(--space-4);
+  min-height: var(--touch-target-min);
+  border-radius: var(--border-radius-sm);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-primary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.budget-button:hover {
+  border-color: var(--color-accent);
+}
+
+.budget-button-active {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
