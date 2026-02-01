@@ -9,6 +9,8 @@ import { generateShoppingList, groupByCategory, CATEGORY_LABELS } from '@/lib/sh
 export default function ShoppingList() {
   const router = useRouter();
   const currentPlan = useStore((state) => state.currentPlan);
+  const checkedItems = useStore((state) => state.checkedItems);
+  const toggleCheckedItem = useStore((state) => state.toggleCheckedItem);
 
   const shoppingList = useMemo(() => {
     if (!currentPlan) return null;
@@ -39,6 +41,7 @@ export default function ShoppingList() {
   }
 
   const totalItems = shoppingList?.length || 0;
+  const checkedCount = checkedItems.length;
 
   return (
     <main className="min-h-screen p-4 pb-8">
@@ -72,9 +75,25 @@ export default function ShoppingList() {
               color: 'var(--color-text-muted)',
             }}
           >
-            {totalItems} items
+            {checkedCount} / {totalItems} items
           </span>
         </div>
+
+        {/* Progress bar */}
+        {totalItems > 0 && (
+          <div
+            className="h-2 rounded-full mb-6 overflow-hidden"
+            style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
+          >
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{
+                backgroundColor: 'var(--color-accent)',
+                width: `${(checkedCount / totalItems) * 100}%`,
+              }}
+            />
+          </div>
+        )}
 
         {/* Grouped list */}
         <div className="space-y-6">
@@ -91,29 +110,57 @@ export default function ShoppingList() {
               >
                 {CATEGORY_LABELS[category]}
               </h2>
-              <ul className="space-y-2">
-                {items.map((item) => (
-                  <li
-                    key={item.id}
-                    className="flex items-center gap-3 py-2"
-                  >
-                    <span
-                      className="w-5 h-5 rounded border flex-shrink-0"
-                      style={{ borderColor: 'var(--color-border)' }}
-                    />
-                    <span
-                      style={{
-                        fontSize: 'var(--font-size-body)',
-                        color: 'var(--color-text-secondary)',
-                      }}
-                    >
-                      <span style={{ color: 'var(--color-text-muted)' }}>
-                        {item.quantity} {item.unit}
-                      </span>{' '}
-                      {item.ingredient}
-                    </span>
-                  </li>
-                ))}
+              <ul className="space-y-1">
+                {items.map((item) => {
+                  const isChecked = checkedItems.includes(item.id);
+                  return (
+                    <li key={item.id}>
+                      <button
+                        onClick={() => toggleCheckedItem(item.id)}
+                        className="w-full flex items-center gap-3 py-2 px-1 -mx-1 rounded transition-colors"
+                        style={{
+                          minHeight: 'var(--touch-target-min)',
+                        }}
+                      >
+                        <span
+                          className="w-5 h-5 rounded border flex-shrink-0 flex items-center justify-center transition-colors"
+                          style={{
+                            borderColor: isChecked ? 'var(--color-accent)' : 'var(--color-border)',
+                            backgroundColor: isChecked ? 'var(--color-accent)' : 'transparent',
+                          }}
+                        >
+                          {isChecked && (
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              stroke="white"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="2 6 5 9 10 3" />
+                            </svg>
+                          )}
+                        </span>
+                        <span
+                          className="text-left transition-all"
+                          style={{
+                            fontSize: 'var(--font-size-body)',
+                            color: isChecked ? 'var(--color-text-muted)' : 'var(--color-text-secondary)',
+                            textDecoration: isChecked ? 'line-through' : 'none',
+                          }}
+                        >
+                          <span style={{ color: isChecked ? 'var(--color-text-muted)' : 'var(--color-text-muted)' }}>
+                            {item.quantity} {item.unit}
+                          </span>{' '}
+                          {item.ingredient}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             </section>
           ))}
