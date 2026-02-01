@@ -83,7 +83,11 @@ export default function CurrentPlan() {
                   if (!recipe) return null;
 
                   return (
-                    <div key={meal.id} className="px-4 py-3">
+                    <Link
+                      key={meal.id}
+                      href={`/recipe/${recipe.id}`}
+                      className="block px-4 py-3 transition-colors hover:bg-gray-50"
+                    >
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <span
@@ -113,8 +117,16 @@ export default function CurrentPlan() {
                             {recipe.prepTime + recipe.cookTime} mins
                           </p>
                         </div>
+                        <span
+                          style={{
+                            color: 'var(--color-text-muted)',
+                            fontSize: 'var(--font-size-body)',
+                          }}
+                        >
+                          →
+                        </span>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
