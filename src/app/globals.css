@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+@theme inline {
+  --color-background: var(--color-bg-primary);
+  --color-foreground: var(--color-text-primary);
+  --color-accent: var(--color-accent);
+  --font-sans: var(--font-family);
+}
+
+body {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  line-height: var(--line-height-normal);
+}
+
+/* Button styles */
+.primary-button {
+  background-color: var(--color-accent);
+  color: var(--color-text-inverse);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+  min-height: var(--touch-target-min);
+  transition: background-color var(--transition-fast);
+}
+
+.primary-button:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.primary-button:active {
+  background-color: var(--color-accent-active);
+}
