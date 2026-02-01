@@ -13,6 +13,7 @@ const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
 export default function CurrentPlan() {
   const router = useRouter();
   const currentPlan = useStore((state) => state.currentPlan);
+  const swapMeal = useStore((state) => state.swapMeal);
 
   useEffect(() => {
     if (!currentPlan) {
@@ -83,50 +84,53 @@ export default function CurrentPlan() {
                   if (!recipe) return null;
 
                   return (
-                    <Link
+                    <div
                       key={meal.id}
-                      href={`/recipe/${recipe.id}`}
-                      className="block px-4 py-3 transition-colors hover:bg-gray-50"
+                      className="flex items-center justify-between px-4 py-3"
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <span
-                            className="uppercase tracking-wide"
-                            style={{
-                              fontSize: 'var(--font-size-caption)',
-                              color: 'var(--color-text-muted)',
-                            }}
-                          >
-                            {meal.mealType}
-                          </span>
-                          <p
-                            style={{
-                              fontSize: 'var(--font-size-body)',
-                              color: 'var(--color-text-primary)',
-                              fontWeight: 'var(--font-weight-bold)',
-                            }}
-                          >
-                            {recipe.title}
-                          </p>
-                          <p
-                            style={{
-                              fontSize: 'var(--font-size-caption)',
-                              color: 'var(--color-text-muted)',
-                            }}
-                          >
-                            {recipe.prepTime + recipe.cookTime} mins
-                          </p>
-                        </div>
+                      <Link
+                        href={`/recipe/${recipe.id}`}
+                        className="flex-1 transition-colors"
+                      >
                         <span
+                          className="uppercase tracking-wide"
                           style={{
+                            fontSize: 'var(--font-size-caption)',
                             color: 'var(--color-text-muted)',
-                            fontSize: 'var(--font-size-body)',
                           }}
                         >
-                          →
+                          {meal.mealType}
                         </span>
-                      </div>
-                    </Link>
+                        <p
+                          style={{
+                            fontSize: 'var(--font-size-body)',
+                            color: 'var(--color-text-primary)',
+                            fontWeight: 'var(--font-weight-bold)',
+                          }}
+                        >
+                          {recipe.title}
+                        </p>
+                        <p
+                          style={{
+                            fontSize: 'var(--font-size-caption)',
+                            color: 'var(--color-text-muted)',
+                          }}
+                        >
+                          {recipe.prepTime + recipe.cookTime} mins
+                        </p>
+                      </Link>
+                      <button
+                        onClick={() => swapMeal(meal.id)}
+                        className="ml-3 px-3 py-1.5 rounded transition-colors"
+                        style={{
+                          fontSize: 'var(--font-size-caption)',
+                          color: 'var(--color-accent)',
+                          backgroundColor: 'var(--color-bg-tertiary)',
+                        }}
+                      >
+                        Swap
+                      </button>
+                    </div>
                   );
                 })}
               </div>
