@@ -252,19 +252,19 @@
 
 ## Implementation Status
 
-| Story | Description | Implemented | E2E Tests |
-|-------|-------------|:-----------:|:---------:|
-| US-1.1 | Create a new meal plan | ✓ | ✓ |
-| US-1.2 | Use smart defaults | | |
-| US-2.1 | View weekly calendar | ✓ | ✓ |
-| US-2.2 | View recipe from calendar | ✓ | |
-| US-2.3 | Swap a meal | ✓ | ✓ |
-| US-3.1 | View recipe details | ✓ | ✓ |
-| US-3.2 | Adjust servings | | |
-| US-4.1 | View shopping list | ✓ | ✓ |
-| US-4.2 | Check off items | ✓ | ✓ |
-| US-4.3 | Clear checked items | | |
-| US-5.1 | View current plan summary | | |
-| US-5.2 | Create new plan from dashboard | | |
-| US-5.3 | Empty state for new users | ✓ | ✓ |
-| US-6.1 | Persist data across sessions | ✓ | |
+**Source of truth:** The e2e tests in `e2e/` are the authoritative record of which user stories are implemented and verified.
+
+Each test file:
+- Is named after its user story (e.g., `us-1.1-create-meal-plan.spec.ts`)
+- Contains the full user story and acceptance criteria in a JSDoc comment
+- Has tests that map directly to acceptance criteria
+
+To see what's implemented:
+```bash
+ls e2e/us-*.spec.ts
+```
+
+To verify acceptance criteria are met:
+```bash
+npm run test:e2e
+```
