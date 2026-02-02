@@ -44,7 +44,7 @@ export default function ShoppingList() {
   const checkedCount = checkedItems.length;
 
   return (
-    <main className="min-h-screen p-4 pb-8">
+    <main className="min-h-screen p-4 pb-8" data-testid="shopping-list">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -70,6 +70,7 @@ export default function ShoppingList() {
             </h1>
           </div>
           <span
+            data-testid="progress-counter"
             style={{
               fontSize: 'var(--font-size-caption)',
               color: 'var(--color-text-muted)',
@@ -98,7 +99,7 @@ export default function ShoppingList() {
         {/* Grouped list */}
         <div className="space-y-6">
           {Array.from(groupedItems.entries()).map(([category, items]) => (
-            <section key={category}>
+            <section key={category} data-testid={`category-${category}`}>
               <h2
                 className="mb-3 pb-2"
                 style={{
@@ -114,10 +115,11 @@ export default function ShoppingList() {
                 {items.map((item) => {
                   const isChecked = checkedItems.includes(item.id);
                   return (
-                    <li key={item.id}>
+                    <li key={item.id} data-testid={`item-${item.id}`}>
                       <button
                         onClick={() => toggleCheckedItem(item.id)}
                         className="w-full flex items-center gap-3 py-2 px-1 -mx-1 rounded transition-colors"
+                        data-testid={`checkbox-${item.id}`}
                         style={{
                           minHeight: 'var(--touch-target-min)',
                         }}

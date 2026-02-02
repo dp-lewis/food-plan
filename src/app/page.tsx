@@ -19,7 +19,7 @@ export default function Dashboard() {
     );
 
     return (
-      <main className="min-h-screen p-4">
+      <main className="min-h-screen p-4" data-testid="dashboard">
         <div className="max-w-md mx-auto">
           <h1
             className="mb-6"
@@ -35,6 +35,7 @@ export default function Dashboard() {
           {/* Today's meals */}
           <div
             className="rounded-lg p-4 mb-4"
+            data-testid="today-meals"
             style={{
               backgroundColor: 'var(--color-bg-primary)',
               border: 'var(--border-width) solid var(--color-border)',
@@ -86,6 +87,7 @@ export default function Dashboard() {
             <Link
               href="/plan/current"
               className="block w-full text-center py-3 rounded-lg"
+              data-testid="view-full-plan-link"
               style={{
                 backgroundColor: 'var(--color-bg-primary)',
                 border: 'var(--border-width) solid var(--color-border)',
@@ -98,6 +100,7 @@ export default function Dashboard() {
             <Link
               href="/shopping-list"
               className="primary-button w-full inline-flex items-center justify-center"
+              data-testid="shopping-list-link"
             >
               Shopping List
             </Link>
@@ -119,7 +122,7 @@ export default function Dashboard() {
 
   // Empty state for new users
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4">
+    <main className="min-h-screen flex flex-col items-center justify-center px-4" data-testid="empty-state">
       <div className="max-w-md w-full text-center">
         {/* Icon */}
         <div
@@ -157,6 +160,7 @@ export default function Dashboard() {
         <Link
           href="/plan"
           className="primary-button inline-flex items-center justify-center w-full"
+          data-testid="create-first-plan-btn"
         >
           Create Your First Plan
         </Link>

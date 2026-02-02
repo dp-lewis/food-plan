@@ -29,7 +29,7 @@ export default function RecipeDetail() {
   const totalTime = recipe.prepTime + recipe.cookTime;
 
   return (
-    <main className="min-h-screen p-4 pb-8">
+    <main className="min-h-screen p-4 pb-8" data-testid="recipe-page">
       <div className="max-w-md mx-auto">
         {/* Back button */}
         <button
@@ -46,6 +46,7 @@ export default function RecipeDetail() {
         {/* Header */}
         <h1
           className="mb-2"
+          data-testid="recipe-title"
           style={{
             fontSize: 'var(--font-size-heading)',
             fontWeight: 'var(--font-weight-bold)',
@@ -73,6 +74,7 @@ export default function RecipeDetail() {
         >
           <div
             className="px-3 py-2 rounded-md"
+            data-testid="recipe-time"
             style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
           >
             <span
@@ -97,6 +99,7 @@ export default function RecipeDetail() {
 
           <div
             className="px-3 py-2 rounded-md"
+            data-testid="recipe-servings"
             style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
           >
             <span
@@ -180,7 +183,7 @@ export default function RecipeDetail() {
           >
             Ingredients
           </h2>
-          <ul className="space-y-2">
+          <ul className="space-y-2" data-testid="ingredients-list">
             {recipe.ingredients.map((ing, index) => (
               <li
                 key={index}
@@ -214,7 +217,7 @@ export default function RecipeDetail() {
           >
             Instructions
           </h2>
-          <ol className="space-y-4">
+          <ol className="space-y-4" data-testid="instructions-list">
             {recipe.instructions.map((step, index) => (
               <li key={index} className="flex gap-3">
                 <span

@@ -79,11 +79,13 @@ export default function CreatePlan() {
                   }))
                 }
                 className="stepper-button"
+                data-testid="people-decrement"
               >
                 −
               </button>
               <span
                 className="w-12 text-center"
+                data-testid="people-count"
                 style={{
                   fontSize: 'var(--font-size-heading)',
                   fontWeight: 'var(--font-weight-bold)',
@@ -100,6 +102,7 @@ export default function CreatePlan() {
                   }))
                 }
                 className="stepper-button"
+                data-testid="people-increment"
               >
                 +
               </button>
@@ -125,6 +128,7 @@ export default function CreatePlan() {
                   type="button"
                   onClick={() => setPreferences((p) => ({ ...p, numberOfDays: day }))}
                   className={`day-button ${preferences.numberOfDays === day ? 'day-button-active' : ''}`}
+                  data-testid={`day-${day}`}
                 >
                   {day}
                 </button>
@@ -159,6 +163,7 @@ export default function CreatePlan() {
                     }))
                   }
                   className={`meal-button ${preferences.includeMeals[meal] ? 'meal-button-active' : ''}`}
+                  data-testid={`meal-${meal}`}
                 >
                   {meal.charAt(0).toUpperCase() + meal.slice(1)}
                 </button>
@@ -185,6 +190,7 @@ export default function CreatePlan() {
                   type="button"
                   onClick={() => setPreferences((p) => ({ ...p, budget: level }))}
                   className={`budget-button ${preferences.budget === level ? 'budget-button-active' : ''}`}
+                  data-testid={`budget-${level}`}
                 >
                   {level.charAt(0).toUpperCase() + level.slice(1)}
                 </button>
@@ -193,7 +199,7 @@ export default function CreatePlan() {
           </div>
 
           {/* Submit */}
-          <button type="submit" className="primary-button w-full inline-flex items-center justify-center">
+          <button type="submit" className="primary-button w-full inline-flex items-center justify-center" data-testid="generate-plan-btn">
             Generate Plan
           </button>
         </form>

@@ -34,7 +34,7 @@ export default function CurrentPlan() {
   });
 
   return (
-    <main className="min-h-screen p-4 pb-24">
+    <main className="min-h-screen p-4 pb-24" data-testid="meal-plan">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1
@@ -58,10 +58,11 @@ export default function CurrentPlan() {
         </div>
 
         <div className="space-y-4">
-          {mealsByDay.map(({ dayName, meals }) => (
+          {mealsByDay.map(({ dayName, dayIndex, meals }) => (
             <div
               key={dayName}
               className="rounded-lg overflow-hidden"
+              data-testid={`day-${dayIndex}`}
               style={{
                 backgroundColor: 'var(--color-bg-primary)',
                 border: 'var(--border-width) solid var(--color-border)',
@@ -87,6 +88,7 @@ export default function CurrentPlan() {
                     <div
                       key={meal.id}
                       className="flex items-center justify-between px-4 py-3"
+                      data-testid={`meal-${meal.id}`}
                     >
                       <Link
                         href={`/recipe/${recipe.id}`}
@@ -122,6 +124,7 @@ export default function CurrentPlan() {
                       <button
                         onClick={() => swapMeal(meal.id)}
                         className="ml-3 px-3 py-1.5 rounded transition-colors"
+                        data-testid={`swap-${meal.id}`}
                         style={{
                           fontSize: 'var(--font-size-caption)',
                           color: 'var(--color-accent)',
@@ -150,6 +153,7 @@ export default function CurrentPlan() {
             <Link
               href="/shopping-list"
               className="primary-button w-full inline-flex items-center justify-center"
+              data-testid="shopping-list-btn"
             >
               View Shopping List
             </Link>
