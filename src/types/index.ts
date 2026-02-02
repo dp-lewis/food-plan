@@ -1,7 +1,7 @@
 export type MealType = 'breakfast' | 'lunch' | 'dinner';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type BudgetLevel = 'low' | 'medium' | 'high';
-export type IngredientCategory = 'produce' | 'dairy' | 'meat' | 'pantry' | 'frozen';
+export type IngredientCategory = 'produce' | 'dairy' | 'meat' | 'pantry' | 'frozen' | 'uncategorized';
 
 export interface Ingredient {
   name: string;
@@ -23,6 +23,10 @@ export interface Recipe {
   estimatedCost: BudgetLevel;
   ingredients: Ingredient[];
   instructions: string[];
+  // For imported recipes
+  sourceUrl?: string;
+  sourceName?: string;
+  isUserRecipe?: boolean;
 }
 
 export interface Meal {

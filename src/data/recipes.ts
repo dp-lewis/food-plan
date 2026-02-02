@@ -684,10 +684,12 @@ export const recipes: Recipe[] = [
   },
 ];
 
-export function getRecipesByMealType(mealType: string): Recipe[] {
-  return recipes.filter((r) => r.mealType === mealType);
+export function getRecipesByMealType(mealType: string, userRecipes: Recipe[] = []): Recipe[] {
+  const allRecipes = [...recipes, ...userRecipes];
+  return allRecipes.filter((r) => r.mealType === mealType);
 }
 
-export function getRecipeById(id: string): Recipe | undefined {
-  return recipes.find((r) => r.id === id);
+export function getRecipeById(id: string, userRecipes: Recipe[] = []): Recipe | undefined {
+  const allRecipes = [...recipes, ...userRecipes];
+  return allRecipes.find((r) => r.id === id);
 }

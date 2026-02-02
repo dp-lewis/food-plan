@@ -11,11 +11,12 @@ export default function ShoppingList() {
   const currentPlan = useStore((state) => state.currentPlan);
   const checkedItems = useStore((state) => state.checkedItems);
   const toggleCheckedItem = useStore((state) => state.toggleCheckedItem);
+  const userRecipes = useStore((state) => state.userRecipes);
 
   const shoppingList = useMemo(() => {
     if (!currentPlan) return null;
-    return generateShoppingList(currentPlan);
-  }, [currentPlan]);
+    return generateShoppingList(currentPlan, userRecipes);
+  }, [currentPlan, userRecipes]);
 
   const groupedItems = useMemo(() => {
     if (!shoppingList) return null;

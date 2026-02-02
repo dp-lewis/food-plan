@@ -1,4 +1,4 @@
-import { MealPlan, ShoppingListItem, IngredientCategory } from '@/types';
+import { MealPlan, ShoppingListItem, IngredientCategory, Recipe } from '@/types';
 import { getRecipeById } from '@/data/recipes';
 
 interface AggregatedIngredient {
@@ -8,7 +8,7 @@ interface AggregatedIngredient {
   category: IngredientCategory;
 }
 
-const CATEGORY_ORDER: IngredientCategory[] = ['produce', 'meat', 'dairy', 'frozen', 'pantry'];
+const CATEGORY_ORDER: IngredientCategory[] = ['produce', 'meat', 'dairy', 'frozen', 'pantry', 'uncategorized'];
 
 const CATEGORY_LABELS: Record<IngredientCategory, string> = {
   produce: 'Produce',
@@ -16,13 +16,14 @@ const CATEGORY_LABELS: Record<IngredientCategory, string> = {
   dairy: 'Dairy',
   frozen: 'Frozen',
   pantry: 'Pantry',
+  uncategorized: 'Other',
 };
 
-export function generateShoppingList(plan: MealPlan): ShoppingListItem[] {
+export function generateShoppingList(plan: MealPlan, userRecipes: Recipe[] = []): ShoppingListItem[] {
   const ingredientMap = new Map<string, AggregatedIngredient>();
 
   for (const meal of plan.meals) {
-    const recipe = getRecipeById(meal.recipeId);
+    const recipe = getRecipeById(meal.recipeId, userRecipes);
     if (!recipe) continue;
 
     // Calculate serving multiplier

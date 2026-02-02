@@ -8,6 +8,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 
 export default function Dashboard() {
   const currentPlan = useStore((state) => state.currentPlan);
+  const userRecipes = useStore((state) => state.userRecipes);
 
   // Show plan summary if one exists
   if (currentPlan) {
@@ -53,7 +54,7 @@ export default function Dashboard() {
             </h2>
             <div className="space-y-2">
               {todayMeals.map((meal) => {
-                const recipe = getRecipeById(meal.recipeId);
+                const recipe = getRecipeById(meal.recipeId, userRecipes);
                 if (!recipe) return null;
                 return (
                   <div key={meal.id} className="flex justify-between items-center">
@@ -113,6 +114,17 @@ export default function Dashboard() {
               className="block text-center mt-4"
             >
               Create new plan
+            </Link>
+            <Link
+              href="/recipes"
+              style={{
+                fontSize: 'var(--font-size-caption)',
+                color: 'var(--color-text-muted)',
+              }}
+              className="block text-center mt-2"
+              data-testid="my-recipes-link"
+            >
+              My Recipes
             </Link>
           </div>
         </div>
@@ -186,6 +198,18 @@ export default function Dashboard() {
             <span>Easy meal swapping when plans change</span>
           </li>
         </ul>
+
+        <Link
+          href="/recipes"
+          style={{
+            fontSize: 'var(--font-size-caption)',
+            color: 'var(--color-text-muted)',
+          }}
+          className="block text-center mt-6"
+          data-testid="my-recipes-link"
+        >
+          Import your own recipes →
+        </Link>
       </div>
     </main>
   );

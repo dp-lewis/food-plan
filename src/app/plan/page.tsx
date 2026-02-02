@@ -10,12 +10,13 @@ import { MealPlanPreferences, BudgetLevel } from '@/types';
 export default function CreatePlan() {
   const router = useRouter();
   const setCurrentPlan = useStore((state) => state.setCurrentPlan);
+  const userRecipes = useStore((state) => state.userRecipes);
 
   const [preferences, setPreferences] = useState<MealPlanPreferences>(defaultPreferences);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const plan = generateMealPlan(preferences);
+    const plan = generateMealPlan(preferences, userRecipes);
     setCurrentPlan(plan);
     router.push('/plan/current');
   };

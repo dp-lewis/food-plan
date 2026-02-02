@@ -1,5 +1,5 @@
-import { MealPlan, MealPlanPreferences, Meal, MealType } from '@/types';
-import { recipes, getRecipesByMealType } from '@/data/recipes';
+import { MealPlan, MealPlanPreferences, Meal, MealType, Recipe } from '@/types';
+import { getRecipesByMealType } from '@/data/recipes';
 
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
@@ -14,7 +14,7 @@ function generateId(): string {
   return Math.random().toString(36).substring(2, 15);
 }
 
-export function generateMealPlan(preferences: MealPlanPreferences): MealPlan {
+export function generateMealPlan(preferences: MealPlanPreferences, userRecipes: Recipe[] = []): MealPlan {
   const meals: Meal[] = [];
   const mealTypes: MealType[] = [];
 
@@ -23,7 +23,7 @@ export function generateMealPlan(preferences: MealPlanPreferences): MealPlan {
   if (preferences.includeMeals.dinner) mealTypes.push('dinner');
 
   for (const mealType of mealTypes) {
-    const availableRecipes = getRecipesByMealType(mealType);
+    const availableRecipes = getRecipesByMealType(mealType, userRecipes);
     const shuffledRecipes = shuffleArray(availableRecipes);
 
     for (let dayIndex = 0; dayIndex < preferences.numberOfDays; dayIndex++) {
@@ -49,12 +49,12 @@ export function generateMealPlan(preferences: MealPlanPreferences): MealPlan {
   };
 }
 
-export function swapMeal(plan: MealPlan, mealId: string): MealPlan {
+export function swapMeal(plan: MealPlan, mealId: string, userRecipes: Recipe[] = []): MealPlan {
   const mealIndex = plan.meals.findIndex((m) => m.id === mealId);
   if (mealIndex === -1) return plan;
 
   const meal = plan.meals[mealIndex];
-  const availableRecipes = getRecipesByMealType(meal.mealType);
+  const availableRecipes = getRecipesByMealType(meal.mealType, userRecipes);
 
   // Get recipes not currently used for this meal type
   const usedRecipeIds = plan.meals

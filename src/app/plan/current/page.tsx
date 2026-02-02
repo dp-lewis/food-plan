@@ -14,6 +14,7 @@ export default function CurrentPlan() {
   const router = useRouter();
   const currentPlan = useStore((state) => state.currentPlan);
   const swapMeal = useStore((state) => state.swapMeal);
+  const userRecipes = useStore((state) => state.userRecipes);
 
   useEffect(() => {
     if (!currentPlan) {
@@ -81,8 +82,12 @@ export default function CurrentPlan() {
               </div>
               <div className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
                 {meals.map((meal) => {
-                  const recipe = getRecipeById(meal.recipeId);
+                  const recipe = getRecipeById(meal.recipeId, userRecipes);
                   if (!recipe) return null;
+
+                  const recipeUrl = recipe.isUserRecipe
+                    ? `/recipes/${recipe.id}`
+                    : `/recipe/${recipe.id}`;
 
                   return (
                     <div
@@ -91,7 +96,7 @@ export default function CurrentPlan() {
                       data-testid={`meal-${meal.id}`}
                     >
                       <Link
-                        href={`/recipe/${recipe.id}`}
+                        href={recipeUrl}
                         className="flex-1 transition-colors"
                       >
                         <span

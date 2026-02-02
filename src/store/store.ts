@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { MealPlan, MealPlanPreferences } from '@/types';
+import { MealPlan, MealPlanPreferences, Recipe } from '@/types';
 import { swapMeal } from '@/lib/planGenerator';
 
 interface AppState {
@@ -12,18 +12,23 @@ interface AppState {
   checkedItems: string[];
   toggleCheckedItem: (itemId: string) => void;
   clearCheckedItems: () => void;
+  userRecipes: Recipe[];
+  addUserRecipe: (recipe: Recipe) => void;
+  removeUserRecipe: (id: string) => void;
 }
 
 export const useStore = create<AppState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       currentPlan: null,
       setCurrentPlan: (plan) => set({ currentPlan: plan, checkedItems: [] }),
-      swapMeal: (mealId) =>
-        set((state) => ({
-          currentPlan: state.currentPlan ? swapMeal(state.currentPlan, mealId) : null,
+      swapMeal: (mealId) => {
+        const state = get();
+        set({
+          currentPlan: state.currentPlan ? swapMeal(state.currentPlan, mealId, state.userRecipes) : null,
           checkedItems: [], // Reset shopping list when plan changes
-        })),
+        });
+      },
       checkedItems: [],
       toggleCheckedItem: (itemId) =>
         set((state) => ({
@@ -32,6 +37,15 @@ export const useStore = create<AppState>()(
             : [...state.checkedItems, itemId],
         })),
       clearCheckedItems: () => set({ checkedItems: [] }),
+      userRecipes: [],
+      addUserRecipe: (recipe) =>
+        set((state) => ({
+          userRecipes: [...state.userRecipes, recipe],
+        })),
+      removeUserRecipe: (id) =>
+        set((state) => ({
+          userRecipes: state.userRecipes.filter((r) => r.id !== id),
+        })),
     }),
     {
       name: 'food-plan-storage',
