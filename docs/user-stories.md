@@ -247,3 +247,24 @@
 | **P0 - Must have** | US-1.1, US-2.1, US-3.1, US-4.1, US-5.1, US-6.1 | Core loop: create → view → shop |
 | **P1 - Should have** | US-1.2, US-2.2, US-2.3, US-4.2, US-5.2, US-5.3 | Polish and usability |
 | **P2 - Nice to have** | US-3.2, US-4.3 | Enhancements |
+
+---
+
+## Implementation Status
+
+| Story | Description | Implemented | E2E Tests |
+|-------|-------------|:-----------:|:---------:|
+| US-1.1 | Create a new meal plan | ✓ | ✓ |
+| US-1.2 | Use smart defaults | | |
+| US-2.1 | View weekly calendar | ✓ | ✓ |
+| US-2.2 | View recipe from calendar | ✓ | |
+| US-2.3 | Swap a meal | ✓ | ✓ |
+| US-3.1 | View recipe details | ✓ | ✓ |
+| US-3.2 | Adjust servings | | |
+| US-4.1 | View shopping list | ✓ | ✓ |
+| US-4.2 | Check off items | ✓ | ✓ |
+| US-4.3 | Clear checked items | | |
+| US-5.1 | View current plan summary | | |
+| US-5.2 | Create new plan from dashboard | | |
+| US-5.3 | Empty state for new users | ✓ | ✓ |
+| US-6.1 | Persist data across sessions | ✓ | |

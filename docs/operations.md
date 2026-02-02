@@ -70,6 +70,47 @@ No environment variables needed — runs entirely in the browser.
 
 ---
 
+## Testing
+
+### E2E Tests (Playwright)
+
+Tests are organised by user story in the `e2e/` folder.
+
+**Commands:**
+
+| Command | Purpose |
+|---------|---------|
+| `npm run test:e2e` | Run all e2e tests headlessly |
+| `npm run test:e2e:ui` | Run with interactive UI for debugging |
+
+**File structure:**
+
+```
+e2e/
+├── helpers/test-utils.ts       # Shared utilities
+├── us-1.1-create-meal-plan.spec.ts
+├── us-2.1-view-weekly-calendar.spec.ts
+├── us-2.3-swap-meal.spec.ts
+├── us-3.1-view-recipe-details.spec.ts
+├── us-4.1-view-shopping-list.spec.ts
+├── us-4.2-check-off-items.spec.ts
+└── us-5.3-empty-state-dashboard.spec.ts
+```
+
+**Adding new tests:**
+
+1. Create `e2e/us-X.X-feature-name.spec.ts`
+2. Add `data-testid` attributes to components for reliable selectors
+3. Use helpers from `test-utils.ts` (e.g., `clearAppState`, `createDefaultPlan`)
+
+**Conventions:**
+
+- Test files named after user story IDs
+- Use `data-testid` attributes for test selectors (not CSS classes)
+- Each test file covers one user story's acceptance criteria
+
+---
+
 ## Infrastructure
 
 ### Development
