@@ -67,20 +67,7 @@ export default function UserRecipeDetail() {
           {recipe.title}
         </h1>
 
-        {recipe.description && (
-          <p
-            className="mb-4"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              color: 'var(--color-text-secondary)',
-            }}
-          >
-            {recipe.description}
-          </p>
-        )}
-
-        {/* Source attribution */}
-        {recipe.sourceName && recipe.sourceUrl && (
+        {recipe.sourceName && (
           <p
             className="mb-4"
             style={{
@@ -88,18 +75,10 @@ export default function UserRecipeDetail() {
               color: 'var(--color-text-muted)',
             }}
           >
-            Source:{' '}
-            <a
-              href={recipe.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'var(--color-accent)' }}
-              data-testid="source-link"
-            >
-              {recipe.sourceName}
-            </a>
+            Imported from {recipe.sourceName}
           </p>
         )}
+
 
         {/* Meta info */}
         <div
@@ -215,44 +194,35 @@ export default function UserRecipeDetail() {
           </ul>
         </section>
 
-        {/* Instructions */}
-        <section className="mb-6">
-          <h2
-            className="mb-3"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            Instructions
-          </h2>
-          <ol className="space-y-4" data-testid="instructions-list">
-            {recipe.instructions.map((step, index) => (
-              <li key={index} className="flex gap-3">
-                <span
-                  className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{
-                    backgroundColor: 'var(--color-accent)',
-                    color: 'var(--color-text-inverse)',
-                    fontSize: 'var(--font-size-caption)',
-                    fontWeight: 'var(--font-weight-bold)',
-                  }}
-                >
-                  {index + 1}
-                </span>
-                <p
-                  style={{
-                    fontSize: 'var(--font-size-body)',
-                    color: 'var(--color-text-secondary)',
-                  }}
-                >
-                  {step}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </section>
+        {/* View Recipe Link */}
+        {recipe.sourceUrl && (
+          <section className="mb-6">
+            <a
+              href={recipe.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full text-center py-4 rounded-lg"
+              data-testid="view-recipe-link"
+              style={{
+                backgroundColor: 'var(--color-accent)',
+                color: 'var(--color-text-inverse)',
+                fontSize: 'var(--font-size-body)',
+                fontWeight: 'var(--font-weight-bold)',
+              }}
+            >
+              View Recipe on {recipe.sourceName || 'Original Site'} →
+            </a>
+            <p
+              className="text-center mt-2"
+              style={{
+                fontSize: 'var(--font-size-caption)',
+                color: 'var(--color-text-muted)',
+              }}
+            >
+              Cooking instructions are on the original website
+            </p>
+          </section>
+        )}
 
         {/* Delete button */}
         <button

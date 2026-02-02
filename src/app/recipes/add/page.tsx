@@ -24,13 +24,11 @@ export default function AddRecipe() {
 
   // Editable fields for preview
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [mealType, setMealType] = useState<MealType>('dinner');
   const [prepTime, setPrepTime] = useState(15);
   const [cookTime, setCookTime] = useState(30);
   const [servings, setServings] = useState(4);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [instructions, setInstructions] = useState<string[]>([]);
 
   const handleFetchRecipe = async () => {
     setError(null);
@@ -53,11 +51,9 @@ export default function AddRecipe() {
 
       setParsedRecipe(data);
       setTitle(data.title);
-      setDescription(data.description || '');
       setPrepTime(data.prepTime || 15);
       setCookTime(data.cookTime || 30);
       setServings(data.servings || 4);
-      setInstructions(data.instructions || []);
 
       // Parse ingredients with auto-categorization
       const parsedIngredients = (data.ingredients || []).map((raw: string) =>
@@ -81,7 +77,7 @@ export default function AddRecipe() {
     const recipe = {
       id: `user-${Date.now()}`,
       title,
-      description,
+      description: '', // Not stored for imported recipes
       mealType,
       prepTime,
       cookTime,
@@ -90,7 +86,7 @@ export default function AddRecipe() {
       tags: [],
       estimatedCost: 'medium' as BudgetLevel,
       ingredients,
-      instructions,
+      instructions: [], // Not stored - users visit original site for method
       sourceUrl: parsedRecipe.sourceUrl,
       sourceName: parsedRecipe.sourceName,
       isUserRecipe: true,
@@ -431,58 +427,43 @@ export default function AddRecipe() {
               </div>
             </div>
 
-            {/* Instructions Preview */}
-            <div>
-              <label
-                className="block mb-2"
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                Instructions ({instructions.length} steps)
-              </label>
+            {/* Source notice */}
+            {parsedRecipe?.sourceName && parsedRecipe?.sourceUrl && (
               <div
-                className="rounded-lg p-3"
+                className="rounded-lg p-4"
                 style={{
                   backgroundColor: 'var(--color-bg-tertiary)',
-                  maxHeight: '150px',
-                  overflow: 'auto',
+                  border: 'var(--border-width) solid var(--color-border)',
                 }}
               >
-                <ol
-                  className="space-y-2"
+                <p
+                  className="mb-2"
+                  style={{
+                    fontSize: 'var(--font-size-caption)',
+                    fontWeight: 'var(--font-weight-bold)',
+                    color: 'var(--color-text-primary)',
+                  }}
+                >
+                  Recipe method
+                </p>
+                <p
                   style={{
                     fontSize: 'var(--font-size-caption)',
                     color: 'var(--color-text-secondary)',
                   }}
                 >
-                  {instructions.slice(0, 3).map((step, index) => (
-                    <li key={index} className="flex gap-2">
-                      <span style={{ color: 'var(--color-accent)' }}>{index + 1}.</span>
-                      <span className="line-clamp-2">{step}</span>
-                    </li>
-                  ))}
-                  {instructions.length > 3 && (
-                    <li style={{ color: 'var(--color-text-muted)' }}>
-                      ... and {instructions.length - 3} more steps
-                    </li>
-                  )}
-                </ol>
+                  The cooking instructions will remain on the original website. When you cook this recipe, you&apos;ll be linked to{' '}
+                  <a
+                    href={parsedRecipe.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--color-accent)' }}
+                  >
+                    {parsedRecipe.sourceName}
+                  </a>
+                  .
+                </p>
               </div>
-            </div>
-
-            {/* Source */}
-            {parsedRecipe?.sourceName && (
-              <p
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  color: 'var(--color-text-muted)',
-                }}
-              >
-                Source: {parsedRecipe.sourceName}
-              </p>
             )}
 
             {/* Save Button */}
