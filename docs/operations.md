@@ -81,6 +81,7 @@ Tests are organised by user story in the `e2e/` folder.
 | Command | Purpose |
 |---------|---------|
 | `npm run test:e2e` | Run all e2e tests headlessly |
+| `npm run test:e2e:headed` | Run tests with visible browser |
 | `npm run test:e2e:ui` | Run with interactive UI for debugging |
 
 **File structure:**
