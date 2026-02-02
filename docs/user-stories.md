@@ -216,6 +216,26 @@
 
 ---
 
+## Epic 7: User Recipes
+
+### US-7.1: Import recipe from URL
+
+**As a** home cook
+**I want to** import recipes from my favourite food websites
+**So that** I can include trusted recipes in my meal plans
+
+**Acceptance Criteria:**
+- [ ] Can navigate to "My Recipes" from the dashboard
+- [ ] Can enter a URL to import a recipe
+- [ ] Recipe title and ingredients are extracted from the page
+- [ ] Can select meal type (breakfast, lunch, dinner) for imported recipe
+- [ ] Can adjust ingredient categories before saving
+- [ ] Saved recipes appear in "My Recipes" list
+- [ ] Imported recipes link to original website for cooking instructions
+- [ ] Imported recipe ingredients appear on shopping list when used in a plan
+
+---
+
 ## Story Map Overview
 
 ```
@@ -245,7 +265,7 @@
 | Priority | Stories | Rationale |
 |----------|---------|-----------|
 | **P0 - Must have** | US-1.1, US-2.1, US-3.1, US-4.1, US-5.1, US-6.1 | Core loop: create → view → shop |
-| **P1 - Should have** | US-1.2, US-2.2, US-2.3, US-4.2, US-5.2, US-5.3 | Polish and usability |
+| **P1 - Should have** | US-1.2, US-2.2, US-2.3, US-4.2, US-5.2, US-5.3, US-7.1 | Polish and usability |
 | **P2 - Nice to have** | US-3.2, US-4.3 | Enhancements |
 
 ---

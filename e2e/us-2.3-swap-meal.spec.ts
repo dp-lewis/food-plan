@@ -60,8 +60,9 @@ test.describe('US-2.3: Swap a meal', () => {
 
     const recipeAfterSwap = await firstDay.locator('[data-testid^="meal-"]').first().locator('a').textContent();
 
-    // Reload page
+    // Reload page and wait for meal plan to load
     await page.reload();
+    await expect(page.getByTestId('meal-plan')).toBeVisible();
 
     const recipeAfterReload = await page.getByTestId('day-0').locator('[data-testid^="meal-"]').first().locator('a').textContent();
 
