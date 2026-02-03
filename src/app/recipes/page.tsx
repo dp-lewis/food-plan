@@ -93,16 +93,16 @@ export default function MyRecipes() {
             </p>
             <div className="flex flex-col gap-2">
               <Link
-                href="/recipes/new"
+                href="/recipes/add"
                 className="primary-button inline-flex items-center justify-center"
-                data-testid="empty-create-btn"
+                data-testid="empty-import-btn"
               >
-                Create Your Own Recipe
+                Import from URL
               </Link>
               <Link
-                href="/recipes/add"
+                href="/recipes/new"
                 className="inline-flex items-center justify-center px-4 py-2 rounded-lg"
-                data-testid="empty-import-btn"
+                data-testid="empty-create-btn"
                 style={{
                   backgroundColor: 'var(--color-bg-tertiary)',
                   border: 'var(--border-width) solid var(--color-border)',
@@ -110,7 +110,7 @@ export default function MyRecipes() {
                   color: 'var(--color-text-primary)',
                 }}
               >
-                Import from URL
+                Create Your Own Recipe
               </Link>
             </div>
           </div>
