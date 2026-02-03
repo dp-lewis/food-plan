@@ -27,6 +27,8 @@ export interface Recipe {
   sourceUrl?: string;
   sourceName?: string;
   isUserRecipe?: boolean;
+  // For manual recipes - brief reminders
+  notes?: string;
 }
 
 export interface Meal {

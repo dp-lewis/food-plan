@@ -185,7 +185,7 @@ test.describe('US-7.1: Import recipe from URL', () => {
     await page.goto('/recipes');
 
     await expect(page.getByTestId('empty-recipes')).toBeVisible();
-    await expect(page.getByText('No imported recipes yet')).toBeVisible();
+    await expect(page.getByText('No recipes yet')).toBeVisible();
   });
 
   test('Can delete an imported recipe', async ({ page }) => {

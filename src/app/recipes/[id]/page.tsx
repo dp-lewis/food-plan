@@ -67,17 +67,16 @@ export default function UserRecipeDetail() {
           {recipe.title}
         </h1>
 
-        {recipe.sourceName && (
-          <p
-            className="mb-4"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            Imported from {recipe.sourceName}
-          </p>
-        )}
+        <p
+          className="mb-4"
+          data-testid="recipe-source"
+          style={{
+            fontSize: 'var(--font-size-caption)',
+            color: 'var(--color-text-muted)',
+          }}
+        >
+          {recipe.sourceName ? `Imported from ${recipe.sourceName}` : 'Your recipe'}
+        </p>
 
 
         {/* Meta info */}
@@ -193,6 +192,33 @@ export default function UserRecipeDetail() {
             ))}
           </ul>
         </section>
+
+        {/* Notes */}
+        {recipe.notes && (
+          <section className="mb-6">
+            <h2
+              className="mb-2"
+              style={{
+                fontSize: 'var(--font-size-body)',
+                fontWeight: 'var(--font-weight-bold)',
+                color: 'var(--color-text-primary)',
+              }}
+            >
+              Notes
+            </h2>
+            <p
+              data-testid="recipe-notes"
+              className="p-3 rounded-lg"
+              style={{
+                fontSize: 'var(--font-size-body)',
+                color: 'var(--color-text-secondary)',
+                backgroundColor: 'var(--color-bg-tertiary)',
+              }}
+            >
+              {recipe.notes}
+            </p>
+          </section>
+        )}
 
         {/* View Recipe Link */}
         {recipe.sourceUrl && (

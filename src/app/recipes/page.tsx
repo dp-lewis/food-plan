@@ -20,13 +20,28 @@ export default function MyRecipes() {
           >
             My Recipes
           </h1>
-          <Link
-            href="/recipes/add"
-            className="primary-button inline-flex items-center"
-            data-testid="add-recipe-btn"
-          >
-            + Add from URL
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              href="/recipes/new"
+              className="px-3 py-2 rounded-lg inline-flex items-center"
+              data-testid="create-recipe-btn"
+              style={{
+                backgroundColor: 'var(--color-bg-tertiary)',
+                border: 'var(--border-width) solid var(--color-border)',
+                fontSize: 'var(--font-size-caption)',
+                color: 'var(--color-text-primary)',
+              }}
+            >
+              + Create
+            </Link>
+            <Link
+              href="/recipes/add"
+              className="primary-button inline-flex items-center"
+              data-testid="import-recipe-btn"
+            >
+              Import URL
+            </Link>
+          </div>
         </div>
 
         {/* Back to dashboard */}
@@ -65,7 +80,7 @@ export default function MyRecipes() {
                 color: 'var(--color-text-primary)',
               }}
             >
-              No imported recipes yet
+              No recipes yet
             </p>
             <p
               className="mb-4"
@@ -74,14 +89,30 @@ export default function MyRecipes() {
                 color: 'var(--color-text-muted)',
               }}
             >
-              Import your favourite recipes from websites like RecipeTin Eats, BBC Good Food, and more.
+              Add your own recipes or import from your favourite food websites.
             </p>
-            <Link
-              href="/recipes/add"
-              className="primary-button inline-flex items-center"
-            >
-              Import Your First Recipe
-            </Link>
+            <div className="flex flex-col gap-2">
+              <Link
+                href="/recipes/new"
+                className="primary-button inline-flex items-center justify-center"
+                data-testid="empty-create-btn"
+              >
+                Create Your Own Recipe
+              </Link>
+              <Link
+                href="/recipes/add"
+                className="inline-flex items-center justify-center px-4 py-2 rounded-lg"
+                data-testid="empty-import-btn"
+                style={{
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  border: 'var(--border-width) solid var(--color-border)',
+                  fontSize: 'var(--font-size-body)',
+                  color: 'var(--color-text-primary)',
+                }}
+              >
+                Import from URL
+              </Link>
+            </div>
           </div>
         )}
 
@@ -116,12 +147,8 @@ export default function MyRecipes() {
                   }}
                 >
                   <span className="capitalize">{recipe.mealType}</span>
-                  {recipe.sourceName && (
-                    <>
-                      <span>·</span>
-                      <span>from {recipe.sourceName}</span>
-                    </>
-                  )}
+                  <span>·</span>
+                  <span>{recipe.sourceName ? `from ${recipe.sourceName}` : 'Your recipe'}</span>
                 </div>
               </Link>
             ))}

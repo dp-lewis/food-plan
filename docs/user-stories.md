@@ -236,6 +236,24 @@
 
 ---
 
+### US-7.2: Create recipe manually
+
+**As a** family meal planner
+**I want to** add simple recipes manually without needing a URL
+**So that** I can include our family staples like "Schnitzel and salad" in meal plans
+
+**Acceptance Criteria:**
+- [ ] Can navigate to manual recipe form from My Recipes
+- [ ] Can enter a recipe title
+- [ ] Can select meal type (breakfast, lunch, dinner)
+- [ ] Can add multiple ingredients with quantities
+- [ ] Can set ingredient categories for shopping list grouping
+- [ ] Can add optional notes (brief reminders)
+- [ ] Saved recipe appears in My Recipes list as "Your recipe"
+- [ ] Manual recipe ingredients appear on shopping list when used in a plan
+
+---
+
 ## Story Map Overview
 
 ```
@@ -265,7 +283,7 @@
 | Priority | Stories | Rationale |
 |----------|---------|-----------|
 | **P0 - Must have** | US-1.1, US-2.1, US-3.1, US-4.1, US-5.1, US-6.1 | Core loop: create → view → shop |
-| **P1 - Should have** | US-1.2, US-2.2, US-2.3, US-4.2, US-5.2, US-5.3, US-7.1 | Polish and usability |
+| **P1 - Should have** | US-1.2, US-2.2, US-2.3, US-4.2, US-5.2, US-5.3, US-7.1, US-7.2 | Polish and usability |
 | **P2 - Nice to have** | US-3.2, US-4.3 | Enhancements |
 
 ---
