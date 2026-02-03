@@ -1,20 +1,65 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
-import { getRecipeById } from '@/data/recipes';
+import { getRecipeById, getRecipesByMealType } from '@/data/recipes';
 import { MealType } from '@/types';
+import RecipeDrawer from '@/components/RecipeDrawer';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
+
+interface DrawerState {
+  isOpen: boolean;
+  mealId: string | null;
+  mealType: MealType | null;
+  currentRecipeId: string | null;
+}
 
 export default function CurrentPlan() {
   const router = useRouter();
   const currentPlan = useStore((state) => state.currentPlan);
   const swapMeal = useStore((state) => state.swapMeal);
   const userRecipes = useStore((state) => state.userRecipes);
+
+  const [drawerState, setDrawerState] = useState<DrawerState>({
+    isOpen: false,
+    mealId: null,
+    mealType: null,
+    currentRecipeId: null,
+  });
+
+  const openDrawer = (mealId: string, mealType: MealType, currentRecipeId: string) => {
+    setDrawerState({
+      isOpen: true,
+      mealId,
+      mealType,
+      currentRecipeId,
+    });
+  };
+
+  const closeDrawer = () => {
+    setDrawerState({
+      isOpen: false,
+      mealId: null,
+      mealType: null,
+      currentRecipeId: null,
+    });
+  };
+
+  const handleSelectRecipe = (recipeId: string) => {
+    if (drawerState.mealId) {
+      swapMeal(drawerState.mealId, recipeId);
+    }
+  };
+
+  const handleSurpriseMe = () => {
+    if (drawerState.mealId) {
+      swapMeal(drawerState.mealId);
+    }
+  };
 
   useEffect(() => {
     if (!currentPlan) {
@@ -25,6 +70,10 @@ export default function CurrentPlan() {
   if (!currentPlan) {
     return null;
   }
+
+  const drawerRecipes = drawerState.mealType
+    ? getRecipesByMealType(drawerState.mealType, userRecipes)
+    : [];
 
   // Group meals by day
   const mealsByDay = DAYS.slice(0, currentPlan.preferences.numberOfDays).map((dayName, dayIndex) => {
@@ -138,7 +187,7 @@ export default function CurrentPlan() {
                         </p>
                       </Link>
                       <button
-                        onClick={() => swapMeal(meal.id)}
+                        onClick={() => openDrawer(meal.id, meal.mealType, meal.recipeId)}
                         className="ml-3 px-3 py-1.5 rounded transition-colors"
                         data-testid={`swap-${meal.id}`}
                         style={{
@@ -176,6 +225,17 @@ export default function CurrentPlan() {
           </div>
         </div>
       </div>
+
+      {/* Recipe selection drawer */}
+      <RecipeDrawer
+        isOpen={drawerState.isOpen}
+        onClose={closeDrawer}
+        mealType={drawerState.mealType}
+        currentRecipeId={drawerState.currentRecipeId}
+        recipes={drawerRecipes}
+        onSelectRecipe={handleSelectRecipe}
+        onSurpriseMe={handleSurpriseMe}
+      />
     </main>
   );
 }

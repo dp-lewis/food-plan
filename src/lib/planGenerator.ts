@@ -49,33 +49,48 @@ export function generateMealPlan(preferences: MealPlanPreferences, userRecipes: 
   };
 }
 
-export function swapMeal(plan: MealPlan, mealId: string, userRecipes: Recipe[] = []): MealPlan {
+export function swapMeal(
+  plan: MealPlan,
+  mealId: string,
+  userRecipes: Recipe[] = [],
+  selectedRecipeId?: string
+): MealPlan {
   const mealIndex = plan.meals.findIndex((m) => m.id === mealId);
   if (mealIndex === -1) return plan;
 
   const meal = plan.meals[mealIndex];
-  const availableRecipes = getRecipesByMealType(meal.mealType, userRecipes);
 
-  // Get recipes not currently used for this meal type
-  const usedRecipeIds = plan.meals
-    .filter((m) => m.mealType === meal.mealType)
-    .map((m) => m.recipeId);
+  let newRecipeId: string;
 
-  let newRecipes = availableRecipes.filter((r) => !usedRecipeIds.includes(r.id));
+  if (selectedRecipeId) {
+    // Use the user-selected recipe
+    newRecipeId = selectedRecipeId;
+  } else {
+    // Random selection logic
+    const availableRecipes = getRecipesByMealType(meal.mealType, userRecipes);
 
-  // If all recipes are used, allow any recipe except the current one
-  if (newRecipes.length === 0) {
-    newRecipes = availableRecipes.filter((r) => r.id !== meal.recipeId);
+    // Get recipes not currently used for this meal type
+    const usedRecipeIds = plan.meals
+      .filter((m) => m.mealType === meal.mealType)
+      .map((m) => m.recipeId);
+
+    let newRecipes = availableRecipes.filter((r) => !usedRecipeIds.includes(r.id));
+
+    // If all recipes are used, allow any recipe except the current one
+    if (newRecipes.length === 0) {
+      newRecipes = availableRecipes.filter((r) => r.id !== meal.recipeId);
+    }
+
+    if (newRecipes.length === 0) return plan;
+
+    const newRecipe = newRecipes[Math.floor(Math.random() * newRecipes.length)];
+    newRecipeId = newRecipe.id;
   }
-
-  if (newRecipes.length === 0) return plan;
-
-  const newRecipe = newRecipes[Math.floor(Math.random() * newRecipes.length)];
 
   const updatedMeals = [...plan.meals];
   updatedMeals[mealIndex] = {
     ...meal,
-    recipeId: newRecipe.id,
+    recipeId: newRecipeId,
   };
 
   return {

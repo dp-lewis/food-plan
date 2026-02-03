@@ -8,7 +8,7 @@ import { swapMeal } from '@/lib/planGenerator';
 interface AppState {
   currentPlan: MealPlan | null;
   setCurrentPlan: (plan: MealPlan | null) => void;
-  swapMeal: (mealId: string) => void;
+  swapMeal: (mealId: string, recipeId?: string) => void;
   checkedItems: string[];
   toggleCheckedItem: (itemId: string) => void;
   clearCheckedItems: () => void;
@@ -22,10 +22,12 @@ export const useStore = create<AppState>()(
     (set, get) => ({
       currentPlan: null,
       setCurrentPlan: (plan) => set({ currentPlan: plan, checkedItems: [] }),
-      swapMeal: (mealId) => {
+      swapMeal: (mealId, recipeId) => {
         const state = get();
         set({
-          currentPlan: state.currentPlan ? swapMeal(state.currentPlan, mealId, state.userRecipes) : null,
+          currentPlan: state.currentPlan
+            ? swapMeal(state.currentPlan, mealId, state.userRecipes, recipeId)
+            : null,
           checkedItems: [], // Reset shopping list when plan changes
         });
       },

@@ -75,10 +75,13 @@
 
 **Acceptance Criteria:**
 - [ ] Each meal has a "Swap" button/action
-- [ ] Swapping replaces the meal with a different recipe of the same type
-- [ ] New recipe is randomly selected from available options
+- [ ] Clicking Swap opens a drawer with recipe options
+- [ ] Can select a specific recipe from the list
+- [ ] Can use "Surprise me" for random selection
+- [ ] Current recipe is highlighted and disabled
 - [ ] Change is saved to localStorage
 - [ ] Can swap the same meal multiple times
+- [ ] Can dismiss drawer without making changes
 
 ---
 
