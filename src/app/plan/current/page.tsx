@@ -37,6 +37,17 @@ export default function CurrentPlan() {
   return (
     <main className="min-h-screen p-4 pb-24" data-testid="meal-plan">
       <div className="max-w-2xl mx-auto">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1 mb-4"
+          style={{
+            fontSize: 'var(--font-size-caption)',
+            color: 'var(--color-text-muted)',
+          }}
+        >
+          ← Back to Dashboard
+        </Link>
+
         <div className="flex items-center justify-between mb-6">
           <h1
             style={{
