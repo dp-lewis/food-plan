@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore, defaultPreferences } from '@/store/store';
 import { generateMealPlan } from '@/lib/planGenerator';
-import { MealPlanPreferences, BudgetLevel } from '@/types';
+import { MealPlanPreferences } from '@/types';
 
 export default function CreatePlan() {
   const router = useRouter();
@@ -167,33 +167,6 @@ export default function CreatePlan() {
                   data-testid={`meal-${meal}`}
                 >
                   {meal.charAt(0).toUpperCase() + meal.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Budget */}
-          <div>
-            <label
-              className="block mb-2"
-              style={{
-                fontSize: 'var(--font-size-body)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              Budget level
-            </label>
-            <div className="flex gap-2">
-              {(['low', 'medium', 'high'] as BudgetLevel[]).map((level) => (
-                <button
-                  key={level}
-                  type="button"
-                  onClick={() => setPreferences((p) => ({ ...p, budget: level }))}
-                  className={`budget-button ${preferences.budget === level ? 'budget-button-active' : ''}`}
-                  data-testid={`budget-${level}`}
-                >
-                  {level.charAt(0).toUpperCase() + level.slice(1)}
                 </button>
               ))}
             </div>

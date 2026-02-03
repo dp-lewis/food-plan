@@ -12,7 +12,6 @@ import { clearAppState } from './helpers/test-utils';
  * - [ ] Can specify number of people (default: 4)
  * - [ ] Can specify number of days (1-7, default: 7)
  * - [ ] Can select which meals to plan (breakfast, lunch, dinner)
- * - [ ] Can select budget level (low, medium, high)
  * - [ ] Clicking "Generate Plan" creates a plan from available recipes
  * - [ ] Plan is saved to localStorage
  * - [ ] Redirects to plan view after generation
@@ -61,20 +60,6 @@ test.describe('US-1.1: Create a new meal plan', () => {
     // Can toggle back on
     await page.getByTestId('meal-breakfast').click();
     await expect(page.getByTestId('meal-breakfast')).toHaveClass(/meal-button-active/);
-  });
-
-  test('Can select budget level (low, medium, high)', async ({ page }) => {
-    // Medium selected by default
-    await expect(page.getByTestId('budget-medium')).toHaveClass(/budget-button-active/);
-
-    // Can change to low
-    await page.getByTestId('budget-low').click();
-    await expect(page.getByTestId('budget-low')).toHaveClass(/budget-button-active/);
-    await expect(page.getByTestId('budget-medium')).not.toHaveClass(/budget-button-active/);
-
-    // Can change to high
-    await page.getByTestId('budget-high').click();
-    await expect(page.getByTestId('budget-high')).toHaveClass(/budget-button-active/);
   });
 
   test('Clicking "Generate Plan" creates a plan from available recipes', async ({ page }) => {
