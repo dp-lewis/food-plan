@@ -160,6 +160,8 @@ export default function AddRecipe() {
                 placeholder="https://www.recipetineats.com/..."
                 className="w-full px-3 py-2 rounded-lg"
                 data-testid="url-input"
+                aria-describedby={error ? 'url-error' : undefined}
+                aria-invalid={error ? true : undefined}
                 style={{
                   backgroundColor: 'var(--color-bg-primary)',
                   border: 'var(--border-width) solid var(--color-border)',
@@ -171,6 +173,8 @@ export default function AddRecipe() {
 
             {error && (
               <p
+                id="url-error"
+                role="alert"
                 className="text-center py-2 px-3 rounded"
                 data-testid="error-message"
                 style={{

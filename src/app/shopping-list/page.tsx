@@ -121,6 +121,9 @@ export default function ShoppingList() {
                         onClick={() => toggleCheckedItem(item.id)}
                         className="w-full flex items-center gap-3 py-2 px-1 -mx-1 rounded transition-colors"
                         data-testid={`checkbox-${item.id}`}
+                        role="checkbox"
+                        aria-checked={isChecked}
+                        aria-label={`${item.quantity} ${item.unit} ${item.ingredient}`}
                         style={{
                           minHeight: 'var(--touch-target-min)',
                         }}

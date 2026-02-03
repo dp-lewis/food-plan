@@ -81,6 +81,7 @@ export default function CreatePlan() {
                 }
                 className="stepper-button"
                 data-testid="people-decrement"
+                aria-label="Decrease number of people"
               >
                 −
               </button>
@@ -104,6 +105,7 @@ export default function CreatePlan() {
                 }
                 className="stepper-button"
                 data-testid="people-increment"
+                aria-label="Increase number of people"
               >
                 +
               </button>

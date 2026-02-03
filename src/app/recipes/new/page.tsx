@@ -123,6 +123,7 @@ export default function NewRecipe() {
           {/* Title */}
           <div>
             <label
+              htmlFor="title-input"
               className="block mb-1"
               style={{
                 fontSize: 'var(--font-size-caption)',
@@ -134,6 +135,7 @@ export default function NewRecipe() {
             </label>
             <input
               type="text"
+              id="title-input"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., Schnitzel and salad"
@@ -151,6 +153,7 @@ export default function NewRecipe() {
           {/* Meal Type */}
           <div>
             <label
+              htmlFor="meal-type-select"
               className="block mb-1"
               style={{
                 fontSize: 'var(--font-size-caption)',
@@ -161,6 +164,7 @@ export default function NewRecipe() {
               Meal Type *
             </label>
             <select
+              id="meal-type-select"
               value={mealType}
               onChange={(e) => setMealType(e.target.value as MealType)}
               className="w-full px-3 py-2 rounded-lg"
@@ -182,6 +186,7 @@ export default function NewRecipe() {
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label
+                htmlFor="prep-time-input"
                 className="block mb-1"
                 style={{
                   fontSize: 'var(--font-size-caption)',
@@ -193,6 +198,7 @@ export default function NewRecipe() {
               </label>
               <input
                 type="number"
+                id="prep-time-input"
                 value={prepTime}
                 onChange={(e) => setPrepTime(parseInt(e.target.value) || 0)}
                 min="0"
@@ -208,6 +214,7 @@ export default function NewRecipe() {
             </div>
             <div>
               <label
+                htmlFor="cook-time-input"
                 className="block mb-1"
                 style={{
                   fontSize: 'var(--font-size-caption)',
@@ -219,6 +226,7 @@ export default function NewRecipe() {
               </label>
               <input
                 type="number"
+                id="cook-time-input"
                 value={cookTime}
                 onChange={(e) => setCookTime(parseInt(e.target.value) || 0)}
                 min="0"
@@ -234,6 +242,7 @@ export default function NewRecipe() {
             </div>
             <div>
               <label
+                htmlFor="servings-input"
                 className="block mb-1"
                 style={{
                   fontSize: 'var(--font-size-caption)',
@@ -245,6 +254,7 @@ export default function NewRecipe() {
               </label>
               <input
                 type="number"
+                id="servings-input"
                 value={servings}
                 onChange={(e) => setServings(parseInt(e.target.value) || 1)}
                 min="1"
@@ -321,6 +331,7 @@ export default function NewRecipe() {
                       onClick={() => removeIngredient(index)}
                       className="p-1 rounded"
                       data-testid={`remove-ingredient-${index}`}
+                      aria-label={`Remove ${ing.parsed.name}`}
                       style={{
                         color: 'var(--color-error, #c00)',
                         fontSize: 'var(--font-size-caption)',
@@ -380,6 +391,7 @@ export default function NewRecipe() {
           {/* Notes */}
           <div>
             <label
+              htmlFor="notes-input"
               className="block mb-1"
               style={{
                 fontSize: 'var(--font-size-caption)',
@@ -390,6 +402,7 @@ export default function NewRecipe() {
               Notes (optional)
             </label>
             <textarea
+              id="notes-input"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any brief reminders for this recipe..."
@@ -420,6 +433,8 @@ export default function NewRecipe() {
 
           {!canSave && (
             <p
+              role="status"
+              aria-live="polite"
               className="text-center"
               style={{
                 fontSize: 'var(--font-size-caption)',
