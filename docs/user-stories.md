@@ -18,7 +18,6 @@
 - [ ] Can specify number of people (default: 4)
 - [ ] Can specify number of days (1-7, default: 7)
 - [ ] Can select which meals to plan (breakfast, lunch, dinner)
-- [ ] Can select budget level (low, medium, high)
 - [ ] Clicking "Generate Plan" creates a plan from available recipes
 - [ ] Plan is saved to localStorage
 - [ ] Redirects to plan view after generation
@@ -35,7 +34,6 @@
 - [ ] Number of people defaults to 4
 - [ ] Days defaults to 7
 - [ ] All meal types (breakfast, lunch, dinner) selected by default
-- [ ] Budget defaults to "medium"
 - [ ] Can generate a plan with zero changes to defaults
 
 ---

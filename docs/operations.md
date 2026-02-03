@@ -1,72 +1,35 @@
 # Food Plan - Operations Guide
 
-> **Purpose**: The Guidebook — how to build, run, and operate the system.
+> **Purpose**: How to build, run, test, and deploy the application.
 >
 > Related docs:
 > - [architecture.md](./architecture.md) — System structure and diagrams
-> - [adr/](./adr/README.md) — Decision records (esp. [005](./adr/005-gpt4o-mini-for-ai.md), [006](./adr/006-vercel-serverless-hosting.md))
+> - [adr/](./adr/README.md) — Decision records
 
 ---
 
-## API Specification (Production)
+## Development
 
-### Authentication
+### Prerequisites
 
-| Route | Method | Purpose |
-|-------|--------|---------|
-| `/api/auth/*` | Various | NextAuth.js handlers |
+- Node.js 18+
+- npm
 
-### Meal Plans
+### Getting Started
 
-| Route | Method | Purpose |
-|-------|--------|---------|
-| `/api/plans` | GET | List user's meal plans |
-| `/api/plans` | POST | Create new meal plan |
-| `/api/plans/[id]` | GET | Get single plan |
-| `/api/plans/[id]` | PUT | Update plan |
-| `/api/plans/[id]` | DELETE | Delete plan |
-| `/api/plans/[id]/shopping-list` | GET | Generate shopping list |
+```bash
+# Install dependencies
+npm install
 
-### Recipes
+# Run development server
+npm run dev
 
-| Route | Method | Purpose |
-|-------|--------|---------|
-| `/api/recipes` | GET | List user's recipes |
-| `/api/recipes` | POST | Add custom recipe |
-| `/api/recipes/[id]` | GET | Get single recipe |
-| `/api/recipes/[id]` | PUT | Update recipe |
-| `/api/recipes/[id]` | DELETE | Delete recipe |
-
-### AI Generation
-
-| Route | Method | Purpose |
-|-------|--------|---------|
-| `/api/generate/plan` | POST | Generate meal plan via AI |
-| `/api/generate/recipe` | POST | Generate single recipe via AI |
-
----
-
-## Environment Variables
-
-```env
-# Database (Production only)
-DATABASE_URL="postgresql://..."
-
-# Auth (Production only)
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="generated-secret"
-
-# OpenAI (Production only)
-OPENAI_API_KEY="sk-..."
-OPENAI_MODEL="gpt-4o-mini"
-OPENAI_MAX_TOKENS="3000"
-
-# Rate Limiting (Production only)
-RATE_LIMIT_PER_DAY="5"
+# Open http://localhost:3000
 ```
 
-### Prototype
-No environment variables needed — runs entirely in the browser.
+### Environment Variables
+
+No environment variables are required. The app runs entirely in the browser with localStorage.
 
 ---
 
@@ -88,146 +51,78 @@ Tests are organised by user story in the `e2e/` folder.
 
 ```
 e2e/
-├── helpers/test-utils.ts       # Shared utilities
+├── helpers/test-utils.ts
 ├── us-1.1-create-meal-plan.spec.ts
 ├── us-2.1-view-weekly-calendar.spec.ts
 ├── us-2.3-swap-meal.spec.ts
 ├── us-3.1-view-recipe-details.spec.ts
 ├── us-4.1-view-shopping-list.spec.ts
 ├── us-4.2-check-off-items.spec.ts
-└── us-5.3-empty-state-dashboard.spec.ts
+├── us-5.3-empty-state-dashboard.spec.ts
+├── us-7.1-import-recipe-from-url.spec.ts
+└── us-7.2-manual-recipe-entry.spec.ts
 ```
-
-**Adding new tests:**
-
-1. Create `e2e/us-X.X-feature-name.spec.ts`
-2. Add `data-testid` attributes to components for reliable selectors
-3. Use helpers from `test-utils.ts` (e.g., `clearAppState`, `createDefaultPlan`)
 
 **Conventions:**
 
 - Test files named after user story IDs
-- Use `data-testid` attributes for test selectors (not CSS classes)
+- Use `data-testid` attributes for test selectors
 - Each test file covers one user story's acceptance criteria
 
----
+**Adding new tests:**
 
-## Infrastructure
-
-### Development
-
-```
-Local machine
-├── npm run dev (Next.js dev server)
-├── Browser localStorage (no DB needed for prototype)
-└── OpenAI API key (production testing only)
-```
-
-### Production
-
-```
-Vercel (Free tier)
-├── Next.js app (auto-deployed from GitHub)
-├── Serverless functions (API routes)
-└── Edge network (static assets)
-
-Neon/Supabase (Free tier)
-└── PostgreSQL database
-
-OpenAI
-└── API with spending cap
-```
+1. Create `e2e/us-X.X-feature-name.spec.ts`
+2. Add `data-testid` attributes to components
+3. Use helpers from `test-utils.ts` (e.g., `clearAppState`, `createDefaultPlan`)
 
 ---
 
-## Cost Management
+## Deployment
 
-### OpenAI API
+The app is deployed to **Vercel** with automatic deployments from the `main` branch on GitHub.
 
-**Strategies:**
+### How it works
 
-| Strategy | Implementation | Savings |
-|----------|----------------|---------|
-| Use GPT-4o-mini | Default to cheaper model | ~90% vs GPT-4 |
-| Cache recipes | Store AI-generated recipes for reuse | Avoid duplicates |
-| Batch generation | Full week in one call | Fewer API calls |
-| Prompt optimization | Concise prompts, structured output | Fewer tokens |
-| Rate limiting | Max 5 generations/user/day | Prevent abuse |
-| Lazy generation | Generate recipes when viewed | Generate less |
+1. Push to `main` branch
+2. Vercel automatically builds and deploys
+3. Preview deployments for pull requests
 
-**Token Budget:**
+### Build Command
 
-```
-Meal plan generation (7 days):
-├── Prompt:    ~500 tokens
-├── Response:  ~2000 tokens
-└── Total:     ~2500 tokens
-
-Cost per plan: ~$0.0013
-Monthly (100 plans): ~$0.13
+```bash
+npm run build
 ```
 
-### Service Costs
+### Infrastructure
 
-| Service | Free Tier Limits |
-|---------|------------------|
-| **Vercel** | Unlimited deployments, 100GB bandwidth |
-| **Neon** | 512MB storage, 100 compute hours/month |
-| **Supabase** | 500MB storage, 2GB bandwidth |
-| **OpenAI** | Set hard cap at $10/month |
+| Service | Purpose | Cost |
+|---------|---------|------|
+| Vercel | Hosting (static + serverless) | Free tier |
+| GitHub | Source control | Free |
 
-**Total Monthly Estimate: $0 - $5**
+No database or external services required.
 
 ---
 
-## Security
+## API Routes
 
-### Authentication
-- NextAuth.js with secure session handling
-- Passwords hashed with bcrypt
-- HTTP-only cookies for sessions
+The app has one API route for server-side recipe parsing:
 
-### API Security
-- All routes require authentication (except public pages)
-- Input validation on all endpoints
-- Rate limiting on AI generation endpoints
+| Route | Method | Purpose |
+|-------|--------|---------|
+| `/api/parse-recipe` | POST | Fetch and parse recipe from URL |
 
-### Data Privacy
-- User data isolated by user ID in all queries
-- No sharing of user data between accounts
-- Recipe data can be kept private or marked public
-
-### API Key Protection
-- OpenAI key server-side only (never exposed to client)
-- Spending limits set in OpenAI dashboard
-- All secrets in environment variables
+This route fetches external recipe pages and extracts schema.org/Recipe JSON-LD data. It runs server-side to avoid CORS issues.
 
 ---
 
-## Simplifications (Hobby Scale)
+## Data Storage
 
-Things we're **intentionally not doing**:
+All user data is stored in the browser's localStorage:
 
-| Feature | Why Skip It |
-|---------|-------------|
-| Redis caching | Database is fast enough at this scale |
-| CDN for images | No user-uploaded images in MVP |
-| Background jobs | Synchronous AI calls fine for single user |
-| Microservices | Monolith is simpler and sufficient |
-| Kubernetes | Vercel serverless handles everything |
-| Analytics | Privacy-friendly, minimal tracking |
-| Email service | No email notifications needed |
+- Current meal plan
+- User preferences
+- Imported/manual recipes
+- Shopping list checked items
 
----
-
-## Future Scaling Path
-
-If the app grows beyond hobby scale:
-
-1. **Caching** — Redis for session and API response caching
-2. **Background jobs** — Queue AI generation for better UX
-3. **CDN** — Image optimization if recipe photos added
-4. **Database replicas** — If query load increases
-5. **Rate limiting service** — More sophisticated abuse prevention
-
-For now: **keep it simple**.
+Data persists across browser sessions but does not sync across devices.

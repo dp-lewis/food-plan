@@ -20,23 +20,18 @@ flowchart TB
         user[("👤 User<br/><i>Budget-conscious family<br/>planning weekly meals</i>")]
 
         system["🍽️ Food Plan<br/><i>Web Application</i><br/><br/>Generates weekly meal plans,<br/>recipes, and shopping lists<br/>based on user preferences"]
-
-        openai[("🤖 OpenAI API<br/><i>External Service</i><br/><br/>Generates recipes and<br/>meal plan suggestions")]
     end
 
     user -->|"Views meal plans,<br/>manages shopping list"| system
-    system -->|"Requests recipe<br/>generation"| openai
 
     style user fill:#08427b,color:#fff
     style system fill:#1168bd,color:#fff
-    style openai fill:#999,color:#fff
 ```
 
 | Element | Type | Description |
 |---------|------|-------------|
 | **User** | Person | Budget-conscious family member planning meals |
 | **Food Plan** | System | The web application we're building |
-| **OpenAI API** | External | Third-party AI service (production only) |
 
 ---
 
@@ -72,56 +67,40 @@ flowchart TB
 | **localStorage** | Browser API | Persist data between sessions |
 | **Static Recipes** | JSON | Pre-defined recipe data |
 
-### Production
+### Production (Current)
+
+The app is deployed to Vercel and uses the same architecture as the prototype - localStorage for persistence and bundled static recipes plus user-imported recipes.
 
 ```mermaid
 flowchart TB
-    subgraph client ["Client"]
-        browser["🌐 Web Browser<br/><i>React App</i><br/><br/>Next.js frontend<br/>served via Vercel"]
-    end
-
-    subgraph vercel ["Vercel (Serverless)"]
-        nextjs["⚛️ Next.js Server<br/><i>Node.js Runtime</i><br/><br/>Server components,<br/>API route handlers"]
-    end
-
-    subgraph external ["External Services"]
-        db[("🐘 PostgreSQL<br/><i>Neon/Supabase</i><br/><br/>User accounts, recipes,<br/>meal plans, preferences")]
-
-        openai[("🤖 OpenAI API<br/><i>GPT-4o-mini</i><br/><br/>Recipe generation,<br/>meal planning AI")]
+    subgraph vercel ["Vercel"]
+        nextjs["⚛️ Next.js App<br/><i>Static + Serverless</i><br/><br/>React frontend with<br/>API routes for recipe parsing"]
     end
 
     user[("👤 User")]
 
-    user -->|"HTTPS"| browser
-    browser <-->|"HTTPS"| nextjs
-    nextjs <-->|"SQL/TLS"| db
-    nextjs -->|"HTTPS"| openai
+    user -->|"HTTPS"| nextjs
 
     style user fill:#08427b,color:#fff
-    style browser fill:#1168bd,color:#fff
     style nextjs fill:#1168bd,color:#fff
-    style db fill:#999,color:#fff
-    style openai fill:#999,color:#fff
 ```
 
 | Container | Technology | Purpose |
 |-----------|------------|---------|
-| **Web Browser** | React | Client-side rendering |
-| **Next.js Server** | Node.js, Vercel | SSR, API routes, business logic |
-| **PostgreSQL** | Neon/Supabase | Persistent data storage |
-| **OpenAI API** | GPT-4o-mini | AI recipe/plan generation |
+| **Next.js App** | React, Vercel | UI, routing, recipe URL parsing API |
+| **localStorage** | Browser API | Persist user data (plans, recipes, preferences) |
 
 ---
 
 ## Data Flow
 
-### Prototype: Meal Plan Generation
+### Meal Plan Generation
 
 ```mermaid
 sequenceDiagram
     participant U as User
     participant App as Next.js App
-    participant R as Static Recipes
+    participant R as Static + User Recipes
     participant LS as localStorage
 
     U->>App: Submit preferences
@@ -132,23 +111,24 @@ sequenceDiagram
     App-->>U: Display calendar
 ```
 
-### Production: Meal Plan Generation
+### Recipe Import from URL
 
 ```mermaid
 sequenceDiagram
     participant U as User
     participant App as Next.js App
-    participant API as API Routes
-    participant DB as PostgreSQL
-    participant AI as OpenAI
+    participant API as /api/parse-recipe
+    participant Web as External Recipe Site
 
-    U->>App: Submit preferences
-    App->>API: POST /api/generate/plan
-    API->>AI: Generate meal plan
-    AI-->>API: Structured JSON
-    API->>DB: Save plan + recipes
-    API-->>App: Return meal plan
-    App-->>U: Display calendar
+    U->>App: Enter recipe URL
+    App->>API: POST URL
+    API->>Web: Fetch page HTML
+    Web-->>API: HTML with schema.org data
+    API->>API: Extract recipe JSON-LD
+    API-->>App: Parsed recipe data
+    App-->>U: Preview & edit
+    U->>App: Save recipe
+    App->>App: Store in localStorage
 ```
 
 ---
@@ -161,7 +141,5 @@ See [ADRs](./adr/README.md) for detailed decision records. Summary:
 |-----|----------|
 | [001](./adr/001-prototype-first-approach.md) | Prototype-first development |
 | [002](./adr/002-nextjs-single-deployable.md) | Next.js as single deployable |
-| [003](./adr/003-localstorage-for-prototype.md) | localStorage for prototype |
-| [004](./adr/004-postgresql-for-production.md) | PostgreSQL for production |
-| [005](./adr/005-gpt4o-mini-for-ai.md) | GPT-4o-mini for AI |
+| [003](./adr/003-localstorage-for-prototype.md) | localStorage for storage |
 | [006](./adr/006-vercel-serverless-hosting.md) | Vercel serverless hosting |
