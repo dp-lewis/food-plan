@@ -56,8 +56,16 @@ export default function Dashboard() {
               {todayMeals.map((meal) => {
                 const recipe = getRecipeById(meal.recipeId, userRecipes);
                 if (!recipe) return null;
+                const recipeUrl = recipe.isUserRecipe
+                  ? `/recipes/${recipe.id}`
+                  : `/recipe/${recipe.id}`;
                 return (
-                  <div key={meal.id} className="flex justify-between items-center">
+                  <Link
+                    key={meal.id}
+                    href={recipeUrl}
+                    className="flex justify-between items-center py-1 -mx-1 px-1 rounded transition-colors"
+                    style={{ minHeight: 'var(--touch-target-min)' }}
+                  >
                     <div>
                       <span
                         className="uppercase tracking-wide mr-2"
@@ -77,7 +85,15 @@ export default function Dashboard() {
                         {recipe.title}
                       </span>
                     </div>
-                  </div>
+                    <span
+                      style={{
+                        fontSize: 'var(--font-size-caption)',
+                        color: 'var(--color-text-muted)',
+                      }}
+                    >
+                      →
+                    </span>
+                  </Link>
                 );
               })}
             </div>
