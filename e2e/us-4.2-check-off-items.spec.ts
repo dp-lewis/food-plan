@@ -27,15 +27,16 @@ test.describe('US-4.2: Check off items', () => {
     const firstCheckbox = page.locator('[data-testid^="checkbox-"]').first();
     await firstCheckbox.click();
 
-    const textSpan = firstCheckbox.locator('span.text-left');
-    await expect(textSpan).toHaveCSS('text-decoration-line', 'line-through');
+    // Checkbox should be checked via aria-checked
+    await expect(firstCheckbox).toHaveAttribute('aria-checked', 'true');
   });
 
   test('Checked items are visually distinct (strikethrough)', async ({ page }) => {
     const firstCheckbox = page.locator('[data-testid^="checkbox-"]').first();
     await firstCheckbox.click();
 
-    const textSpan = firstCheckbox.locator('span.text-left');
+    // Label wrapper span (second span in button, after checkbox visual) should have strikethrough
+    const textSpan = firstCheckbox.locator('> span').nth(1);
     await expect(textSpan).toHaveCSS('text-decoration-line', 'line-through');
   });
 
@@ -59,13 +60,11 @@ test.describe('US-4.2: Check off items', () => {
 
     // Check the item
     await firstCheckbox.click();
-    let textSpan = firstCheckbox.locator('span.text-left');
-    await expect(textSpan).toHaveCSS('text-decoration-line', 'line-through');
+    await expect(firstCheckbox).toHaveAttribute('aria-checked', 'true');
 
     // Uncheck the item
     await firstCheckbox.click();
-    textSpan = firstCheckbox.locator('span.text-left');
-    await expect(textSpan).toHaveCSS('text-decoration-line', 'none');
+    await expect(firstCheckbox).toHaveAttribute('aria-checked', 'false');
   });
 
   test('Progress counter updates when checking items', async ({ page }) => {

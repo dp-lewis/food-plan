@@ -1,13 +1,24 @@
 'use client';
 
+import { ReactNode } from 'react';
+
 export interface CheckboxProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   label: string;
+  children?: ReactNode;
   strikethrough?: boolean;
+  id?: string;
 }
 
-export default function Checkbox({ checked, onChange, label, strikethrough = true }: CheckboxProps) {
+export default function Checkbox({
+  checked,
+  onChange,
+  label,
+  children,
+  strikethrough = true,
+  id,
+}: CheckboxProps) {
   const buttonStyles = {
     width: '100%',
     display: 'flex',
@@ -50,6 +61,7 @@ export default function Checkbox({ checked, onChange, label, strikethrough = tru
       role="checkbox"
       aria-checked={checked}
       aria-label={label}
+      data-testid={id ? `checkbox-${id}` : undefined}
       style={buttonStyles}
     >
       <span style={checkboxStyles}>
@@ -68,7 +80,7 @@ export default function Checkbox({ checked, onChange, label, strikethrough = tru
           </svg>
         )}
       </span>
-      <span style={labelStyles}>{label}</span>
+      <span style={labelStyles}>{children || label}</span>
     </button>
   );
 }

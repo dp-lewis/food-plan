@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
+import { BackLink, MetaChip, Button } from '@/components/ui';
 
 export default function UserRecipeDetail() {
   const params = useParams();
@@ -41,17 +42,7 @@ export default function UserRecipeDetail() {
   return (
     <main className="min-h-screen p-4 pb-8" data-testid="user-recipe-page">
       <div className="max-w-md mx-auto">
-        {/* Back button */}
-        <Link
-          href="/recipes"
-          className="inline-flex items-center gap-1 mb-4"
-          style={{
-            fontSize: 'var(--font-size-caption)',
-            color: 'var(--color-text-muted)',
-          }}
-        >
-          ← Back to My Recipes
-        </Link>
+        <BackLink href="/recipes">Back to My Recipes</BackLink>
 
         {/* Header */}
         <h1
@@ -78,85 +69,21 @@ export default function UserRecipeDetail() {
           {recipe.sourceName ? `Imported from ${recipe.sourceName}` : 'Your recipe'}
         </p>
 
-
         {/* Meta info */}
         <div
           className="flex flex-wrap gap-3 mb-6 pb-6"
           style={{ borderBottom: 'var(--border-width) solid var(--color-border)' }}
         >
-          <div
-            className="px-3 py-2 rounded-md"
-            data-testid="recipe-time"
-            style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
-          >
-            <span
-              className="block"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
-              Total time
-            </span>
-            <span
-              style={{
-                fontSize: 'var(--font-size-body)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              {totalTime} mins
-            </span>
+          <div data-testid="recipe-time">
+            <MetaChip label="Total time" value={`${totalTime} mins`} />
           </div>
-
-          <div
-            className="px-3 py-2 rounded-md"
-            data-testid="recipe-servings"
-            style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
-          >
-            <span
-              className="block"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
-              Servings
-            </span>
-            <span
-              style={{
-                fontSize: 'var(--font-size-body)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              {recipe.servings}
-            </span>
+          <div data-testid="recipe-servings">
+            <MetaChip label="Servings" value={recipe.servings} />
           </div>
-
-          <div
-            className="px-3 py-2 rounded-md capitalize"
-            style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
-          >
-            <span
-              className="block"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
-              Meal type
-            </span>
-            <span
-              style={{
-                fontSize: 'var(--font-size-body)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              {recipe.mealType}
-            </span>
-          </div>
+          <MetaChip
+            label="Meal type"
+            value={recipe.mealType.charAt(0).toUpperCase() + recipe.mealType.slice(1)}
+          />
         </div>
 
         {/* Ingredients */}
@@ -251,19 +178,18 @@ export default function UserRecipeDetail() {
         )}
 
         {/* Delete button */}
-        <button
+        <Button
+          variant="secondary"
           onClick={handleDelete}
-          className="w-full py-2 rounded-lg"
           data-testid="delete-recipe-btn"
           style={{
-            backgroundColor: 'transparent',
-            border: 'var(--border-width) solid var(--color-error, #c00)',
+            width: '100%',
+            borderColor: 'var(--color-error, #c00)',
             color: 'var(--color-error, #c00)',
-            fontSize: 'var(--font-size-caption)',
           }}
         >
           Delete Recipe
-        </button>
+        </Button>
       </div>
     </main>
   );

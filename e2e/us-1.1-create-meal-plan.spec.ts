@@ -39,27 +39,27 @@ test.describe('US-1.1: Create a new meal plan', () => {
 
   test('Can specify number of days (1-7, default: 7)', async ({ page }) => {
     // Verify default
-    await expect(page.getByTestId('day-7')).toHaveClass(/day-button-active/);
+    await expect(page.getByTestId('day-7')).toHaveAttribute('aria-pressed', 'true');
 
     // Can change it
     await page.getByTestId('day-3').click();
-    await expect(page.getByTestId('day-3')).toHaveClass(/day-button-active/);
-    await expect(page.getByTestId('day-7')).not.toHaveClass(/day-button-active/);
+    await expect(page.getByTestId('day-3')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId('day-7')).toHaveAttribute('aria-pressed', 'false');
   });
 
   test('Can select which meals to plan (breakfast, lunch, dinner)', async ({ page }) => {
     // All selected by default
-    await expect(page.getByTestId('meal-breakfast')).toHaveClass(/meal-button-active/);
-    await expect(page.getByTestId('meal-lunch')).toHaveClass(/meal-button-active/);
-    await expect(page.getByTestId('meal-dinner')).toHaveClass(/meal-button-active/);
+    await expect(page.getByTestId('meal-breakfast')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId('meal-lunch')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId('meal-dinner')).toHaveAttribute('aria-pressed', 'true');
 
     // Can toggle off
     await page.getByTestId('meal-breakfast').click();
-    await expect(page.getByTestId('meal-breakfast')).not.toHaveClass(/meal-button-active/);
+    await expect(page.getByTestId('meal-breakfast')).toHaveAttribute('aria-pressed', 'false');
 
     // Can toggle back on
     await page.getByTestId('meal-breakfast').click();
-    await expect(page.getByTestId('meal-breakfast')).toHaveClass(/meal-button-active/);
+    await expect(page.getByTestId('meal-breakfast')).toHaveAttribute('aria-pressed', 'true');
   });
 
   test('Clicking "Generate Plan" creates a plan from available recipes', async ({ page }) => {

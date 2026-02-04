@@ -7,6 +7,7 @@ import { useStore } from '@/store/store';
 import { getRecipeById, getRecipesByMealType } from '@/data/recipes';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
+import { BackLink, Button, Card } from '@/components/ui';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -86,16 +87,7 @@ export default function CurrentPlan() {
   return (
     <main className="min-h-screen p-4 pb-24" data-testid="meal-plan">
       <div className="max-w-2xl mx-auto">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1 mb-4"
-          style={{
-            fontSize: 'var(--font-size-caption)',
-            color: 'var(--color-text-muted)',
-          }}
-        >
-          ← Back to Dashboard
-        </Link>
+        <BackLink href="/">Back to Dashboard</BackLink>
 
         <div className="flex items-center justify-between mb-6">
           <h1
@@ -120,15 +112,7 @@ export default function CurrentPlan() {
 
         <div className="space-y-4">
           {mealsByDay.map(({ dayName, dayIndex, meals }) => (
-            <div
-              key={dayName}
-              className="rounded-lg overflow-hidden"
-              data-testid={`day-${dayIndex}`}
-              style={{
-                backgroundColor: 'var(--color-bg-primary)',
-                border: 'var(--border-width) solid var(--color-border)',
-              }}
-            >
+            <Card key={dayName} padding="none" data-testid={`day-${dayIndex}`}>
               <div
                 className="px-4 py-2"
                 style={{
@@ -186,23 +170,19 @@ export default function CurrentPlan() {
                           {recipe.prepTime + recipe.cookTime} mins
                         </p>
                       </Link>
-                      <button
+                      <Button
+                        variant="secondary"
+                        size="small"
                         onClick={() => openDrawer(meal.id, meal.mealType, meal.recipeId)}
-                        className="ml-3 px-3 py-1.5 rounded transition-colors"
                         data-testid={`swap-${meal.id}`}
-                        style={{
-                          fontSize: 'var(--font-size-caption)',
-                          color: 'var(--color-accent)',
-                          backgroundColor: 'var(--color-bg-tertiary)',
-                        }}
                       >
                         Swap
-                      </button>
+                      </Button>
                     </div>
                   );
                 })}
               </div>
-            </div>
+            </Card>
           ))}
         </div>
 

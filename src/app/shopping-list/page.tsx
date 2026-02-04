@@ -1,13 +1,12 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { generateShoppingList, groupByCategory, CATEGORY_LABELS } from '@/lib/shoppingList';
+import { BackLink, ProgressBar, Checkbox } from '@/components/ui';
 
 export default function ShoppingList() {
-  const router = useRouter();
   const currentPlan = useStore((state) => state.currentPlan);
   const checkedItems = useStore((state) => state.checkedItems);
   const toggleCheckedItem = useStore((state) => state.toggleCheckedItem);
@@ -50,21 +49,13 @@ export default function ShoppingList() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <button
-              onClick={() => router.back()}
-              className="inline-flex items-center gap-1 mb-2"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
-              ← Back
-            </button>
+            <BackLink />
             <h1
               style={{
                 fontSize: 'var(--font-size-heading)',
                 fontWeight: 'var(--font-weight-bold)',
                 color: 'var(--color-text-primary)',
+                marginTop: 'calc(var(--space-4) * -1)',
               }}
             >
               Shopping List
@@ -83,17 +74,8 @@ export default function ShoppingList() {
 
         {/* Progress bar */}
         {totalItems > 0 && (
-          <div
-            className="h-2 rounded-full mb-6 overflow-hidden"
-            style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
-          >
-            <div
-              className="h-full rounded-full transition-all duration-300"
-              style={{
-                backgroundColor: 'var(--color-accent)',
-                width: `${(checkedCount / totalItems) * 100}%`,
-              }}
-            />
+          <div className="mb-6">
+            <ProgressBar value={checkedCount} max={totalItems} />
           </div>
         )}
 
@@ -117,53 +99,17 @@ export default function ShoppingList() {
                   const isChecked = checkedItems.includes(item.id);
                   return (
                     <li key={item.id} data-testid={`item-${item.id}`}>
-                      <button
-                        onClick={() => toggleCheckedItem(item.id)}
-                        className="w-full flex items-center gap-3 py-2 px-1 -mx-1 rounded transition-colors"
-                        data-testid={`checkbox-${item.id}`}
-                        role="checkbox"
-                        aria-checked={isChecked}
-                        aria-label={`${item.quantity} ${item.unit} ${item.ingredient}`}
-                        style={{
-                          minHeight: 'var(--touch-target-min)',
-                        }}
+                      <Checkbox
+                        checked={isChecked}
+                        onChange={() => toggleCheckedItem(item.id)}
+                        label={`${item.quantity} ${item.unit} ${item.ingredient}`}
+                        id={item.id}
                       >
-                        <span
-                          className="w-5 h-5 rounded border flex-shrink-0 flex items-center justify-center transition-colors"
-                          style={{
-                            borderColor: isChecked ? 'var(--color-accent)' : 'var(--color-border)',
-                            backgroundColor: isChecked ? 'var(--color-accent)' : 'transparent',
-                          }}
-                        >
-                          {isChecked && (
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 12 12"
-                              fill="none"
-                              stroke="white"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <polyline points="2 6 5 9 10 3" />
-                            </svg>
-                          )}
-                        </span>
-                        <span
-                          className="text-left transition-all"
-                          style={{
-                            fontSize: 'var(--font-size-body)',
-                            color: isChecked ? 'var(--color-text-muted)' : 'var(--color-text-secondary)',
-                            textDecoration: isChecked ? 'line-through' : 'none',
-                          }}
-                        >
-                          <span style={{ color: isChecked ? 'var(--color-text-muted)' : 'var(--color-text-muted)' }}>
-                            {item.quantity} {item.unit}
-                          </span>{' '}
-                          {item.ingredient}
-                        </span>
-                      </button>
+                        <span style={{ color: 'var(--color-text-muted)' }}>
+                          {item.quantity} {item.unit}
+                        </span>{' '}
+                        {item.ingredient}
+                      </Checkbox>
                     </li>
                   );
                 })}

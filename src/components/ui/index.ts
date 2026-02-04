@@ -33,3 +33,6 @@ export type { MetaChipProps } from './MetaChip';
 
 export { default as Alert } from './Alert';
 export type { AlertProps } from './Alert';
+
+export { default as Drawer } from './Drawer';
+export type { DrawerProps } from './Drawer';

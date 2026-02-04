@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { parseIngredient } from '@/lib/ingredientParser';
 import { MealType, Difficulty, BudgetLevel, Ingredient, IngredientCategory } from '@/types';
+import { BackLink, Input, Select, Button } from '@/components/ui';
 
 const CATEGORIES: IngredientCategory[] = ['produce', 'dairy', 'meat', 'pantry', 'frozen', 'uncategorized'];
 
@@ -87,16 +87,7 @@ export default function NewRecipe() {
   return (
     <main className="min-h-screen p-4 pb-8" data-testid="new-recipe-page">
       <div className="max-w-md mx-auto">
-        <Link
-          href="/recipes"
-          className="inline-flex items-center gap-1 mb-4"
-          style={{
-            fontSize: 'var(--font-size-caption)',
-            color: 'var(--color-text-muted)',
-          }}
-        >
-          ← Back to My Recipes
-        </Link>
+        <BackLink href="/recipes">Back to My Recipes</BackLink>
 
         <h1
           className="mb-2"
@@ -120,154 +111,54 @@ export default function NewRecipe() {
         </p>
 
         <div className="space-y-4">
-          {/* Title */}
-          <div>
-            <label
-              htmlFor="title-input"
-              className="block mb-1"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              Title *
-            </label>
-            <input
-              type="text"
-              id="title-input"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g., Schnitzel and salad"
-              className="w-full px-3 py-2 rounded-lg"
-              data-testid="title-input"
-              style={{
-                backgroundColor: 'var(--color-bg-primary)',
-                border: 'var(--border-width) solid var(--color-border)',
-                fontSize: 'var(--font-size-body)',
-                color: 'var(--color-text-primary)',
-              }}
-            />
-          </div>
+          <Input
+            label="Title *"
+            value={title}
+            onChange={setTitle}
+            placeholder="e.g., Schnitzel and salad"
+            id="title-input"
+            data-testid="title-input"
+          />
 
-          {/* Meal Type */}
-          <div>
-            <label
-              htmlFor="meal-type-select"
-              className="block mb-1"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              Meal Type *
-            </label>
-            <select
-              id="meal-type-select"
-              value={mealType}
-              onChange={(e) => setMealType(e.target.value as MealType)}
-              className="w-full px-3 py-2 rounded-lg"
-              data-testid="meal-type-select"
-              style={{
-                backgroundColor: 'var(--color-bg-primary)',
-                border: 'var(--border-width) solid var(--color-border)',
-                fontSize: 'var(--font-size-body)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              <option value="breakfast">Breakfast</option>
-              <option value="lunch">Lunch</option>
-              <option value="dinner">Dinner</option>
-            </select>
-          </div>
+          <Select
+            label="Meal Type *"
+            value={mealType}
+            onChange={(value) => setMealType(value as MealType)}
+            options={[
+              { value: 'breakfast', label: 'Breakfast' },
+              { value: 'lunch', label: 'Lunch' },
+              { value: 'dinner', label: 'Dinner' },
+            ]}
+            id="meal-type-select"
+            data-testid="meal-type-select"
+          />
 
           {/* Time & Servings */}
           <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label
-                htmlFor="prep-time-input"
-                className="block mb-1"
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                Prep (min)
-              </label>
-              <input
-                type="number"
-                id="prep-time-input"
-                value={prepTime}
-                onChange={(e) => setPrepTime(parseInt(e.target.value) || 0)}
-                min="0"
-                className="w-full px-3 py-2 rounded-lg"
-                data-testid="prep-time-input"
-                style={{
-                  backgroundColor: 'var(--color-bg-primary)',
-                  border: 'var(--border-width) solid var(--color-border)',
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-primary)',
-                }}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="cook-time-input"
-                className="block mb-1"
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                Cook (min)
-              </label>
-              <input
-                type="number"
-                id="cook-time-input"
-                value={cookTime}
-                onChange={(e) => setCookTime(parseInt(e.target.value) || 0)}
-                min="0"
-                className="w-full px-3 py-2 rounded-lg"
-                data-testid="cook-time-input"
-                style={{
-                  backgroundColor: 'var(--color-bg-primary)',
-                  border: 'var(--border-width) solid var(--color-border)',
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-primary)',
-                }}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="servings-input"
-                className="block mb-1"
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                Servings
-              </label>
-              <input
-                type="number"
-                id="servings-input"
-                value={servings}
-                onChange={(e) => setServings(parseInt(e.target.value) || 1)}
-                min="1"
-                className="w-full px-3 py-2 rounded-lg"
-                data-testid="servings-input"
-                style={{
-                  backgroundColor: 'var(--color-bg-primary)',
-                  border: 'var(--border-width) solid var(--color-border)',
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-primary)',
-                }}
-              />
-            </div>
+            <Input
+              label="Prep (min)"
+              type="number"
+              value={String(prepTime)}
+              onChange={(v) => setPrepTime(parseInt(v) || 0)}
+              id="prep-time-input"
+              data-testid="prep-time-input"
+            />
+            <Input
+              label="Cook (min)"
+              type="number"
+              value={String(cookTime)}
+              onChange={(v) => setCookTime(parseInt(v) || 0)}
+              id="cook-time-input"
+              data-testid="cook-time-input"
+            />
+            <Input
+              label="Servings"
+              type="number"
+              value={String(servings)}
+              onChange={(v) => setServings(parseInt(v) || 1)}
+              id="servings-input"
+              data-testid="servings-input"
+            />
           </div>
 
           {/* Ingredients */}
@@ -361,21 +252,14 @@ export default function NewRecipe() {
                   color: 'var(--color-text-primary)',
                 }}
               />
-              <button
+              <Button
+                variant="secondary"
                 onClick={addIngredient}
                 disabled={!newIngredient.trim()}
-                className="px-4 py-2 rounded-lg"
                 data-testid="add-ingredient-btn"
-                style={{
-                  backgroundColor: 'var(--color-bg-tertiary)',
-                  border: 'var(--border-width) solid var(--color-border)',
-                  fontSize: 'var(--font-size-caption)',
-                  color: 'var(--color-text-primary)',
-                  opacity: !newIngredient.trim() ? 0.5 : 1,
-                }}
               >
                 Add
-              </button>
+              </Button>
             </div>
             <p
               className="mt-1"
@@ -418,18 +302,14 @@ export default function NewRecipe() {
             />
           </div>
 
-          {/* Save Button */}
-          <button
+          <Button
             onClick={handleSave}
             disabled={!canSave || saving}
-            className="primary-button w-full"
+            className="w-full"
             data-testid="save-recipe-btn"
-            style={{
-              opacity: !canSave || saving ? 0.5 : 1,
-            }}
           >
             {saving ? 'Saving...' : 'Save Recipe'}
-          </button>
+          </Button>
 
           {!canSave && (
             <p

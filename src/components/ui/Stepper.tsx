@@ -6,9 +6,10 @@ export interface StepperProps {
   min?: number;
   max?: number;
   label?: string;
+  testId?: string;
 }
 
-export default function Stepper({ value, onChange, min = 1, max = 99, label }: StepperProps) {
+export default function Stepper({ value, onChange, min = 1, max = 99, label, testId }: StepperProps) {
   const buttonStyles = {
     width: 'var(--touch-target-min)',
     height: 'var(--touch-target-min)',
@@ -58,10 +59,11 @@ export default function Stepper({ value, onChange, min = 1, max = 99, label }: S
           disabled={value <= min}
           style={{ ...buttonStyles, opacity: value <= min ? 0.5 : 1 }}
           aria-label={`Decrease ${label || 'value'}`}
+          data-testid={testId ? `${testId}-decrement` : undefined}
         >
           −
         </button>
-        <span style={valueStyles} data-testid="stepper-value">
+        <span style={valueStyles} data-testid={testId ? `${testId}-count` : 'stepper-value'}>
           {value}
         </span>
         <button
@@ -70,6 +72,7 @@ export default function Stepper({ value, onChange, min = 1, max = 99, label }: S
           disabled={value >= max}
           style={{ ...buttonStyles, opacity: value >= max ? 0.5 : 1 }}
           aria-label={`Increase ${label || 'value'}`}
+          data-testid={testId ? `${testId}-increment` : undefined}
         >
           +
         </button>

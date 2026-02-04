@@ -12,6 +12,7 @@ export interface ToggleGroupProps {
   multiple?: boolean;
   label?: string;
   variant?: 'default' | 'compact';
+  testIdPrefix?: string;
 }
 
 export default function ToggleGroup({
@@ -21,6 +22,7 @@ export default function ToggleGroup({
   multiple = false,
   label,
   variant = 'default',
+  testIdPrefix,
 }: ToggleGroupProps) {
   const selectedValues = Array.isArray(value) ? value : [value];
 
@@ -87,6 +89,7 @@ export default function ToggleGroup({
                 ...(isActive ? activeStyles : {}),
               }}
               aria-pressed={isActive}
+              data-testid={testIdPrefix ? `${testIdPrefix}-${option.value}` : undefined}
             >
               {option.label}
             </button>

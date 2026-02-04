@@ -1,12 +1,12 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { getRecipeById } from '@/data/recipes';
+import { BackLink, MetaChip } from '@/components/ui';
 
 export default function RecipeDetail() {
   const params = useParams();
-  const router = useRouter();
   const recipe = getRecipeById(params.id as string);
 
   if (!recipe) {
@@ -31,17 +31,7 @@ export default function RecipeDetail() {
   return (
     <main className="min-h-screen p-4 pb-8" data-testid="recipe-page">
       <div className="max-w-md mx-auto">
-        {/* Back button */}
-        <button
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-1 mb-4"
-          style={{
-            fontSize: 'var(--font-size-caption)',
-            color: 'var(--color-text-muted)',
-          }}
-        >
-          ← Back
-        </button>
+        <BackLink />
 
         {/* Header */}
         <h1
@@ -72,103 +62,20 @@ export default function RecipeDetail() {
           className="flex flex-wrap gap-3 mb-6 pb-6"
           style={{ borderBottom: 'var(--border-width) solid var(--color-border)' }}
         >
-          <div
-            className="px-3 py-2 rounded-md"
-            data-testid="recipe-time"
-            style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
-          >
-            <span
-              className="block"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
-              Total time
-            </span>
-            <span
-              style={{
-                fontSize: 'var(--font-size-body)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              {totalTime} mins
-            </span>
+          <div data-testid="recipe-time">
+            <MetaChip label="Total time" value={`${totalTime} mins`} />
           </div>
-
-          <div
-            className="px-3 py-2 rounded-md"
-            data-testid="recipe-servings"
-            style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
-          >
-            <span
-              className="block"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
-              Servings
-            </span>
-            <span
-              style={{
-                fontSize: 'var(--font-size-body)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              {recipe.servings}
-            </span>
+          <div data-testid="recipe-servings">
+            <MetaChip label="Servings" value={recipe.servings} />
           </div>
-
-          <div
-            className="px-3 py-2 rounded-md"
-            style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
-          >
-            <span
-              className="block"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
-              Difficulty
-            </span>
-            <span
-              style={{
-                fontSize: 'var(--font-size-body)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              {recipe.difficulty.charAt(0).toUpperCase() + recipe.difficulty.slice(1)}
-            </span>
-          </div>
-
-          <div
-            className="px-3 py-2 rounded-md"
-            style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
-          >
-            <span
-              className="block"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
-              Cost
-            </span>
-            <span
-              style={{
-                fontSize: 'var(--font-size-body)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              {recipe.estimatedCost.charAt(0).toUpperCase() + recipe.estimatedCost.slice(1)}
-            </span>
-          </div>
+          <MetaChip
+            label="Difficulty"
+            value={recipe.difficulty.charAt(0).toUpperCase() + recipe.difficulty.slice(1)}
+          />
+          <MetaChip
+            label="Cost"
+            value={recipe.estimatedCost.charAt(0).toUpperCase() + recipe.estimatedCost.slice(1)}
+          />
         </div>
 
         {/* Ingredients */}

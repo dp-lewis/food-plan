@@ -119,8 +119,8 @@ test.describe('US-2.3: Swap a meal', () => {
 
     const recipeAfterSwap = await firstDay.locator('[data-testid^="meal-"]').first().locator('a').textContent();
 
-    // Small wait to ensure localStorage is persisted
-    await page.waitForTimeout(100);
+    // Wait for localStorage to persist (Zustand persist middleware is async)
+    await page.waitForTimeout(500);
 
     // Reload page and wait for meal plan to load
     await page.reload();

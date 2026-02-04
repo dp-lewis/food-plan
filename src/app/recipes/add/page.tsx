@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { ParsedRecipe } from '@/lib/recipeParser';
 import { parseIngredient } from '@/lib/ingredientParser';
 import { MealType, Difficulty, BudgetLevel, Ingredient, IngredientCategory } from '@/types';
+import { BackLink, Input, Select, Alert, Button, Card } from '@/components/ui';
 
 type Step = 'url' | 'preview' | 'saving';
 
@@ -77,7 +77,7 @@ export default function AddRecipe() {
     const recipe = {
       id: `user-${Date.now()}`,
       title,
-      description: '', // Not stored for imported recipes
+      description: '',
       mealType,
       prepTime,
       cookTime,
@@ -86,7 +86,7 @@ export default function AddRecipe() {
       tags: [],
       estimatedCost: 'medium' as BudgetLevel,
       ingredients,
-      instructions: [], // Not stored - users visit original site for method
+      instructions: [],
       sourceUrl: parsedRecipe.sourceUrl,
       sourceName: parsedRecipe.sourceName,
       isUserRecipe: true,
@@ -107,16 +107,7 @@ export default function AddRecipe() {
     return (
       <main className="min-h-screen p-4" data-testid="add-recipe-page">
         <div className="max-w-md mx-auto">
-          <Link
-            href="/recipes"
-            className="inline-flex items-center gap-1 mb-4"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            ← Back to My Recipes
-          </Link>
+          <BackLink href="/recipes">Back to My Recipes</BackLink>
 
           <h1
             className="mb-2"
@@ -140,64 +131,31 @@ export default function AddRecipe() {
           </p>
 
           <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="url"
-                className="block mb-2"
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                Recipe URL
-              </label>
-              <input
-                id="url"
-                type="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://www.recipetineats.com/..."
-                className="w-full px-3 py-2 rounded-lg"
-                data-testid="url-input"
-                aria-describedby={error ? 'url-error' : undefined}
-                aria-invalid={error ? true : undefined}
-                style={{
-                  backgroundColor: 'var(--color-bg-primary)',
-                  border: 'var(--border-width) solid var(--color-border)',
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-primary)',
-                }}
-              />
-            </div>
+            <Input
+              label="Recipe URL"
+              type="url"
+              value={url}
+              onChange={setUrl}
+              placeholder="https://www.recipetineats.com/..."
+              id="url"
+              data-testid="url-input"
+              error={error || undefined}
+            />
 
             {error && (
-              <p
-                id="url-error"
-                role="alert"
-                className="text-center py-2 px-3 rounded"
-                data-testid="error-message"
-                style={{
-                  backgroundColor: 'var(--color-error-light, #fee)',
-                  color: 'var(--color-error, #c00)',
-                  fontSize: 'var(--font-size-caption)',
-                }}
-              >
+              <Alert variant="error" data-testid="error-message">
                 {error}
-              </p>
+              </Alert>
             )}
 
-            <button
+            <Button
               onClick={handleFetchRecipe}
               disabled={!url || loading}
-              className="primary-button w-full"
+              className="w-full"
               data-testid="fetch-recipe-btn"
-              style={{
-                opacity: !url || loading ? 0.5 : 1,
-              }}
             >
               {loading ? 'Fetching...' : 'Fetch Recipe'}
-            </button>
+            </Button>
           </div>
         </div>
       </main>
@@ -242,137 +200,45 @@ export default function AddRecipe() {
           </p>
 
           <div className="space-y-4">
-            {/* Title */}
-            <div>
-              <label
-                className="block mb-1"
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                Title
-              </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg"
-                data-testid="title-input"
-                style={{
-                  backgroundColor: 'var(--color-bg-primary)',
-                  border: 'var(--border-width) solid var(--color-border)',
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-primary)',
-                }}
-              />
-            </div>
+            <Input
+              label="Title"
+              value={title}
+              onChange={setTitle}
+              data-testid="title-input"
+            />
 
-            {/* Meal Type */}
-            <div>
-              <label
-                className="block mb-1"
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                Meal Type
-              </label>
-              <select
-                value={mealType}
-                onChange={(e) => setMealType(e.target.value as MealType)}
-                className="w-full px-3 py-2 rounded-lg"
-                data-testid="meal-type-select"
-                style={{
-                  backgroundColor: 'var(--color-bg-primary)',
-                  border: 'var(--border-width) solid var(--color-border)',
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                <option value="breakfast">Breakfast</option>
-                <option value="lunch">Lunch</option>
-                <option value="dinner">Dinner</option>
-              </select>
-            </div>
+            <Select
+              label="Meal Type"
+              value={mealType}
+              onChange={(value) => setMealType(value as MealType)}
+              options={[
+                { value: 'breakfast', label: 'Breakfast' },
+                { value: 'lunch', label: 'Lunch' },
+                { value: 'dinner', label: 'Dinner' },
+              ]}
+              data-testid="meal-type-select"
+            />
 
-            {/* Time & Servings */}
+            {/* Time & Servings - keep grid layout */}
             <div className="grid grid-cols-3 gap-3">
-              <div>
-                <label
-                  className="block mb-1"
-                  style={{
-                    fontSize: 'var(--font-size-caption)',
-                    fontWeight: 'var(--font-weight-bold)',
-                    color: 'var(--color-text-primary)',
-                  }}
-                >
-                  Prep (min)
-                </label>
-                <input
-                  type="number"
-                  value={prepTime}
-                  onChange={(e) => setPrepTime(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-lg"
-                  style={{
-                    backgroundColor: 'var(--color-bg-primary)',
-                    border: 'var(--border-width) solid var(--color-border)',
-                    fontSize: 'var(--font-size-body)',
-                    color: 'var(--color-text-primary)',
-                  }}
-                />
-              </div>
-              <div>
-                <label
-                  className="block mb-1"
-                  style={{
-                    fontSize: 'var(--font-size-caption)',
-                    fontWeight: 'var(--font-weight-bold)',
-                    color: 'var(--color-text-primary)',
-                  }}
-                >
-                  Cook (min)
-                </label>
-                <input
-                  type="number"
-                  value={cookTime}
-                  onChange={(e) => setCookTime(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-lg"
-                  style={{
-                    backgroundColor: 'var(--color-bg-primary)',
-                    border: 'var(--border-width) solid var(--color-border)',
-                    fontSize: 'var(--font-size-body)',
-                    color: 'var(--color-text-primary)',
-                  }}
-                />
-              </div>
-              <div>
-                <label
-                  className="block mb-1"
-                  style={{
-                    fontSize: 'var(--font-size-caption)',
-                    fontWeight: 'var(--font-weight-bold)',
-                    color: 'var(--color-text-primary)',
-                  }}
-                >
-                  Servings
-                </label>
-                <input
-                  type="number"
-                  value={servings}
-                  onChange={(e) => setServings(parseInt(e.target.value) || 1)}
-                  className="w-full px-3 py-2 rounded-lg"
-                  style={{
-                    backgroundColor: 'var(--color-bg-primary)',
-                    border: 'var(--border-width) solid var(--color-border)',
-                    fontSize: 'var(--font-size-body)',
-                    color: 'var(--color-text-primary)',
-                  }}
-                />
-              </div>
+              <Input
+                label="Prep (min)"
+                type="number"
+                value={String(prepTime)}
+                onChange={(v) => setPrepTime(parseInt(v) || 0)}
+              />
+              <Input
+                label="Cook (min)"
+                type="number"
+                value={String(cookTime)}
+                onChange={(v) => setCookTime(parseInt(v) || 0)}
+              />
+              <Input
+                label="Servings"
+                type="number"
+                value={String(servings)}
+                onChange={(v) => setServings(parseInt(v) || 1)}
+              />
             </div>
 
             {/* Ingredients */}
@@ -433,13 +299,7 @@ export default function AddRecipe() {
 
             {/* Source notice */}
             {parsedRecipe?.sourceName && parsedRecipe?.sourceUrl && (
-              <div
-                className="rounded-lg p-4"
-                style={{
-                  backgroundColor: 'var(--color-bg-tertiary)',
-                  border: 'var(--border-width) solid var(--color-border)',
-                }}
-              >
+              <Card>
                 <p
                   className="mb-2"
                   style={{
@@ -467,21 +327,17 @@ export default function AddRecipe() {
                   </a>
                   .
                 </p>
-              </div>
+              </Card>
             )}
 
-            {/* Save Button */}
-            <button
+            <Button
               onClick={handleSave}
               disabled={step === 'saving' || !title}
-              className="primary-button w-full"
+              className="w-full"
               data-testid="save-recipe-btn"
-              style={{
-                opacity: step === 'saving' || !title ? 0.5 : 1,
-              }}
             >
               {step === 'saving' ? 'Saving...' : 'Save Recipe'}
-            </button>
+            </Button>
           </div>
         </div>
       </main>

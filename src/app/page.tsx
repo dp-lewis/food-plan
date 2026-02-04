@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { getRecipeById } from '@/data/recipes';
+import { Card, Button, EmptyState } from '@/components/ui';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -34,14 +35,7 @@ export default function Dashboard() {
           </h1>
 
           {/* Today's meals */}
-          <div
-            className="rounded-lg p-4 mb-4"
-            data-testid="today-meals"
-            style={{
-              backgroundColor: 'var(--color-bg-primary)',
-              border: 'var(--border-width) solid var(--color-border)',
-            }}
-          >
+          <Card data-testid="today-meals" className="mb-4">
             <h2
               className="mb-3"
               style={{
@@ -97,29 +91,19 @@ export default function Dashboard() {
                 );
               })}
             </div>
-          </div>
+          </Card>
 
           {/* Quick actions */}
           <div className="space-y-3">
-            <Link
-              href="/plan/current"
-              className="block w-full text-center py-3 rounded-lg"
-              data-testid="view-full-plan-link"
-              style={{
-                backgroundColor: 'var(--color-bg-primary)',
-                border: 'var(--border-width) solid var(--color-border)',
-                fontSize: 'var(--font-size-body)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              View Full Plan
+            <Link href="/plan/current" data-testid="view-full-plan-link">
+              <Button variant="secondary" className="w-full">
+                View Full Plan
+              </Button>
             </Link>
-            <Link
-              href="/shopping-list"
-              className="primary-button w-full inline-flex items-center justify-center"
-              data-testid="shopping-list-link"
-            >
-              Shopping List
+            <Link href="/shopping-list" data-testid="shopping-list-link">
+              <Button className="w-full">
+                Shopping List
+              </Button>
             </Link>
             <Link
               href="/plan"
@@ -151,47 +135,17 @@ export default function Dashboard() {
   // Empty state for new users
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4" data-testid="empty-state">
-      <div className="max-w-md w-full text-center">
-        {/* Icon */}
-        <div
-          className="mx-auto mb-6 w-16 h-16 rounded-full flex items-center justify-center text-3xl"
-          style={{ backgroundColor: 'var(--color-accent-light)' }}
-        >
-          🍽️
-        </div>
-
-        {/* Heading */}
-        <h1
-          className="mb-3"
-          style={{
-            fontSize: 'var(--font-size-heading)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text-primary)',
-            lineHeight: 'var(--line-height-tight)',
-          }}
-        >
-          Plan your meals for the week
-        </h1>
-
-        {/* Description */}
-        <p
-          className="mb-8"
-          style={{
-            fontSize: 'var(--font-size-body)',
-            color: 'var(--color-text-secondary)',
-          }}
-        >
-          Generate a weekly meal plan, get recipes, and create a shopping list — all in one place.
-        </p>
-
-        {/* Primary CTA */}
-        <Link
-          href="/plan"
-          className="primary-button inline-flex items-center justify-center w-full"
-          data-testid="create-first-plan-btn"
-        >
-          Create Your First Plan
-        </Link>
+      <div className="max-w-md w-full">
+        <EmptyState
+          icon="🍽️"
+          title="Plan your meals for the week"
+          description="Generate a weekly meal plan, get recipes, and create a shopping list — all in one place."
+          action={
+            <Link href="/plan" data-testid="create-first-plan-btn">
+              <Button className="w-full">Create Your First Plan</Button>
+            </Link>
+          }
+        />
 
         {/* Features list */}
         <ul
