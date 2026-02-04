@@ -27,3 +27,9 @@ export type { EmptyStateProps } from './EmptyState';
 
 export { default as ProgressBar } from './ProgressBar';
 export type { ProgressBarProps } from './ProgressBar';
+
+export { default as MetaChip } from './MetaChip';
+export type { MetaChipProps } from './MetaChip';
+
+export { default as Alert } from './Alert';
+export type { AlertProps } from './Alert';
