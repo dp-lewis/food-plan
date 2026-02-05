@@ -15,6 +15,7 @@ export interface BottomNavProps {
   backLabel?: string;
   showBack?: boolean;
   secondaryAction?: ActionConfig;
+  tertiaryAction?: ActionConfig;
   primaryAction?: ActionConfig;
   maxWidth?: 'md' | '2xl';
 }
@@ -24,12 +25,13 @@ export default function BottomNav({
   backLabel = 'Back',
   showBack = true,
   secondaryAction,
+  tertiaryAction,
   primaryAction,
   maxWidth = 'md',
 }: BottomNavProps) {
   const router = useRouter();
 
-  if (!showBack && !primaryAction && !secondaryAction) {
+  if (!showBack && !primaryAction && !secondaryAction && !tertiaryAction) {
     return null;
   }
 
@@ -105,6 +107,27 @@ export default function BottomNav({
     )
   ) : null;
 
+  const TertiaryElement = tertiaryAction ? (
+    tertiaryAction.href ? (
+      <Link
+        href={tertiaryAction.href}
+        style={secondaryButtonStyles}
+        data-testid={tertiaryAction.testId || 'bottom-nav-tertiary'}
+      >
+        {tertiaryAction.label}
+      </Link>
+    ) : (
+      <button
+        type="button"
+        onClick={tertiaryAction.onClick}
+        style={secondaryButtonStyles}
+        data-testid={tertiaryAction.testId || 'bottom-nav-tertiary'}
+      >
+        {tertiaryAction.label}
+      </button>
+    )
+  ) : null;
+
   const PrimaryElement = primaryAction ? (
     primaryAction.href ? (
       <Link
@@ -126,7 +149,7 @@ export default function BottomNav({
     )
   ) : null;
 
-  const hasActions = primaryAction || secondaryAction;
+  const hasActions = primaryAction || secondaryAction || tertiaryAction;
 
   return (
     <nav
@@ -144,6 +167,7 @@ export default function BottomNav({
         {hasActions && (
           <div className="flex gap-2">
             {SecondaryElement}
+            {TertiaryElement}
             {PrimaryElement}
           </div>
         )}

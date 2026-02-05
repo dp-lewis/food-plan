@@ -95,28 +95,17 @@ export default function Dashboard() {
           </Card>
 
           {/* Quick actions */}
-          <div className="space-y-3">
-            <Link href="/plan/current" data-testid="view-full-plan-link" className="block">
-              <Button variant="secondary" className="w-full">
-                View Full Plan
-              </Button>
-            </Link>
-            <Link
-              href="/plan"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-              className="block text-center mt-4"
-            >
-              Create new plan
-            </Link>
-          </div>
+          <Link href="/plan/current" data-testid="view-full-plan-link" className="block">
+            <Button variant="secondary" className="w-full">
+              View Full Plan
+            </Button>
+          </Link>
         </div>
 
         <BottomNav
           showBack={false}
-          secondaryAction={{ href: '/recipes', label: 'My Recipes', testId: 'my-recipes-link' }}
+          secondaryAction={{ href: '/recipes', label: 'Recipes', testId: 'my-recipes-link' }}
+          tertiaryAction={{ href: '/plan', label: 'New Plan' }}
           primaryAction={{ href: '/shopping-list', label: 'Shopping List', testId: 'shopping-list-link' }}
         />
       </main>
@@ -163,7 +152,7 @@ export default function Dashboard() {
 
       <BottomNav
         showBack={false}
-        primaryAction={{ href: '/recipes', label: 'My Recipes', testId: 'my-recipes-link' }}
+        primaryAction={{ href: '/recipes', label: 'Recipes', testId: 'my-recipes-link' }}
       />
     </main>
   );
