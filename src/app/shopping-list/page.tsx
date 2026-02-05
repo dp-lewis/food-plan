@@ -40,8 +40,17 @@ export default function ShoppingList() {
   const handleAddItem = () => {
     if (!newItemText.trim()) return;
 
-    const parsed = parseIngredient(newItemText.trim());
-    addCustomItem(parsed.name, parsed.quantity, parsed.unit);
+    // Split by commas and "and" to support multiple items
+    const items = newItemText
+      .split(/,|\band\b/i)
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+
+    items.forEach((item) => {
+      const parsed = parseIngredient(item);
+      addCustomItem(parsed.name, parsed.quantity, parsed.unit);
+    });
+
     setNewItemText('');
     setIsDrawerOpen(false);
   };
