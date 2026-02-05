@@ -53,6 +53,7 @@ export default function MyRecipes() {
                 key={recipe.id}
                 href={`/recipes/${recipe.id}`}
                 data-testid={`recipe-card-${recipe.id}`}
+                className="block"
               >
                 <Card>
                   <h2
