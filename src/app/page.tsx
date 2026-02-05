@@ -101,7 +101,7 @@ export default function Dashboard() {
                 View Full Plan
               </Button>
             </Link>
-            <Link href="/shopping-list" data-testid="shopping-list-link">
+            <Link href="/shopping-list" data-testid="shopping-list-link" className="mt-2 block">
               <Button className="w-full">
                 Shopping List
               </Button>
