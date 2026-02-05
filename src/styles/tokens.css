@@ -23,7 +23,7 @@
   /* Neutrals - Gray scale */
   --color-text-primary: #111827;     /* Headings, important text */
   --color-text-secondary: #4b5563;   /* Body text, descriptions */
-  --color-text-muted: #9ca3af;       /* Captions, placeholders */
+  --color-text-muted: #6b7280;       /* Captions, placeholders - WCAG AA compliant */
   --color-text-inverse: #ffffff;     /* Text on dark backgrounds */
 
   /* Backgrounds */
@@ -37,8 +37,13 @@
 
   /* Semantic - Used sparingly */
   --color-success: #16a34a;          /* Same as accent */
-  --color-warning: #f59e0b;          /* Caution states */
+  --color-success-light: #dcfce7;    /* Success backgrounds */
+  --color-warning: #d97706;          /* Caution states */
+  --color-warning-light: #fef3c7;    /* Warning backgrounds */
   --color-error: #dc2626;            /* Error states */
+  --color-error-light: #fee2e2;      /* Error backgrounds */
+  --color-info: #2563eb;             /* Info states */
+  --color-info-light: #dbeafe;       /* Info backgrounds */
 
   /* ==========================================
      TYPOGRAPHY

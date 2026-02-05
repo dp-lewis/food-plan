@@ -8,20 +8,20 @@ export interface AlertProps {
 export default function Alert({ variant = 'error', children }: AlertProps) {
   const variantStyles = {
     error: {
-      backgroundColor: 'var(--color-error-light, #fee2e2)',
-      color: 'var(--color-error, #dc2626)',
+      backgroundColor: 'var(--color-error-light)',
+      color: 'var(--color-error)',
     },
     success: {
-      backgroundColor: 'var(--color-success-light, #dcfce7)',
-      color: 'var(--color-success, #16a34a)',
+      backgroundColor: 'var(--color-success-light)',
+      color: 'var(--color-success)',
     },
     warning: {
-      backgroundColor: 'var(--color-warning-light, #fef3c7)',
-      color: 'var(--color-warning, #d97706)',
+      backgroundColor: 'var(--color-warning-light)',
+      color: 'var(--color-warning)',
     },
     info: {
-      backgroundColor: 'var(--color-info-light, #dbeafe)',
-      color: 'var(--color-info, #2563eb)',
+      backgroundColor: 'var(--color-info-light)',
+      color: 'var(--color-info)',
     },
   };
 

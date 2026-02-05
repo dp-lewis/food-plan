@@ -11,7 +11,7 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 function generateId(): string {
-  return Math.random().toString(36).substring(2, 15);
+  return crypto.randomUUID();
 }
 
 export function generateMealPlan(preferences: MealPlanPreferences, userRecipes: Recipe[] = []): MealPlan {

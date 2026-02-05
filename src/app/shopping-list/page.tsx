@@ -44,7 +44,7 @@ export default function ShoppingList() {
   const checkedCount = checkedItems.length;
 
   return (
-    <main className="min-h-screen p-4 pb-8" data-testid="shopping-list">
+    <main id="main-content" className="min-h-screen p-4 pb-8" data-testid="shopping-list">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

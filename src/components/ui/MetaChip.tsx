@@ -23,7 +23,7 @@ export default function MetaChip({ label, value }: MetaChipProps) {
   };
 
   return (
-    <div style={containerStyles}>
+    <div style={containerStyles} aria-label={`${label}: ${value}`}>
       <span style={labelStyles}>{label}</span>
       <span style={valueStyles}>{value}</span>
     </div>

@@ -8,7 +8,7 @@ export default function MyRecipes() {
   const userRecipes = useStore((state) => state.userRecipes);
 
   return (
-    <main className="min-h-screen p-4" data-testid="my-recipes-page">
+    <main id="main-content" className="min-h-screen p-4" data-testid="my-recipes-page">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

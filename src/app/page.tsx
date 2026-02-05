@@ -21,7 +21,7 @@ export default function Dashboard() {
     );
 
     return (
-      <main className="min-h-screen p-4" data-testid="dashboard">
+      <main id="main-content" className="min-h-screen p-4" data-testid="dashboard">
         <div className="max-w-md mx-auto">
           <h1
             className="mb-6"
@@ -84,6 +84,7 @@ export default function Dashboard() {
                         fontSize: 'var(--font-size-caption)',
                         color: 'var(--color-text-muted)',
                       }}
+                      aria-hidden="true"
                     >
                       →
                     </span>
@@ -134,7 +135,7 @@ export default function Dashboard() {
 
   // Empty state for new users
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4" data-testid="empty-state">
+    <main id="main-content" className="min-h-screen flex flex-col items-center justify-center px-4" data-testid="empty-state">
       <div className="max-w-md w-full">
         <EmptyState
           icon="🍽️"

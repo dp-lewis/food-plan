@@ -111,6 +111,7 @@ export default function UserRecipeDetail() {
                 <span
                   className="w-5 h-5 rounded border flex-shrink-0"
                   style={{ borderColor: 'var(--color-border)' }}
+                  aria-hidden="true"
                 />
                 <span>
                   {ing.quantity} {ing.unit} {ing.name}

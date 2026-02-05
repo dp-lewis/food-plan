@@ -37,7 +37,7 @@ export default function CreatePlan() {
     .map(([meal]) => meal);
 
   return (
-    <main className="min-h-screen p-4">
+    <main id="main-content" className="min-h-screen p-4">
       <div className="max-w-md mx-auto">
         <BackLink href="/" />
 

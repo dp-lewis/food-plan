@@ -2,9 +2,10 @@ export interface ProgressBarProps {
   value: number;
   max: number;
   showLabel?: boolean;
+  label?: string;
 }
 
-export default function ProgressBar({ value, max, showLabel = false }: ProgressBarProps) {
+export default function ProgressBar({ value, max, showLabel = false, label }: ProgressBarProps) {
   const percentage = max > 0 ? Math.min((value / max) * 100, 100) : 0;
 
   const containerStyles = {
@@ -36,7 +37,14 @@ export default function ProgressBar({ value, max, showLabel = false }: ProgressB
   return (
     <div style={containerStyles}>
       <div style={trackStyles}>
-        <div style={barStyles} role="progressbar" aria-valuenow={value} aria-valuemin={0} aria-valuemax={max} />
+        <div
+          style={barStyles}
+          role="progressbar"
+          aria-valuenow={value}
+          aria-valuemin={0}
+          aria-valuemax={max}
+          aria-label={label || `Progress: ${value} of ${max}`}
+        />
       </div>
       {showLabel && (
         <div style={labelStyles}>

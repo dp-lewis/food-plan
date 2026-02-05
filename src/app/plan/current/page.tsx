@@ -85,7 +85,7 @@ export default function CurrentPlan() {
   });
 
   return (
-    <main className="min-h-screen p-4 pb-24" data-testid="meal-plan">
+    <main id="main-content" className="min-h-screen p-4 pb-24" data-testid="meal-plan">
       <div className="max-w-2xl mx-auto">
         <BackLink href="/">Back to Dashboard</BackLink>
 
@@ -175,6 +175,7 @@ export default function CurrentPlan() {
                         size="small"
                         onClick={() => openDrawer(meal.id, meal.mealType, meal.recipeId)}
                         data-testid={`swap-${meal.id}`}
+                        aria-label={`Swap ${meal.mealType}: ${recipe.title}`}
                       >
                         Swap
                       </Button>
