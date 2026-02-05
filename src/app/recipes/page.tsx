@@ -47,7 +47,7 @@ export default function MyRecipes() {
 
         {/* Recipe list */}
         {userRecipes.length > 0 && (
-          <div className="space-y-3" data-testid="recipe-list">
+          <div className="space-y-4" data-testid="recipe-list">
             {userRecipes.map((recipe) => (
               <Link
                 key={recipe.id}
