@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { getRecipeById } from '@/data/recipes';
-import { Card, Button, EmptyState } from '@/components/ui';
+import { Card, Button, EmptyState, BottomNav } from '@/components/ui';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -21,7 +21,7 @@ export default function Dashboard() {
     );
 
     return (
-      <main id="main-content" className="min-h-screen p-4" data-testid="dashboard">
+      <main id="main-content" className="min-h-screen p-4 pb-20" data-testid="dashboard">
         <div className="max-w-md mx-auto">
           <h1
             className="mb-6"
@@ -96,14 +96,9 @@ export default function Dashboard() {
 
           {/* Quick actions */}
           <div className="space-y-3">
-            <Link href="/plan/current" data-testid="view-full-plan-link">
+            <Link href="/plan/current" data-testid="view-full-plan-link" className="block">
               <Button variant="secondary" className="w-full">
                 View Full Plan
-              </Button>
-            </Link>
-            <Link href="/shopping-list" data-testid="shopping-list-link" className="mt-2 block">
-              <Button className="w-full">
-                Shopping List
               </Button>
             </Link>
             <Link
@@ -116,26 +111,21 @@ export default function Dashboard() {
             >
               Create new plan
             </Link>
-            <Link
-              href="/recipes"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-              className="block text-center mt-2"
-              data-testid="my-recipes-link"
-            >
-              My Recipes
-            </Link>
           </div>
         </div>
+
+        <BottomNav
+          showBack={false}
+          secondaryAction={{ href: '/recipes', label: 'My Recipes', testId: 'my-recipes-link' }}
+          primaryAction={{ href: '/shopping-list', label: 'Shopping List', testId: 'shopping-list-link' }}
+        />
       </main>
     );
   }
 
   // Empty state for new users
   return (
-    <main id="main-content" className="min-h-screen flex flex-col items-center justify-center px-4" data-testid="empty-state">
+    <main id="main-content" className="min-h-screen flex flex-col items-center justify-center px-4 pb-20" data-testid="empty-state">
       <div className="max-w-md w-full">
         <EmptyState
           icon="🍽️"
@@ -169,19 +159,12 @@ export default function Dashboard() {
             <span>Easy meal swapping when plans change</span>
           </li>
         </ul>
-
-        <Link
-          href="/recipes"
-          style={{
-            fontSize: 'var(--font-size-caption)',
-            color: 'var(--color-text-muted)',
-          }}
-          className="block text-center mt-6"
-          data-testid="my-recipes-link"
-        >
-          Import your own recipes →
-        </Link>
       </div>
+
+      <BottomNav
+        showBack={false}
+        primaryAction={{ href: '/recipes', label: 'My Recipes', testId: 'my-recipes-link' }}
+      />
     </main>
   );
 }
