@@ -11,7 +11,7 @@ export default function RecipeDetail() {
 
   if (!recipe) {
     return (
-      <main className="min-h-screen p-4">
+      <main className="min-h-screen p-4 pb-20">
         <div className="max-w-md mx-auto text-center py-12">
           <p style={{ color: 'var(--color-text-muted)' }}>Recipe not found</p>
           <Link
@@ -22,6 +22,8 @@ export default function RecipeDetail() {
             Go back home
           </Link>
         </div>
+
+        <BottomNav />
       </main>
     );
   }

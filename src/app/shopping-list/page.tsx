@@ -24,7 +24,7 @@ export default function ShoppingList() {
 
   if (!currentPlan || !groupedItems) {
     return (
-      <main className="min-h-screen p-4">
+      <main className="min-h-screen p-4 pb-20">
         <div className="max-w-md mx-auto text-center py-12">
           <p style={{ color: 'var(--color-text-muted)' }}>
             No meal plan found. Create one first.
@@ -36,6 +36,8 @@ export default function ShoppingList() {
             Create Meal Plan
           </Link>
         </div>
+
+        <BottomNav />
       </main>
     );
   }
