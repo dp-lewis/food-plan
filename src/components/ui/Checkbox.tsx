@@ -75,6 +75,7 @@ export default function Checkbox({
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
           >
             <polyline points="2 6 5 9 10 3" />
           </svg>

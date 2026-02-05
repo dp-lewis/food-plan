@@ -119,14 +119,27 @@ test.describe('US-2.3: Swap a meal', () => {
 
     const recipeAfterSwap = await firstDay.locator('[data-testid^="meal-"]').first().locator('a').textContent();
 
-    // Wait for localStorage to persist (Zustand persist middleware is async)
-    await page.waitForTimeout(500);
+    // Verify localStorage was updated by checking the store directly
+    const storedState = await page.evaluate(() => {
+      const stored = localStorage.getItem('food-plan-storage');
+      return stored ? JSON.parse(stored) : null;
+    });
 
-    // Reload page and wait for meal plan to load
-    await page.reload();
-    await expect(page.getByTestId('meal-plan')).toBeVisible({ timeout: 10000 });
+    expect(storedState).not.toBeNull();
+    expect(storedState.state.currentPlan).not.toBeNull();
 
-    const recipeAfterReload = await page.getByTestId('day-0').locator('[data-testid^="meal-"]').first().locator('a').textContent();
+    // Navigate to home and wait for state to hydrate (today-meals shows when plan exists)
+    await page.goto('/');
+    await expect(page.getByTestId('today-meals')).toBeVisible({ timeout: 15000 });
+
+    // Now navigate to the plan page - state should be hydrated
+    await page.goto('/plan/current');
+
+    // Wait for the first meal link to be visible
+    const firstMealLink = page.getByTestId('day-0').locator('[data-testid^="meal-"]').first().locator('a');
+    await expect(firstMealLink).toBeVisible({ timeout: 15000 });
+
+    const recipeAfterReload = await firstMealLink.textContent();
 
     expect(recipeAfterReload).toBe(recipeAfterSwap);
   });
