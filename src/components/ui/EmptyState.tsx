@@ -40,7 +40,11 @@ export default function EmptyState({ icon, title, description, action }: EmptySt
 
   return (
     <div style={containerStyles}>
-      {icon && <div style={iconContainerStyles}>{icon}</div>}
+      {icon && (
+        <div style={iconContainerStyles} role="presentation" aria-hidden="true">
+          {icon}
+        </div>
+      )}
       <h2 style={titleStyles}>{title}</h2>
       {description && <p style={descriptionStyles}>{description}</p>}
       {action && <div>{action}</div>}

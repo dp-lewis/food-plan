@@ -34,6 +34,7 @@ export default function RecipeDrawer({
         }}
         className="surprise-me-btn"
         data-testid="surprise-me-btn"
+        aria-label={`Choose a random ${mealTypeLabel.toLowerCase()} recipe`}
       >
         Surprise me
       </button>

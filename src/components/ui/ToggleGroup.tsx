@@ -72,10 +72,16 @@ export default function ToggleGroup({
     color: variant === 'compact' ? 'var(--color-text-inverse)' : 'var(--color-accent)',
   };
 
+  const groupId = label ? `toggle-group-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined;
+
   return (
     <div>
-      {label && <label style={labelStyles}>{label}</label>}
-      <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+      {label && <label id={groupId} style={labelStyles}>{label}</label>}
+      <div
+        role="group"
+        aria-labelledby={groupId}
+        style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}
+      >
         {options.map((option) => {
           const isActive = selectedValues.includes(option.value);
           return (

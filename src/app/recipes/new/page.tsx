@@ -206,6 +206,7 @@ export default function NewRecipe() {
                       onChange={(e) => updateIngredientCategory(index, e.target.value as IngredientCategory)}
                       className="px-2 py-1 rounded text-xs"
                       data-testid={`category-${index}`}
+                      aria-label={`Category for ${ing.parsed.name}`}
                       style={{
                         backgroundColor: 'var(--color-bg-primary)',
                         border: 'var(--border-width) solid var(--color-border)',
@@ -237,7 +238,11 @@ export default function NewRecipe() {
 
             {/* Add ingredient input */}
             <div className="flex gap-2">
+              <label htmlFor="new-ingredient-input" className="sr-only">
+                Add ingredient
+              </label>
               <input
+                id="new-ingredient-input"
                 type="text"
                 value={newIngredient}
                 onChange={(e) => setNewIngredient(e.target.value)}
@@ -245,6 +250,7 @@ export default function NewRecipe() {
                 placeholder="e.g., 2 chicken schnitzels"
                 className="flex-1 px-3 py-2 rounded-lg"
                 data-testid="new-ingredient-input"
+                aria-describedby="ingredient-hint"
                 style={{
                   backgroundColor: 'var(--color-bg-primary)',
                   border: 'var(--border-width) solid var(--color-border)',
@@ -262,6 +268,7 @@ export default function NewRecipe() {
               </Button>
             </div>
             <p
+              id="ingredient-hint"
               className="mt-1"
               style={{
                 fontSize: 'var(--font-size-caption)',

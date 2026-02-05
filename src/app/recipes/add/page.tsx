@@ -280,6 +280,7 @@ export default function AddRecipe() {
                       value={ing.category}
                       onChange={(e) => updateIngredientCategory(index, e.target.value as IngredientCategory)}
                       className="px-2 py-1 rounded text-xs"
+                      aria-label={`Category for ${ing.name}`}
                       style={{
                         backgroundColor: 'var(--color-bg-primary)',
                         border: 'var(--border-width) solid var(--color-border)',

@@ -132,8 +132,8 @@ test.describe('US-2.3: Swap a meal', () => {
     await page.goto('/');
     await expect(page.getByTestId('today-meals')).toBeVisible({ timeout: 15000 });
 
-    // Now navigate to the plan page - state should be hydrated
-    await page.goto('/plan/current');
+    // Click "View Full Plan" link - this preserves hydrated state
+    await page.getByTestId('view-full-plan-link').click();
 
     // Wait for the first meal link to be visible
     const firstMealLink = page.getByTestId('day-0').locator('[data-testid^="meal-"]').first().locator('a');

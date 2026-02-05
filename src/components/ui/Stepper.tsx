@@ -63,7 +63,13 @@ export default function Stepper({ value, onChange, min = 1, max = 99, label, tes
         >
           −
         </button>
-        <span style={valueStyles} data-testid={testId ? `${testId}-count` : 'stepper-value'}>
+        <span
+          style={valueStyles}
+          data-testid={testId ? `${testId}-count` : 'stepper-value'}
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {value}
         </span>
         <button
