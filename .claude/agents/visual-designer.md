@@ -1,3 +1,7 @@
+---
+model: haiku
+---
+
 # Visual Designer Agent
 
 A design-focused agent for the Food Plan application.

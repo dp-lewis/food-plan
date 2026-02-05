@@ -1,3 +1,7 @@
+---
+model: haiku
+---
+
 # Doc Writer Agent
 
 A documentation agent for the Food Plan application.
