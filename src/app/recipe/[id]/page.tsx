@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { getRecipeById } from '@/data/recipes';
-import { BackLink, MetaChip } from '@/components/ui';
+import { BottomNav, MetaChip } from '@/components/ui';
 
 export default function RecipeDetail() {
   const params = useParams();
@@ -29,10 +29,8 @@ export default function RecipeDetail() {
   const totalTime = recipe.prepTime + recipe.cookTime;
 
   return (
-    <main className="min-h-screen p-4 pb-8" data-testid="recipe-page">
+    <main className="min-h-screen p-4 pb-20" data-testid="recipe-page">
       <div className="max-w-md mx-auto">
-        <BackLink />
-
         {/* Header */}
         <h1
           className="mb-2"
@@ -151,6 +149,8 @@ export default function RecipeDetail() {
           </ol>
         </section>
       </div>
+
+      <BottomNav />
     </main>
   );
 }

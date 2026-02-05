@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useStore, defaultPreferences } from '@/store/store';
 import { generateMealPlan } from '@/lib/planGenerator';
 import { MealPlanPreferences } from '@/types';
-import { BackLink, Stepper, ToggleGroup, Button } from '@/components/ui';
+import { BottomNav, Stepper, ToggleGroup, Button } from '@/components/ui';
 
 export default function CreatePlan() {
   const router = useRouter();
@@ -37,9 +37,8 @@ export default function CreatePlan() {
     .map(([meal]) => meal);
 
   return (
-    <main id="main-content" className="min-h-screen p-4">
+    <main id="main-content" className="min-h-screen p-4 pb-20">
       <div className="max-w-md mx-auto">
-        <BackLink href="/" />
 
         <h1
           className="mb-2"
@@ -108,6 +107,8 @@ export default function CreatePlan() {
           </Button>
         </form>
       </div>
+
+      <BottomNav backHref="/" />
     </main>
   );
 }

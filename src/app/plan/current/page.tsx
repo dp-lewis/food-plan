@@ -7,7 +7,7 @@ import { useStore } from '@/store/store';
 import { getRecipeById, getRecipesByMealType } from '@/data/recipes';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
-import { BackLink, Button, Card } from '@/components/ui';
+import { BottomNav, Button, Card } from '@/components/ui';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -87,8 +87,6 @@ export default function CurrentPlan() {
   return (
     <main id="main-content" className="min-h-screen p-4 pb-24" data-testid="meal-plan">
       <div className="max-w-2xl mx-auto">
-        <BackLink href="/">Back to Dashboard</BackLink>
-
         <div className="flex items-center justify-between mb-6">
           <h1
             style={{
@@ -187,25 +185,13 @@ export default function CurrentPlan() {
           ))}
         </div>
 
-        {/* Bottom action bar */}
-        <div
-          className="fixed bottom-0 left-0 right-0 p-4"
-          style={{
-            backgroundColor: 'var(--color-bg-primary)',
-            borderTop: 'var(--border-width) solid var(--color-border)',
-          }}
-        >
-          <div className="max-w-2xl mx-auto">
-            <Link
-              href="/shopping-list"
-              className="primary-button w-full inline-flex items-center justify-center"
-              data-testid="shopping-list-btn"
-            >
-              View Shopping List
-            </Link>
-          </div>
-        </div>
       </div>
+
+      <BottomNav
+        backHref="/"
+        primaryAction={{ href: '/shopping-list', label: 'View Shopping List', testId: 'shopping-list-btn' }}
+        maxWidth="2xl"
+      />
 
       {/* Recipe selection drawer */}
       <RecipeDrawer

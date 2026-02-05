@@ -96,7 +96,7 @@ test.describe('US-3.1: View recipe details', () => {
     await firstDay.locator('[data-testid^="meal-"]').first().locator('a').click();
     await expect(page.getByTestId('recipe-page')).toBeVisible();
 
-    await page.getByText('← Back').click();
+    await page.getByTestId('bottom-nav-back').click();
 
     await expect(page.getByTestId('meal-plan')).toBeVisible();
   });

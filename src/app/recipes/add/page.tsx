@@ -6,7 +6,7 @@ import { useStore } from '@/store/store';
 import { ParsedRecipe } from '@/lib/recipeParser';
 import { parseIngredient } from '@/lib/ingredientParser';
 import { MealType, Difficulty, BudgetLevel, Ingredient, IngredientCategory } from '@/types';
-import { BackLink, Input, Select, Alert, Button, Card } from '@/components/ui';
+import { BottomNav, Input, Select, Alert, Button, Card } from '@/components/ui';
 
 type Step = 'url' | 'preview' | 'saving';
 
@@ -105,10 +105,8 @@ export default function AddRecipe() {
   // URL Input Step
   if (step === 'url') {
     return (
-      <main className="min-h-screen p-4" data-testid="add-recipe-page">
+      <main className="min-h-screen p-4 pb-20" data-testid="add-recipe-page">
         <div className="max-w-md mx-auto">
-          <BackLink href="/recipes">Back to My Recipes</BackLink>
-
           <h1
             className="mb-2"
             style={{
@@ -158,6 +156,8 @@ export default function AddRecipe() {
             </Button>
           </div>
         </div>
+
+        <BottomNav backHref="/recipes" />
       </main>
     );
   }
@@ -165,7 +165,7 @@ export default function AddRecipe() {
   // Preview/Edit Step
   if (step === 'preview' || step === 'saving') {
     return (
-      <main className="min-h-screen p-4 pb-8" data-testid="preview-recipe-page">
+      <main className="min-h-screen p-4 pb-20" data-testid="preview-recipe-page">
         <div className="max-w-md mx-auto">
           <button
             onClick={() => setStep('url')}
@@ -341,6 +341,8 @@ export default function AddRecipe() {
             </Button>
           </div>
         </div>
+
+        <BottomNav backHref="/recipes" />
       </main>
     );
   }

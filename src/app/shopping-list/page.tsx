@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { generateShoppingList, groupByCategory, CATEGORY_LABELS } from '@/lib/shoppingList';
-import { BackLink, ProgressBar, Checkbox } from '@/components/ui';
+import { BottomNav, ProgressBar, Checkbox } from '@/components/ui';
 
 export default function ShoppingList() {
   const currentPlan = useStore((state) => state.currentPlan);
@@ -44,13 +44,11 @@ export default function ShoppingList() {
   const checkedCount = checkedItems.length;
 
   return (
-    <main id="main-content" className="min-h-screen p-4 pb-8" data-testid="shopping-list">
+    <main id="main-content" className="min-h-screen p-4 pb-20" data-testid="shopping-list">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <BackLink />
-            <h1
+          <h1
               style={{
                 fontSize: 'var(--font-size-heading)',
                 fontWeight: 'var(--font-weight-bold)',
@@ -60,7 +58,6 @@ export default function ShoppingList() {
             >
               Shopping List
             </h1>
-          </div>
           <span
             data-testid="progress-counter"
             style={{
@@ -118,6 +115,8 @@ export default function ShoppingList() {
           ))}
         </div>
       </div>
+
+      <BottomNav />
     </main>
   );
 }

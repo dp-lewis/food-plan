@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { useStore } from '@/store/store';
-import { BackLink, Button, Card, EmptyState } from '@/components/ui';
+import { BottomNav, Button, Card, EmptyState } from '@/components/ui';
 
 export default function MyRecipes() {
   const userRecipes = useStore((state) => state.userRecipes);
 
   return (
-    <main id="main-content" className="min-h-screen p-4" data-testid="my-recipes-page">
+    <main id="main-content" className="min-h-screen p-4 pb-20" data-testid="my-recipes-page">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -34,8 +34,6 @@ export default function MyRecipes() {
             </Link>
           </div>
         </div>
-
-        <BackLink href="/">Back to Dashboard</BackLink>
 
         {/* Empty state */}
         {userRecipes.length === 0 && (
@@ -96,6 +94,8 @@ export default function MyRecipes() {
           </div>
         )}
       </div>
+
+      <BottomNav backHref="/" />
     </main>
   );
 }

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
 import { parseIngredient } from '@/lib/ingredientParser';
 import { MealType, Difficulty, BudgetLevel, Ingredient, IngredientCategory } from '@/types';
-import { BackLink, Input, Select, Button } from '@/components/ui';
+import { BottomNav, Input, Select, Button } from '@/components/ui';
 
 const CATEGORIES: IngredientCategory[] = ['produce', 'dairy', 'meat', 'pantry', 'frozen', 'uncategorized'];
 
@@ -85,10 +85,8 @@ export default function NewRecipe() {
   };
 
   return (
-    <main className="min-h-screen p-4 pb-8" data-testid="new-recipe-page">
+    <main className="min-h-screen p-4 pb-20" data-testid="new-recipe-page">
       <div className="max-w-md mx-auto">
-        <BackLink href="/recipes">Back to My Recipes</BackLink>
-
         <h1
           className="mb-2"
           style={{
@@ -333,6 +331,8 @@ export default function NewRecipe() {
           )}
         </div>
       </div>
+
+      <BottomNav backHref="/recipes" />
     </main>
   );
 }

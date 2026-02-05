@@ -36,3 +36,6 @@ export type { AlertProps } from './Alert';
 
 export { default as Drawer } from './Drawer';
 export type { DrawerProps } from './Drawer';
+
+export { default as BottomNav } from './BottomNav';
+export type { BottomNavProps } from './BottomNav';

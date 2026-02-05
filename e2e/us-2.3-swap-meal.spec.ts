@@ -180,8 +180,8 @@ test.describe('US-2.3: Swap a meal', () => {
 
     await expect(page.locator('[role="dialog"]')).toBeVisible();
 
-    // Click backdrop to dismiss
-    await page.locator('.drawer-backdrop').click();
+    // Press Escape to dismiss
+    await page.keyboard.press('Escape');
 
     // Drawer should close
     await expect(page.locator('[role="dialog"]')).not.toBeVisible();

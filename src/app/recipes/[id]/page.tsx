@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
-import { BackLink, MetaChip, Button } from '@/components/ui';
+import { BottomNav, MetaChip, Button } from '@/components/ui';
 
 export default function UserRecipeDetail() {
   const params = useParams();
@@ -40,10 +40,8 @@ export default function UserRecipeDetail() {
   const totalTime = recipe.prepTime + recipe.cookTime;
 
   return (
-    <main className="min-h-screen p-4 pb-8" data-testid="user-recipe-page">
+    <main className="min-h-screen p-4 pb-20" data-testid="user-recipe-page">
       <div className="max-w-md mx-auto">
-        <BackLink href="/recipes">Back to My Recipes</BackLink>
-
         {/* Header */}
         <h1
           className="mb-2"
@@ -192,6 +190,8 @@ export default function UserRecipeDetail() {
           Delete Recipe
         </Button>
       </div>
+
+      <BottomNav backHref="/recipes" />
     </main>
   );
 }
