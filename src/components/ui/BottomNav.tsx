@@ -69,11 +69,26 @@ export default function BottomNav({
     )
   ) : null;
 
+  const secondaryButtonStyles: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 'var(--space-3) var(--space-6)',
+    fontSize: 'var(--font-size-body)',
+    fontWeight: 'var(--font-weight-bold)' as React.CSSProperties['fontWeight'],
+    minHeight: 'var(--touch-target-min)',
+    borderRadius: 'var(--border-radius-sm)',
+    border: 'var(--border-width) solid var(--color-border)',
+    backgroundColor: 'var(--color-bg-primary)',
+    color: 'var(--color-text-primary)',
+    cursor: 'pointer',
+  };
+
   const SecondaryElement = secondaryAction ? (
     secondaryAction.href ? (
       <Link
         href={secondaryAction.href}
-        className="secondary-button"
+        style={secondaryButtonStyles}
         data-testid={secondaryAction.testId || 'bottom-nav-secondary'}
       >
         {secondaryAction.label}
@@ -82,7 +97,7 @@ export default function BottomNav({
       <button
         type="button"
         onClick={secondaryAction.onClick}
-        className="secondary-button"
+        style={secondaryButtonStyles}
         data-testid={secondaryAction.testId || 'bottom-nav-secondary'}
       >
         {secondaryAction.label}
