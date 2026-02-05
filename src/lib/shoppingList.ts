@@ -1,4 +1,4 @@
-import { MealPlan, ShoppingListItem, IngredientCategory, Recipe } from '@/types';
+import { MealPlan, ShoppingListItem, IngredientCategory, Recipe, CustomShoppingListItem } from '@/types';
 import { getRecipeById } from '@/data/recipes';
 
 interface AggregatedIngredient {
@@ -80,4 +80,29 @@ export function groupByCategory(items: ShoppingListItem[]): Map<IngredientCatego
   return grouped;
 }
 
-export { CATEGORY_LABELS };
+export function mergeShoppingLists(
+  generatedItems: ShoppingListItem[],
+  customItems: CustomShoppingListItem[]
+): ShoppingListItem[] {
+  // Convert custom items to ShoppingListItem format
+  const convertedCustom: ShoppingListItem[] = customItems.map((item) => ({
+    id: item.id,
+    ingredient: item.ingredient,
+    quantity: item.quantity,
+    unit: item.unit,
+    category: item.category,
+    checked: false,
+  }));
+
+  // Combine and sort by category order, then alphabetically
+  const combined = [...generatedItems, ...convertedCustom];
+  combined.sort((a, b) => {
+    const categoryDiff = CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category);
+    if (categoryDiff !== 0) return categoryDiff;
+    return a.ingredient.localeCompare(b.ingredient);
+  });
+
+  return combined;
+}
+
+export { CATEGORY_LABELS, CATEGORY_ORDER };

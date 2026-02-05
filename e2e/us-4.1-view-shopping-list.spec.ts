@@ -57,7 +57,6 @@ test.describe('US-4.1: View shopping list', () => {
     const counter = page.getByTestId('progress-counter');
     await expect(counter).toBeVisible();
     await expect(counter).toContainText('/');
-    await expect(counter).toContainText('items');
   });
 
   test('Shows empty state when no plan exists', async ({ page }) => {

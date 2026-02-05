@@ -2,8 +2,9 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { MealPlan, MealPlanPreferences, Recipe } from '@/types';
+import { MealPlan, MealPlanPreferences, Recipe, CustomShoppingListItem } from '@/types';
 import { swapMeal } from '@/lib/planGenerator';
+import { categorizeIngredient } from '@/lib/ingredientParser';
 
 interface AppState {
   currentPlan: MealPlan | null;
@@ -15,6 +16,9 @@ interface AppState {
   userRecipes: Recipe[];
   addUserRecipe: (recipe: Recipe) => void;
   removeUserRecipe: (id: string) => void;
+  customShoppingItems: CustomShoppingListItem[];
+  addCustomItem: (ingredient: string, quantity?: number, unit?: string) => void;
+  removeCustomItem: (itemId: string) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -47,6 +51,24 @@ export const useStore = create<AppState>()(
       removeUserRecipe: (id) =>
         set((state) => ({
           userRecipes: state.userRecipes.filter((r) => r.id !== id),
+        })),
+      customShoppingItems: [],
+      addCustomItem: (ingredient, quantity = 1, unit = '') =>
+        set((state) => ({
+          customShoppingItems: [
+            ...state.customShoppingItems,
+            {
+              id: `custom-${crypto.randomUUID()}`,
+              ingredient,
+              quantity,
+              unit,
+              category: categorizeIngredient(ingredient),
+            },
+          ],
+        })),
+      removeCustomItem: (itemId) =>
+        set((state) => ({
+          customShoppingItems: state.customShoppingItems.filter((item) => item.id !== itemId),
         })),
     }),
     {

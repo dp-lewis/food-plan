@@ -65,3 +65,11 @@ export interface ShoppingListItem {
   category: IngredientCategory;
   checked: boolean;
 }
+
+export interface CustomShoppingListItem {
+  id: string;                      // Prefixed 'custom-' to avoid collisions
+  ingredient: string;              // Item name
+  quantity: number;                // Default 1
+  unit: string;                    // Optional, empty string default
+  category: IngredientCategory;    // Auto-detected via categorizeIngredient()
+}
