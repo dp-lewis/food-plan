@@ -3,16 +3,19 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+interface ActionConfig {
+  href?: string;
+  onClick?: () => void;
+  label: string;
+  testId?: string;
+}
+
 export interface BottomNavProps {
   backHref?: string;
   backLabel?: string;
   showBack?: boolean;
-  primaryAction?: {
-    href?: string;
-    onClick?: () => void;
-    label: string;
-    testId?: string;
-  };
+  secondaryAction?: ActionConfig;
+  primaryAction?: ActionConfig;
   maxWidth?: 'md' | '2xl';
 }
 
@@ -20,12 +23,13 @@ export default function BottomNav({
   backHref,
   backLabel = 'Back',
   showBack = true,
+  secondaryAction,
   primaryAction,
   maxWidth = 'md',
 }: BottomNavProps) {
   const router = useRouter();
 
-  if (!showBack && !primaryAction) {
+  if (!showBack && !primaryAction && !secondaryAction) {
     return null;
   }
 
@@ -65,6 +69,27 @@ export default function BottomNav({
     )
   ) : null;
 
+  const SecondaryElement = secondaryAction ? (
+    secondaryAction.href ? (
+      <Link
+        href={secondaryAction.href}
+        className="secondary-button"
+        data-testid={secondaryAction.testId || 'bottom-nav-secondary'}
+      >
+        {secondaryAction.label}
+      </Link>
+    ) : (
+      <button
+        type="button"
+        onClick={secondaryAction.onClick}
+        className="secondary-button"
+        data-testid={secondaryAction.testId || 'bottom-nav-secondary'}
+      >
+        {secondaryAction.label}
+      </button>
+    )
+  ) : null;
+
   const PrimaryElement = primaryAction ? (
     primaryAction.href ? (
       <Link
@@ -86,6 +111,8 @@ export default function BottomNav({
     )
   ) : null;
 
+  const hasActions = primaryAction || secondaryAction;
+
   return (
     <nav
       aria-label="Page navigation"
@@ -97,9 +124,14 @@ export default function BottomNav({
         zIndex: 'var(--z-sticky)',
       }}
     >
-      <div className={`${containerMaxWidth} mx-auto flex items-center ${primaryAction ? 'justify-between' : 'justify-start'} gap-3`}>
+      <div className={`${containerMaxWidth} mx-auto flex items-center ${hasActions ? 'justify-between' : 'justify-start'} gap-3`}>
         {BackElement}
-        {PrimaryElement}
+        {hasActions && (
+          <div className="flex gap-2">
+            {SecondaryElement}
+            {PrimaryElement}
+          </div>
+        )}
       </div>
     </nav>
   );

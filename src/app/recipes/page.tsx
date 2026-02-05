@@ -11,29 +11,16 @@ export default function MyRecipes() {
     <main id="main-content" className="min-h-screen p-4 pb-20" data-testid="my-recipes-page">
       <div className="max-w-md mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h1
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            My Recipes
-          </h1>
-          <div className="flex gap-2">
-            <Link href="/recipes/new" data-testid="create-recipe-btn">
-              <Button variant="secondary" size="small">
-                + Create
-              </Button>
-            </Link>
-            <Link href="/recipes/add" data-testid="import-recipe-btn">
-              <Button size="small">
-                Import URL
-              </Button>
-            </Link>
-          </div>
-        </div>
+        <h1
+          className="mb-6"
+          style={{
+            fontSize: 'var(--font-size-heading)',
+            fontWeight: 'var(--font-weight-bold)',
+            color: 'var(--color-text-primary)',
+          }}
+        >
+          My Recipes
+        </h1>
 
         {/* Empty state */}
         {userRecipes.length === 0 && (
@@ -95,7 +82,11 @@ export default function MyRecipes() {
         )}
       </div>
 
-      <BottomNav backHref="/" />
+      <BottomNav
+        backHref="/"
+        secondaryAction={{ href: '/recipes/new', label: '+ Create', testId: 'create-recipe-btn' }}
+        primaryAction={{ href: '/recipes/add', label: 'Import URL', testId: 'import-recipe-btn' }}
+      />
     </main>
   );
 }
