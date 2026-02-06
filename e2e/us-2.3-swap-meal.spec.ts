@@ -128,9 +128,9 @@ test.describe('US-2.3: Swap a meal', () => {
     expect(storedState).not.toBeNull();
     expect(storedState.state.currentPlan).not.toBeNull();
 
-    // Navigate to home and wait for state to hydrate (today-meals shows when plan exists)
+    // Navigate to home and wait for state to hydrate (dashboard shows when plan exists)
     await page.goto('/');
-    await expect(page.getByTestId('today-meals')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByTestId('dashboard')).toBeVisible({ timeout: 15000 });
 
     // Click "View Full Plan" link - this preserves hydrated state
     await page.getByTestId('view-full-plan-link').click();
