@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
 import { ParsedRecipe } from '@/lib/recipeParser';
@@ -15,6 +15,8 @@ const CATEGORIES: IngredientCategory[] = ['produce', 'dairy', 'meat', 'pantry', 
 export default function AddRecipe() {
   const router = useRouter();
   const addUserRecipe = useStore((state) => state.addUserRecipe);
+  const pendingImportedRecipe = useStore((state) => state.pendingImportedRecipe);
+  const setPendingImportedRecipe = useStore((state) => state.setPendingImportedRecipe);
 
   const [step, setStep] = useState<Step>('url');
   const [url, setUrl] = useState('');
@@ -29,6 +31,28 @@ export default function AddRecipe() {
   const [cookTime, setCookTime] = useState(30);
   const [servings, setServings] = useState(4);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+
+  // Check for pending imported recipe on mount
+  useEffect(() => {
+    if (pendingImportedRecipe) {
+      // Load the pending recipe into the form
+      setParsedRecipe(pendingImportedRecipe);
+      setTitle(pendingImportedRecipe.title);
+      setPrepTime(pendingImportedRecipe.prepTime || 15);
+      setCookTime(pendingImportedRecipe.cookTime || 30);
+      setServings(pendingImportedRecipe.servings || 4);
+
+      // Parse ingredients with auto-categorization
+      const parsedIngredients = (pendingImportedRecipe.ingredients || []).map((raw: string) =>
+        parseIngredient(raw)
+      );
+      setIngredients(parsedIngredients);
+
+      // Clear the pending recipe from store and go to preview
+      setPendingImportedRecipe(null);
+      setStep('preview');
+    }
+  }, [pendingImportedRecipe, setPendingImportedRecipe]);
 
   const handleFetchRecipe = async () => {
     setError(null);

@@ -60,21 +60,26 @@ test.describe('US-7.1: Import recipe from URL', () => {
   });
 
   test('Can enter a URL to import a recipe', async ({ page }) => {
-    await page.goto('/recipes/add');
+    await page.goto('/recipes');
 
-    const urlInput = page.getByTestId('url-input');
+    // Click Import URL to open drawer
+    await page.getByTestId('import-recipe-btn').click();
+
+    const urlInput = page.getByTestId('import-url-input');
     await expect(urlInput).toBeVisible();
 
     await urlInput.fill('https://www.recipetineats.com/honey-garlic-chicken/');
     await page.getByTestId('fetch-recipe-btn').click();
 
-    // Should navigate to preview step
+    // Should navigate to preview page
+    await expect(page).toHaveURL('/recipes/add');
     await expect(page.getByTestId('preview-recipe-page')).toBeVisible();
   });
 
   test('Recipe title and ingredients are extracted from the page', async ({ page }) => {
-    await page.goto('/recipes/add');
-    await page.getByTestId('url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
+    await page.goto('/recipes');
+    await page.getByTestId('import-recipe-btn').click();
+    await page.getByTestId('import-url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
     await page.getByTestId('fetch-recipe-btn').click();
 
     await expect(page.getByTestId('preview-recipe-page')).toBeVisible();
@@ -90,8 +95,9 @@ test.describe('US-7.1: Import recipe from URL', () => {
   });
 
   test('Can select meal type for imported recipe', async ({ page }) => {
-    await page.goto('/recipes/add');
-    await page.getByTestId('url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
+    await page.goto('/recipes');
+    await page.getByTestId('import-recipe-btn').click();
+    await page.getByTestId('import-url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
     await page.getByTestId('fetch-recipe-btn').click();
 
     await expect(page.getByTestId('preview-recipe-page')).toBeVisible();
@@ -105,8 +111,9 @@ test.describe('US-7.1: Import recipe from URL', () => {
   });
 
   test('Can adjust ingredient categories before saving', async ({ page }) => {
-    await page.goto('/recipes/add');
-    await page.getByTestId('url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
+    await page.goto('/recipes');
+    await page.getByTestId('import-recipe-btn').click();
+    await page.getByTestId('import-url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
     await page.getByTestId('fetch-recipe-btn').click();
 
     await expect(page.getByTestId('preview-recipe-page')).toBeVisible();
@@ -121,8 +128,9 @@ test.describe('US-7.1: Import recipe from URL', () => {
   });
 
   test('Saved recipes appear in "My Recipes" list', async ({ page }) => {
-    await page.goto('/recipes/add');
-    await page.getByTestId('url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
+    await page.goto('/recipes');
+    await page.getByTestId('import-recipe-btn').click();
+    await page.getByTestId('import-url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
     await page.getByTestId('fetch-recipe-btn').click();
 
     await expect(page.getByTestId('preview-recipe-page')).toBeVisible();
@@ -138,8 +146,9 @@ test.describe('US-7.1: Import recipe from URL', () => {
 
   test('Imported recipes link to original website for cooking instructions', async ({ page }) => {
     // First import a recipe
-    await page.goto('/recipes/add');
-    await page.getByTestId('url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
+    await page.goto('/recipes');
+    await page.getByTestId('import-recipe-btn').click();
+    await page.getByTestId('import-url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
     await page.getByTestId('fetch-recipe-btn').click();
     await page.getByTestId('save-recipe-btn').click();
 
@@ -158,8 +167,9 @@ test.describe('US-7.1: Import recipe from URL', () => {
 
   test('Imported recipe ingredients appear on shopping list when used in a plan', async ({ page }) => {
     // First import a recipe as dinner
-    await page.goto('/recipes/add');
-    await page.getByTestId('url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
+    await page.goto('/recipes');
+    await page.getByTestId('import-recipe-btn').click();
+    await page.getByTestId('import-url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
     await page.getByTestId('fetch-recipe-btn').click();
     await page.getByTestId('meal-type-select').selectOption('dinner');
     await page.getByTestId('save-recipe-btn').click();
@@ -190,8 +200,9 @@ test.describe('US-7.1: Import recipe from URL', () => {
 
   test('Can delete an imported recipe', async ({ page }) => {
     // First import a recipe
-    await page.goto('/recipes/add');
-    await page.getByTestId('url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
+    await page.goto('/recipes');
+    await page.getByTestId('import-recipe-btn').click();
+    await page.getByTestId('import-url-input').fill('https://www.recipetineats.com/honey-garlic-chicken/');
     await page.getByTestId('fetch-recipe-btn').click();
     await page.getByTestId('save-recipe-btn').click();
 

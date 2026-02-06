@@ -1,11 +1,66 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
-import { BottomNav, Button, Card, EmptyState } from '@/components/ui';
+import { BottomNav, Button, Card, EmptyState, Drawer } from '@/components/ui';
 
 export default function MyRecipes() {
+  const router = useRouter();
   const userRecipes = useStore((state) => state.userRecipes);
+  const setPendingImportedRecipe = useStore((state) => state.setPendingImportedRecipe);
+
+  const [isImportDrawerOpen, setIsImportDrawerOpen] = useState(false);
+  const [importUrl, setImportUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Focus input when drawer opens
+  useEffect(() => {
+    if (isImportDrawerOpen && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [isImportDrawerOpen]);
+
+  const handleFetchRecipe = async () => {
+    if (!importUrl.trim()) return;
+
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/parse-recipe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: importUrl }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to parse recipe');
+        setIsLoading(false);
+        return;
+      }
+
+      // Store the parsed recipe and navigate to preview
+      setPendingImportedRecipe(data);
+      setIsImportDrawerOpen(false);
+      setImportUrl('');
+      router.push('/recipes/add');
+    } catch {
+      setError('Failed to fetch recipe. Please check the URL and try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const openImportDrawer = () => {
+    setError(null);
+    setIsImportDrawerOpen(true);
+  };
 
   return (
     <main id="main-content" className="min-h-screen p-4 pb-20" data-testid="my-recipes-page">
@@ -31,9 +86,9 @@ export default function MyRecipes() {
               description="Add your own recipes or import from your favourite food websites."
               action={
                 <div className="flex flex-col gap-2">
-                  <Link href="/recipes/add" data-testid="empty-import-btn">
-                    <Button className="w-full">Import from URL</Button>
-                  </Link>
+                  <Button onClick={openImportDrawer} className="w-full" data-testid="empty-import-btn">
+                    Import from URL
+                  </Button>
                   <Link href="/recipes/new" data-testid="empty-create-btn">
                     <Button variant="secondary" className="w-full">
                       Create Your Own Recipe
@@ -83,10 +138,77 @@ export default function MyRecipes() {
         )}
       </div>
 
+      <Drawer
+        isOpen={isImportDrawerOpen}
+        onClose={() => setIsImportDrawerOpen(false)}
+        title="Import Recipe"
+      >
+        <div data-testid="import-recipe-drawer">
+          <div className="flex gap-2">
+            <label htmlFor="import-url-input" className="sr-only">
+              Recipe URL
+            </label>
+            <input
+              ref={inputRef}
+              id="import-url-input"
+              type="url"
+              value={importUrl}
+              onChange={(e) => setImportUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && importUrl.trim() && !isLoading) {
+                  e.preventDefault();
+                  handleFetchRecipe();
+                }
+              }}
+              placeholder="https://www.recipetineats.com/..."
+              className="flex-1"
+              data-testid="import-url-input"
+              style={{
+                backgroundColor: 'var(--color-bg-primary)',
+                border: 'var(--border-width) solid var(--color-border)',
+                fontSize: 'var(--font-size-body)',
+                color: 'var(--color-text-primary)',
+                padding: 'var(--space-2) var(--space-3)',
+                borderRadius: 'var(--border-radius-sm)',
+              }}
+            />
+          </div>
+          {error && (
+            <p
+              className="mt-2"
+              style={{
+                fontSize: 'var(--font-size-caption)',
+                color: 'var(--color-error)',
+              }}
+              data-testid="import-error"
+            >
+              {error}
+            </p>
+          )}
+          <p
+            className="mt-2 mb-4"
+            style={{
+              fontSize: 'var(--font-size-caption)',
+              color: 'var(--color-text-muted)',
+            }}
+          >
+            Paste a recipe URL from sites like RecipeTin Eats, BBC Good Food, or any site with structured recipe data.
+          </p>
+          <Button
+            onClick={handleFetchRecipe}
+            disabled={!importUrl.trim() || isLoading}
+            data-testid="fetch-recipe-btn"
+            className="w-full"
+          >
+            {isLoading ? 'Fetching...' : 'Fetch Recipe'}
+          </Button>
+        </div>
+      </Drawer>
+
       <BottomNav
         backHref="/"
         secondaryAction={{ href: '/recipes/new', label: '+ Create', testId: 'create-recipe-btn' }}
-        primaryAction={{ href: '/recipes/add', label: 'Import URL', testId: 'import-recipe-btn' }}
+        primaryAction={{ onClick: openImportDrawer, label: 'Import URL', testId: 'import-recipe-btn' }}
       />
     </main>
   );

@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware';
 import { MealPlan, MealPlanPreferences, Recipe, CustomShoppingListItem } from '@/types';
 import { swapMeal } from '@/lib/planGenerator';
 import { categorizeIngredient } from '@/lib/ingredientParser';
+import { ParsedRecipe } from '@/lib/recipeParser';
 
 interface AppState {
   currentPlan: MealPlan | null;
@@ -19,6 +20,8 @@ interface AppState {
   customShoppingItems: CustomShoppingListItem[];
   addCustomItem: (ingredient: string, quantity?: number, unit?: string) => void;
   removeCustomItem: (itemId: string) => void;
+  pendingImportedRecipe: ParsedRecipe | null;
+  setPendingImportedRecipe: (recipe: ParsedRecipe | null) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -70,9 +73,18 @@ export const useStore = create<AppState>()(
         set((state) => ({
           customShoppingItems: state.customShoppingItems.filter((item) => item.id !== itemId),
         })),
+      pendingImportedRecipe: null,
+      setPendingImportedRecipe: (recipe) => set({ pendingImportedRecipe: recipe }),
     }),
     {
       name: 'food-plan-storage',
+      partialize: (state) => ({
+        currentPlan: state.currentPlan,
+        checkedItems: state.checkedItems,
+        userRecipes: state.userRecipes,
+        customShoppingItems: state.customShoppingItems,
+        // Note: pendingImportedRecipe is intentionally NOT persisted
+      }),
     }
   )
 );
