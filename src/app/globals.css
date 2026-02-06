@@ -15,6 +15,13 @@ body {
   line-height: var(--line-height-normal);
 }
 
+/* Extra bottom padding in standalone (home screen) mode for safe area */
+@media (display-mode: standalone) {
+  main {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
 /* Focus styles for keyboard accessibility */
 button:focus-visible,
 a:focus-visible,

@@ -157,6 +157,7 @@ export default function BottomNav({
       className="fixed bottom-0 left-0 right-0"
       style={{
         padding: 'var(--space-4)',
+        paddingBottom: 'calc(var(--space-4) + env(safe-area-inset-bottom, 0px))',
         backgroundColor: 'var(--color-bg-primary)',
         borderTop: 'var(--border-width) solid var(--color-border)',
         zIndex: 'var(--z-sticky)',
