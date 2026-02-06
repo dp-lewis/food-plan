@@ -1,9 +1,24 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { ServiceWorkerRegistration } from "./ServiceWorkerRegistration";
 
 export const metadata: Metadata = {
   title: "Food Plan",
   description: "Weekly meal planning made simple",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Food Plan",
+  },
+  icons: {
+    apple: "/icons/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#16a34a",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -18,6 +33,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         {children}
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );
