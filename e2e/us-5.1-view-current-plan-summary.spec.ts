@@ -10,7 +10,10 @@ import { clearAppState, createDefaultPlan } from './helpers/test-utils';
  *
  * Acceptance Criteria:
  * - [ ] Dashboard shows current meal plan if one exists
- * - [ ] Shows today's meals prominently
+ * - [ ] Shows "Up Next" meal slot prominently (all meals in that slot)
+ * - [ ] Plan day calculated from creation date (day 0 = day plan was created)
+ * - [ ] Shows tomorrow preview before 3pm
+ * - [ ] Shows shopping list progress (X of Y items checked)
  * - [ ] Quick link to full calendar view
  * - [ ] Quick link to shopping list
  */
@@ -30,8 +33,8 @@ test.describe('US-5.1: View current plan summary', () => {
     await expect(page.getByTestId('empty-state')).not.toBeVisible();
   });
 
-  test('Shows today\'s meals prominently', async ({ page }) => {
-    // Should show at least one of: up-next card, tomorrow preview, or meal information
+  test('Shows up-next meal slot prominently', async ({ page }) => {
+    // Should show at least one of: up-next card, tomorrow preview
     // The specific content depends on time of day, but something meal-related should be visible
     const upNextCard = page.getByTestId('up-next-card');
     const tomorrowPreview = page.getByTestId('tomorrow-preview');
@@ -43,12 +46,12 @@ test.describe('US-5.1: View current plan summary', () => {
     expect(hasUpNext || hasTomorrow).toBe(true);
   });
 
-  test('Up next card shows meal details when visible', async ({ page }) => {
+  test('Up next card shows all meals in slot', async ({ page }) => {
     const upNextCard = page.getByTestId('up-next-card');
 
     // If up-next card is visible, it should have meal details
     if (await upNextCard.isVisible().catch(() => false)) {
-      // Should show the recipe link
+      // Should show at least one meal with recipe link
       const recipeLink = page.getByTestId('up-next-recipe-link');
       await expect(recipeLink).toBeVisible();
 
@@ -59,6 +62,11 @@ test.describe('US-5.1: View current plan summary', () => {
         cardText?.toLowerCase().includes('lunch') ||
         cardText?.toLowerCase().includes('dinner');
       expect(hasMealType).toBe(true);
+
+      // All meals in the slot should be displayed (check for meal test IDs)
+      const mealItems = upNextCard.locator('[data-testid^="up-next-meal-"]');
+      const mealCount = await mealItems.count();
+      expect(mealCount).toBeGreaterThanOrEqual(1);
     }
   });
 

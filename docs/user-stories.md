@@ -185,7 +185,10 @@
 
 **Acceptance Criteria:**
 - [ ] Dashboard shows current meal plan if one exists
-- [ ] Shows today's meals prominently
+- [ ] Shows "Up Next" meal slot prominently (all meals in that slot)
+- [ ] Plan day calculated from creation date (day 0 = day plan was created)
+- [ ] Shows tomorrow preview before 3pm
+- [ ] Shows shopping list progress (X of Y items checked)
 - [ ] Quick link to full calendar view
 - [ ] Quick link to shopping list
 
@@ -286,10 +289,10 @@
                                                     │
                               ┌─────────────────────┼─────────────────┐
                               ▼                     ▼                 ▼
-                        ┌──────────┐         ┌───────────┐     ┌──────────┐
-                        │View Recipe│        │Swap Meals │     │ Shopping │
-                        │  US-3.x   │        │  US-2.3   │     │  US-4.x  │
-                        └──────────┘         └───────────┘     └──────────┘
+                        ┌──────────┐         ┌─────────────┐     ┌──────────┐
+                        │View Recipe│        │Manage Meals │     │ Shopping │
+                        │  US-3.x   │        │   US-2.3    │     │  US-4.x  │
+                        └──────────┘         └─────────────┘     └──────────┘
 ```
 
 ---
