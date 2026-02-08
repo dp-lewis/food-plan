@@ -130,11 +130,5 @@ export const useStore = create<AppState>()(
 
 // Default preferences
 export const defaultPreferences: MealPlanPreferences = {
-  numberOfDays: 7,
-  includeMeals: {
-    breakfast: true,
-    lunch: true,
-    dinner: true,
-  },
-  budget: 'medium',
+  startDay: 5, // Saturday (0=Monday ... 5=Saturday, 6=Sunday)
 };

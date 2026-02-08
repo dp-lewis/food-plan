@@ -3,38 +3,32 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore, defaultPreferences } from '@/store/store';
-import { generateMealPlan } from '@/lib/planGenerator';
+import { createEmptyPlan } from '@/lib/planGenerator';
 import { MealPlanPreferences } from '@/types';
 import { BottomNav, ToggleGroup, Button } from '@/components/ui';
+
+const DAY_OPTIONS = [
+  { value: '0', label: 'Mon' },
+  { value: '1', label: 'Tue' },
+  { value: '2', label: 'Wed' },
+  { value: '3', label: 'Thu' },
+  { value: '4', label: 'Fri' },
+  { value: '5', label: 'Sat' },
+  { value: '6', label: 'Sun' },
+];
 
 export default function CreatePlan() {
   const router = useRouter();
   const setCurrentPlan = useStore((state) => state.setCurrentPlan);
-  const userRecipes = useStore((state) => state.userRecipes);
 
   const [preferences, setPreferences] = useState<MealPlanPreferences>(defaultPreferences);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const plan = generateMealPlan(preferences, userRecipes);
+    const plan = createEmptyPlan(preferences);
     setCurrentPlan(plan);
     router.push('/plan/current');
   };
-
-  const dayOptions = [1, 2, 3, 4, 5, 6, 7].map((day) => ({
-    value: String(day),
-    label: String(day),
-  }));
-
-  const mealOptions = [
-    { value: 'breakfast', label: 'Breakfast' },
-    { value: 'lunch', label: 'Lunch' },
-    { value: 'dinner', label: 'Dinner' },
-  ];
-
-  const selectedMeals = Object.entries(preferences.includeMeals)
-    .filter(([, included]) => included)
-    .map(([meal]) => meal);
 
   return (
     <main id="main-content" className="min-h-screen p-4 pb-20">
@@ -49,7 +43,7 @@ export default function CreatePlan() {
             lineHeight: 'var(--line-height-tight)',
           }}
         >
-          Create Meal Plan
+          Start a New Plan
         </h1>
 
         <p
@@ -59,42 +53,23 @@ export default function CreatePlan() {
             color: 'var(--color-text-muted)',
           }}
         >
-          Set your preferences and we&apos;ll generate a plan for you.
+          Pick the day your week starts and we&apos;ll set up a blank week for you to fill.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <ToggleGroup
-            label="Days to plan"
-            options={dayOptions}
-            value={String(preferences.numberOfDays)}
+            label="Week starts on"
+            options={DAY_OPTIONS}
+            value={String(preferences.startDay)}
             onChange={(value) =>
-              setPreferences((p) => ({ ...p, numberOfDays: Number(value) }))
+              setPreferences((p) => ({ ...p, startDay: Number(value) }))
             }
             variant="compact"
             testIdPrefix="day"
           />
 
-          <ToggleGroup
-            label="Meals to include"
-            options={mealOptions}
-            value={selectedMeals}
-            onChange={(values) => {
-              const mealsArray = Array.isArray(values) ? values : [values];
-              setPreferences((p) => ({
-                ...p,
-                includeMeals: {
-                  breakfast: mealsArray.includes('breakfast'),
-                  lunch: mealsArray.includes('lunch'),
-                  dinner: mealsArray.includes('dinner'),
-                },
-              }));
-            }}
-            multiple
-            testIdPrefix="meal"
-          />
-
           <Button type="submit" className="w-full" data-testid="generate-plan-btn">
-            Generate Plan
+            Start Planning
           </Button>
         </form>
       </div>
