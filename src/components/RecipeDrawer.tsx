@@ -11,6 +11,7 @@ interface RecipeDrawerProps {
   recipes: Recipe[];
   onSelectRecipe: (recipeId: string) => void;
   onSurpriseMe: () => void;
+  mode?: 'swap' | 'add';
 }
 
 export default function RecipeDrawer({
@@ -21,11 +22,13 @@ export default function RecipeDrawer({
   recipes,
   onSelectRecipe,
   onSurpriseMe,
+  mode = 'swap',
 }: RecipeDrawerProps) {
   const mealTypeLabel = mealType ? mealType.charAt(0).toUpperCase() + mealType.slice(1) : '';
+  const title = mode === 'add' ? `Add a ${mealTypeLabel}` : `Choose a ${mealTypeLabel}`;
 
   return (
-    <Drawer isOpen={isOpen} onClose={onClose} title={`Choose a ${mealTypeLabel}`}>
+    <Drawer isOpen={isOpen} onClose={onClose} title={title}>
       {/* Surprise me button */}
       <button
         onClick={() => {

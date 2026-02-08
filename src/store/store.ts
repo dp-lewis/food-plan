@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { MealPlan, MealPlanPreferences, Recipe, CustomShoppingListItem } from '@/types';
+import { MealPlan, MealPlanPreferences, Recipe, CustomShoppingListItem, Meal, MealType } from '@/types';
 import { swapMeal } from '@/lib/planGenerator';
 import { categorizeIngredient } from '@/lib/ingredientParser';
 import { ParsedRecipe } from '@/lib/recipeParser';
@@ -11,6 +11,8 @@ interface AppState {
   currentPlan: MealPlan | null;
   setCurrentPlan: (plan: MealPlan | null) => void;
   swapMeal: (mealId: string, recipeId?: string) => void;
+  addMeal: (dayIndex: number, mealType: MealType, recipeId: string) => void;
+  removeMeal: (mealId: string) => void;
   checkedItems: string[];
   toggleCheckedItem: (itemId: string) => void;
   clearCheckedItems: () => void;
@@ -36,6 +38,38 @@ export const useStore = create<AppState>()(
             ? swapMeal(state.currentPlan, mealId, state.userRecipes, recipeId)
             : null,
           checkedItems: [], // Reset shopping list when plan changes
+        });
+      },
+      addMeal: (dayIndex, mealType, recipeId) => {
+        const state = get();
+        if (!state.currentPlan) return;
+
+        const newMeal: Meal = {
+          id: `meal-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          dayIndex,
+          mealType,
+          recipeId,
+          servings: state.currentPlan.preferences.numberOfPeople,
+        };
+
+        set({
+          currentPlan: {
+            ...state.currentPlan,
+            meals: [...state.currentPlan.meals, newMeal],
+          },
+          checkedItems: [],
+        });
+      },
+      removeMeal: (mealId) => {
+        const state = get();
+        if (!state.currentPlan) return;
+
+        set({
+          currentPlan: {
+            ...state.currentPlan,
+            meals: state.currentPlan.meals.filter(m => m.id !== mealId),
+          },
+          checkedItems: [],
         });
       },
       checkedItems: [],

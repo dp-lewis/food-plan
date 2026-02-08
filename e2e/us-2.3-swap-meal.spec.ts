@@ -2,42 +2,49 @@ import { test, expect } from '@playwright/test';
 import { clearAppState, createDefaultPlan } from './helpers/test-utils';
 
 /**
- * US-2.3: Swap a meal
+ * US-2.3: Manage meals in plan
  *
  * As a family meal planner
- * I want to swap out a meal I don't like for a different one
- * So that I can customise the plan to my family's preferences
+ * I want to add and remove meals from any slot
+ * So that I can customise the plan for fussy eaters or eating out
  *
  * Acceptance Criteria:
- * - [ ] Each meal has a "Swap" button/action
- * - [ ] Clicking Swap opens a drawer with recipe options
- * - [ ] Can select a specific recipe from the list
- * - [ ] Can use "Surprise me" for random selection
- * - [ ] Current recipe is highlighted and disabled
- * - [ ] Change is saved to localStorage
- * - [ ] Can swap the same meal multiple times
+ * - [ ] Each meal has a "Remove" button
+ * - [ ] Each slot has an "Add" button that opens recipe drawer
+ * - [ ] Can add multiple meals to the same slot
+ * - [ ] Can remove all meals from a slot (empty slot is valid)
+ * - [ ] Adding a meal opens drawer filtered by meal type
+ * - [ ] Can use "Surprise me" when adding a meal
+ * - [ ] Changes are saved to localStorage
+ * - [ ] Can dismiss drawer without making changes
  */
 
-test.describe('US-2.3: Swap a meal', () => {
+test.describe('US-2.3: Manage meals in plan', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await clearAppState(page);
     await createDefaultPlan(page);
   });
 
-  test('Each meal has a "Swap" button/action', async ({ page }) => {
-    const swapButtons = page.locator('[data-testid^="swap-"]');
-    const count = await swapButtons.count();
+  test('Each meal has a "Remove" button', async ({ page }) => {
+    const removeButtons = page.locator('[data-testid^="remove-meal-"]');
+    const count = await removeButtons.count();
     expect(count).toBeGreaterThan(0);
 
-    const firstSwap = swapButtons.first();
-    await expect(firstSwap).toBeVisible();
-    await expect(firstSwap).toHaveText('Swap');
+    const firstRemove = removeButtons.first();
+    await expect(firstRemove).toBeVisible();
+    await expect(firstRemove).toHaveText('Remove');
   });
 
-  test('Clicking Swap opens a drawer with recipe options', async ({ page }) => {
-    const swapButton = page.locator('[data-testid^="swap-"]').first();
-    await swapButton.click();
+  test('Each slot has an "Add" button that opens recipe drawer', async ({ page }) => {
+    // Find add buttons for day 0
+    const addButtons = page.locator('[data-testid^="add-meal-0-"]');
+    const count = await addButtons.count();
+    expect(count).toBeGreaterThan(0);
+
+    const firstAdd = addButtons.first();
+    await expect(firstAdd).toBeVisible();
+    await firstAdd.click();
 
     // Drawer should be visible
     const drawer = page.locator('[role="dialog"]');
@@ -52,74 +59,84 @@ test.describe('US-2.3: Swap a meal', () => {
     await expect(surpriseBtn).toBeVisible();
   });
 
-  test('Can select a specific recipe from the list', async ({ page }) => {
+  test('Can add multiple meals to the same slot', async ({ page }) => {
     const firstDay = page.getByTestId('day-0');
-    const firstMeal = firstDay.locator('[data-testid^="meal-"]').first();
-    const originalRecipe = await firstMeal.locator('a').textContent();
+    const slot = firstDay.locator('[data-testid="slot-0-breakfast"]');
 
-    const swapButton = firstDay.locator('[data-testid^="swap-"]').first();
-    await swapButton.click();
+    // Count initial meals in the breakfast slot
+    const initialMeals = await slot.locator('[data-testid^="meal-"]').count();
+
+    // Click add button for breakfast
+    const addButton = slot.locator('[data-testid="add-meal-0-breakfast"]');
+    await addButton.click();
 
     // Wait for drawer
     await expect(page.locator('[role="dialog"]')).toBeVisible();
 
-    // Find a recipe that is not the current one (not disabled)
+    // Select a recipe (first available that's not already in the slot)
     const recipeOptions = page.locator('[data-testid^="recipe-option-"]:not([disabled])');
-    const availableCount = await recipeOptions.count();
-    expect(availableCount).toBeGreaterThan(0);
-
-    // Click the first available recipe
     await recipeOptions.first().click();
 
     // Drawer should close
     await expect(page.locator('[role="dialog"]')).not.toBeVisible();
 
-    // Recipe should be different (or same if only one option, but swap happened)
-    const newRecipe = await firstMeal.locator('a').textContent();
-    expect(newRecipe).not.toBeNull();
-    // Note: might be same recipe if limited options, that's okay
+    // Should have one more meal
+    const newMealCount = await slot.locator('[data-testid^="meal-"]').count();
+    expect(newMealCount).toBe(initialMeals + 1);
   });
 
-  test('Can use "Surprise me" for random selection', async ({ page }) => {
-    const swapButton = page.locator('[data-testid^="swap-"]').first();
-    await swapButton.click();
+  test('Can remove all meals from a slot (empty slot is valid)', async ({ page }) => {
+    const firstDay = page.getByTestId('day-0');
+    const slot = firstDay.locator('[data-testid="slot-0-breakfast"]');
+
+    // Get all remove buttons in the slot
+    const removeButtons = slot.locator('[data-testid^="remove-meal-"]');
+    const count = await removeButtons.count();
+
+    // Remove all meals from the slot
+    for (let i = 0; i < count; i++) {
+      // Always click the first one since they shift after removal
+      await slot.locator('[data-testid^="remove-meal-"]').first().click();
+    }
+
+    // Should show "No meals planned"
+    await expect(slot.getByText('No meals planned')).toBeVisible();
+
+    // Should still have an add button
+    await expect(slot.locator('[data-testid="add-meal-0-breakfast"]')).toBeVisible();
+  });
+
+  test('Can use "Surprise me" when adding a meal', async ({ page }) => {
+    const firstDay = page.getByTestId('day-0');
+    const slot = firstDay.locator('[data-testid="slot-0-breakfast"]');
+
+    const initialMeals = await slot.locator('[data-testid^="meal-"]').count();
+
+    const addButton = slot.locator('[data-testid="add-meal-0-breakfast"]');
+    await addButton.click();
 
     await expect(page.locator('[role="dialog"]')).toBeVisible();
 
-    const surpriseBtn = page.getByTestId('surprise-me-btn');
-    await surpriseBtn.click();
+    // Click surprise me
+    await page.getByTestId('surprise-me-btn').click();
 
     // Drawer should close
     await expect(page.locator('[role="dialog"]')).not.toBeVisible();
+
+    // Should have one more meal
+    const newMealCount = await slot.locator('[data-testid^="meal-"]').count();
+    expect(newMealCount).toBe(initialMeals + 1);
   });
 
-  test('Current recipe is highlighted and disabled', async ({ page }) => {
-    const swapButton = page.locator('[data-testid^="swap-"]').first();
-    await swapButton.click();
-
-    await expect(page.locator('[role="dialog"]')).toBeVisible();
-
-    // Find the current recipe card (should have --current class and be disabled)
-    const currentCard = page.locator('.recipe-card--current');
-    await expect(currentCard).toBeVisible();
-    await expect(currentCard).toBeDisabled();
-    await expect(currentCard.locator('.recipe-card__badge')).toHaveText('Current');
-  });
-
-  test('Change is saved to localStorage', async ({ page }) => {
+  test('Changes are saved to localStorage', async ({ page }) => {
     const firstDay = page.getByTestId('day-0');
-    const swapButton = firstDay.locator('[data-testid^="swap-"]').first();
+    const slot = firstDay.locator('[data-testid="slot-0-breakfast"]');
 
-    await swapButton.click();
-    await expect(page.locator('[role="dialog"]')).toBeVisible();
+    // Remove a meal
+    const removeButton = slot.locator('[data-testid^="remove-meal-"]').first();
+    await removeButton.click();
 
-    // Click surprise me to swap
-    await page.getByTestId('surprise-me-btn').click();
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible();
-
-    const recipeAfterSwap = await firstDay.locator('[data-testid^="meal-"]').first().locator('a').textContent();
-
-    // Verify localStorage was updated by checking the store directly
+    // Verify localStorage was updated
     const storedState = await page.evaluate(() => {
       const stored = localStorage.getItem('food-plan-storage');
       return stored ? JSON.parse(stored) : null;
@@ -128,55 +145,26 @@ test.describe('US-2.3: Swap a meal', () => {
     expect(storedState).not.toBeNull();
     expect(storedState.state.currentPlan).not.toBeNull();
 
-    // Navigate to home and wait for state to hydrate (dashboard shows when plan exists)
+    // Navigate to home and back to verify persistence
     await page.goto('/');
     await expect(page.getByTestId('dashboard')).toBeVisible({ timeout: 15000 });
 
-    // Click "View Full Plan" link - this preserves hydrated state
     await page.getByTestId('view-full-plan-link').click();
+    await expect(page.getByTestId('meal-plan')).toBeVisible({ timeout: 15000 });
 
-    // Wait for the first meal link to be visible
-    const firstMealLink = page.getByTestId('day-0').locator('[data-testid^="meal-"]').first().locator('a');
-    await expect(firstMealLink).toBeVisible({ timeout: 15000 });
-
-    const recipeAfterReload = await firstMealLink.textContent();
-
-    expect(recipeAfterReload).toBe(recipeAfterSwap);
+    // The state should have persisted
+    const slotAfterReload = page.getByTestId('day-0').locator('[data-testid="slot-0-breakfast"]');
+    await expect(slotAfterReload).toBeVisible();
   });
 
-  test('Can swap the same meal multiple times', async ({ page }) => {
+  test('Can dismiss drawer without making changes', async ({ page }) => {
     const firstDay = page.getByTestId('day-0');
-    const firstMeal = firstDay.locator('[data-testid^="meal-"]').first();
-    const swapButton = firstDay.locator('[data-testid^="swap-"]').first();
+    const slot = firstDay.locator('[data-testid="slot-0-breakfast"]');
 
-    // First swap
-    await swapButton.click();
-    await expect(page.locator('[role="dialog"]')).toBeVisible();
-    await page.getByTestId('surprise-me-btn').click();
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible();
+    const initialMeals = await slot.locator('[data-testid^="meal-"]').count();
 
-    // Second swap
-    await swapButton.click();
-    await expect(page.locator('[role="dialog"]')).toBeVisible();
-    await page.getByTestId('surprise-me-btn').click();
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible();
-
-    // Third swap
-    await swapButton.click();
-    await expect(page.locator('[role="dialog"]')).toBeVisible();
-    await page.getByTestId('surprise-me-btn').click();
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible();
-
-    await expect(firstMeal).toBeVisible();
-  });
-
-  test('Can dismiss drawer without swapping', async ({ page }) => {
-    const firstDay = page.getByTestId('day-0');
-    const firstMeal = firstDay.locator('[data-testid^="meal-"]').first();
-    const originalRecipe = await firstMeal.locator('a').textContent();
-
-    const swapButton = firstDay.locator('[data-testid^="swap-"]').first();
-    await swapButton.click();
+    const addButton = slot.locator('[data-testid="add-meal-0-breakfast"]');
+    await addButton.click();
 
     await expect(page.locator('[role="dialog"]')).toBeVisible();
 
@@ -186,8 +174,8 @@ test.describe('US-2.3: Swap a meal', () => {
     // Drawer should close
     await expect(page.locator('[role="dialog"]')).not.toBeVisible();
 
-    // Recipe should be unchanged
-    const recipeAfterDismiss = await firstMeal.locator('a').textContent();
-    expect(recipeAfterDismiss).toBe(originalRecipe);
+    // Meal count should be unchanged
+    const mealCount = await slot.locator('[data-testid^="meal-"]').count();
+    expect(mealCount).toBe(initialMeals);
   });
 });

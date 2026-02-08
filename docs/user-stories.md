@@ -47,10 +47,11 @@
 **So that** I can see at a glance what we're eating each day
 
 **Acceptance Criteria:**
-- [ ] Shows 7 days in a grid/list layout
-- [ ] Each day shows assigned meals (breakfast, lunch, dinner)
-- [ ] Each meal displays the recipe name
-- [ ] Shows prep time for each meal
+- [ ] Shows days in a list layout
+- [ ] Each day shows meal slots (breakfast, lunch, dinner)
+- [ ] Each slot shows all assigned meals (zero or more)
+- [ ] Each meal displays the recipe name and prep time
+- [ ] Empty slots show "No meals planned" with add option
 - [ ] Works on mobile (responsive layout)
 
 ---
@@ -67,21 +68,35 @@
 
 ---
 
-### US-2.3: Swap a meal
+### US-2.3: Manage meals in plan
 
 **As a** family meal planner
-**I want to** swap out a meal I don't like for a different one
-**So that** I can customise the plan to my family's preferences
+**I want to** add and remove meals from any slot
+**So that** I can customise the plan for fussy eaters or eating out
 
 **Acceptance Criteria:**
-- [ ] Each meal has a "Swap" button/action
-- [ ] Clicking Swap opens a drawer with recipe options
-- [ ] Can select a specific recipe from the list
-- [ ] Can use "Surprise me" for random selection
-- [ ] Current recipe is highlighted and disabled
-- [ ] Change is saved to localStorage
-- [ ] Can swap the same meal multiple times
+- [ ] Each meal has a "Remove" button
+- [ ] Each slot has an "Add" button that opens recipe drawer
+- [ ] Can add multiple meals to the same slot
+- [ ] Can remove all meals from a slot (empty slot is valid)
+- [ ] Adding a meal opens drawer filtered by meal type
+- [ ] Can use "Surprise me" when adding a meal
+- [ ] Changes are saved to localStorage
 - [ ] Can dismiss drawer without making changes
+
+---
+
+### US-2.4: Handle empty meal slots
+
+**As a** meal planner
+**I want to** leave some meal slots empty
+**So that** I can plan for eating out or skipping meals
+
+**Acceptance Criteria:**
+- [ ] Empty slots display "No meals planned"
+- [ ] Empty slots still show "Add" button
+- [ ] Shopping list excludes empty slots (no ingredients)
+- [ ] Dashboard handles days with empty slots gracefully
 
 ---
 

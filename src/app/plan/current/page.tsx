@@ -10,55 +10,93 @@ import RecipeDrawer from '@/components/RecipeDrawer';
 import { BottomNav, Button, Card } from '@/components/ui';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
+const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
+
+type DrawerMode = 'swap' | 'add';
 
 interface DrawerState {
   isOpen: boolean;
+  mode: DrawerMode;
   mealId: string | null;
+  dayIndex: number | null;
   mealType: MealType | null;
   currentRecipeId: string | null;
+  excludeRecipeIds: string[];
 }
 
 export default function CurrentPlan() {
   const router = useRouter();
   const currentPlan = useStore((state) => state.currentPlan);
   const swapMeal = useStore((state) => state.swapMeal);
+  const addMeal = useStore((state) => state.addMeal);
+  const removeMeal = useStore((state) => state.removeMeal);
   const userRecipes = useStore((state) => state.userRecipes);
 
   const [drawerState, setDrawerState] = useState<DrawerState>({
     isOpen: false,
+    mode: 'swap',
     mealId: null,
+    dayIndex: null,
     mealType: null,
     currentRecipeId: null,
+    excludeRecipeIds: [],
   });
 
-  const openDrawer = (mealId: string, mealType: MealType, currentRecipeId: string) => {
+  const openSwapDrawer = (mealId: string, mealType: MealType, currentRecipeId: string) => {
     setDrawerState({
       isOpen: true,
+      mode: 'swap',
       mealId,
+      dayIndex: null,
       mealType,
       currentRecipeId,
+      excludeRecipeIds: [],
+    });
+  };
+
+  const openAddDrawer = (dayIndex: number, mealType: MealType, excludeRecipeIds: string[]) => {
+    setDrawerState({
+      isOpen: true,
+      mode: 'add',
+      mealId: null,
+      dayIndex,
+      mealType,
+      currentRecipeId: null,
+      excludeRecipeIds,
     });
   };
 
   const closeDrawer = () => {
     setDrawerState({
       isOpen: false,
+      mode: 'swap',
       mealId: null,
+      dayIndex: null,
       mealType: null,
       currentRecipeId: null,
+      excludeRecipeIds: [],
     });
   };
 
   const handleSelectRecipe = (recipeId: string) => {
-    if (drawerState.mealId) {
+    if (drawerState.mode === 'swap' && drawerState.mealId) {
       swapMeal(drawerState.mealId, recipeId);
+    } else if (drawerState.mode === 'add' && drawerState.dayIndex !== null && drawerState.mealType) {
+      addMeal(drawerState.dayIndex, drawerState.mealType, recipeId);
     }
   };
 
   const handleSurpriseMe = () => {
-    if (drawerState.mealId) {
+    if (drawerState.mode === 'swap' && drawerState.mealId) {
       swapMeal(drawerState.mealId);
+    } else if (drawerState.mode === 'add' && drawerState.dayIndex !== null && drawerState.mealType) {
+      // Pick a random recipe from available ones
+      const availableRecipes = getRecipesByMealType(drawerState.mealType, userRecipes)
+        .filter(r => !drawerState.excludeRecipeIds.includes(r.id));
+      if (availableRecipes.length > 0) {
+        const randomRecipe = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
+        addMeal(drawerState.dayIndex, drawerState.mealType, randomRecipe.id);
+      }
     }
   };
 
@@ -74,14 +112,22 @@ export default function CurrentPlan() {
 
   const drawerRecipes = drawerState.mealType
     ? getRecipesByMealType(drawerState.mealType, userRecipes)
+        .filter(r => !drawerState.excludeRecipeIds.includes(r.id))
     : [];
 
-  // Group meals by day
-  const mealsByDay = DAYS.slice(0, currentPlan.preferences.numberOfDays).map((dayName, dayIndex) => {
-    const dayMeals = currentPlan.meals
-      .filter((m) => m.dayIndex === dayIndex)
-      .sort((a, b) => MEAL_ORDER.indexOf(a.mealType) - MEAL_ORDER.indexOf(b.mealType));
-    return { dayName, dayIndex, meals: dayMeals };
+  const { preferences } = currentPlan;
+
+  // Group meals by day and slot (day + mealType)
+  const slotsByDay = DAYS.slice(0, preferences.numberOfDays).map((dayName, dayIndex) => {
+    const slots = MEAL_TYPES
+      .filter(type => preferences.includeMeals[type])
+      .map(mealType => ({
+        mealType,
+        meals: currentPlan.meals.filter(
+          m => m.dayIndex === dayIndex && m.mealType === mealType
+        ),
+      }));
+    return { dayName, dayIndex, slots };
   });
 
   return (
@@ -109,7 +155,7 @@ export default function CurrentPlan() {
         </div>
 
         <div className="space-y-4">
-          {mealsByDay.map(({ dayName, dayIndex, meals }) => (
+          {slotsByDay.map(({ dayName, dayIndex, slots }) => (
             <Card key={dayName} padding="none" data-testid={`day-${dayIndex}`}>
               <div
                 className="px-4 py-2"
@@ -123,60 +169,111 @@ export default function CurrentPlan() {
                 {dayName}
               </div>
               <div className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
-                {meals.map((meal) => {
-                  const recipe = getRecipeById(meal.recipeId, userRecipes);
-                  if (!recipe) return null;
-
-                  const recipeUrl = recipe.isUserRecipe
-                    ? `/recipes/${recipe.id}`
-                    : `/recipe/${recipe.id}`;
+                {slots.map(({ mealType, meals }) => {
+                  const slotRecipeIds = meals.map(m => m.recipeId);
 
                   return (
-                    <div
-                      key={meal.id}
-                      className="flex items-center justify-between px-4 py-3"
-                      data-testid={`meal-${meal.id}`}
-                    >
-                      <Link
-                        href={recipeUrl}
-                        className="flex-1 transition-colors"
+                    <div key={mealType} data-testid={`slot-${dayIndex}-${mealType}`}>
+                      {/* Meal type header */}
+                      <div
+                        className="px-4 pt-3 pb-1"
+                        style={{
+                          fontSize: 'var(--font-size-caption)',
+                          color: 'var(--color-text-muted)',
+                        }}
                       >
-                        <span
-                          className="uppercase tracking-wide"
-                          style={{
-                            fontSize: 'var(--font-size-caption)',
-                            color: 'var(--color-text-muted)',
-                          }}
+                        <span className="uppercase tracking-wide">{mealType}</span>
+                      </div>
+
+                      {/* Meals in this slot */}
+                      {meals.length === 0 ? (
+                        <div
+                          className="px-4 pb-3 flex items-center justify-between"
+                          style={{ color: 'var(--color-text-muted)' }}
                         >
-                          {meal.mealType}
-                        </span>
-                        <p
-                          style={{
-                            fontSize: 'var(--font-size-body)',
-                            color: 'var(--color-text-primary)',
-                            fontWeight: 'var(--font-weight-bold)',
-                          }}
-                        >
-                          {recipe.title}
-                        </p>
-                        <p
-                          style={{
-                            fontSize: 'var(--font-size-caption)',
-                            color: 'var(--color-text-muted)',
-                          }}
-                        >
-                          {recipe.prepTime + recipe.cookTime} mins
-                        </p>
-                      </Link>
-                      <Button
-                        variant="secondary"
-                        size="small"
-                        onClick={() => openDrawer(meal.id, meal.mealType, meal.recipeId)}
-                        data-testid={`swap-${meal.id}`}
-                        aria-label={`Swap ${meal.mealType}: ${recipe.title}`}
-                      >
-                        Swap
-                      </Button>
+                          <span
+                            style={{
+                              fontSize: 'var(--font-size-body)',
+                              fontStyle: 'italic',
+                            }}
+                          >
+                            No meals planned
+                          </span>
+                          <Button
+                            variant="secondary"
+                            size="small"
+                            onClick={() => openAddDrawer(dayIndex, mealType, slotRecipeIds)}
+                            data-testid={`add-meal-${dayIndex}-${mealType}`}
+                            aria-label={`Add ${mealType}`}
+                          >
+                            + Add
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          {meals.map((meal) => {
+                            const recipe = getRecipeById(meal.recipeId, userRecipes);
+                            if (!recipe) return null;
+
+                            const recipeUrl = recipe.isUserRecipe
+                              ? `/recipes/${recipe.id}`
+                              : `/recipe/${recipe.id}`;
+
+                            return (
+                              <div
+                                key={meal.id}
+                                className="flex items-center justify-between px-4 py-2"
+                                data-testid={`meal-${meal.id}`}
+                              >
+                                <Link
+                                  href={recipeUrl}
+                                  className="flex-1 transition-colors"
+                                >
+                                  <p
+                                    style={{
+                                      fontSize: 'var(--font-size-body)',
+                                      color: 'var(--color-text-primary)',
+                                      fontWeight: 'var(--font-weight-bold)',
+                                    }}
+                                  >
+                                    {recipe.title}
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: 'var(--font-size-caption)',
+                                      color: 'var(--color-text-muted)',
+                                    }}
+                                  >
+                                    {recipe.prepTime + recipe.cookTime} mins
+                                  </p>
+                                </Link>
+                                <Button
+                                  variant="ghost"
+                                  size="small"
+                                  onClick={() => removeMeal(meal.id)}
+                                  data-testid={`remove-meal-${meal.id}`}
+                                  aria-label={`Remove ${recipe.title}`}
+                                >
+                                  Remove
+                                </Button>
+                              </div>
+                            );
+                          })}
+                          {/* Add button after existing meals */}
+                          <div className="px-4 pb-3">
+                            <Button
+                              variant="ghost"
+                              size="small"
+                              onClick={() => openAddDrawer(dayIndex, mealType, slotRecipeIds)}
+                              data-testid={`add-meal-${dayIndex}-${mealType}`}
+                              aria-label={`Add ${mealType}`}
+                              style={{ color: 'var(--color-accent)' }}
+                            >
+                              + Add {mealType}
+                            </Button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   );
                 })}
@@ -202,6 +299,7 @@ export default function CurrentPlan() {
         recipes={drawerRecipes}
         onSelectRecipe={handleSelectRecipe}
         onSurpriseMe={handleSurpriseMe}
+        mode={drawerState.mode}
       />
     </main>
   );
