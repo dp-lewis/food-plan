@@ -1,51 +1,16 @@
-import { MealPlan, MealPlanPreferences, Meal, MealType, Recipe } from '@/types';
+import { MealPlan, MealPlanPreferences, Recipe } from '@/types';
 import { getRecipesByMealType } from '@/data/recipes';
-
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
 
 function generateId(): string {
   return crypto.randomUUID();
 }
 
-export function generateMealPlan(preferences: MealPlanPreferences, userRecipes: Recipe[] = []): MealPlan {
-  const meals: Meal[] = [];
-  const mealTypes: MealType[] = [];
-
-  if (preferences.includeMeals.breakfast) mealTypes.push('breakfast');
-  if (preferences.includeMeals.lunch) mealTypes.push('lunch');
-  if (preferences.includeMeals.dinner) mealTypes.push('dinner');
-
-  for (const mealType of mealTypes) {
-    const availableRecipes = getRecipesByMealType(mealType, userRecipes);
-    const shuffledRecipes = shuffleArray(availableRecipes);
-
-    for (let dayIndex = 0; dayIndex < preferences.numberOfDays; dayIndex++) {
-      // Cycle through recipes if we have more days than recipes
-      const recipeIndex = dayIndex % shuffledRecipes.length;
-      const recipe = shuffledRecipes[recipeIndex];
-
-      meals.push({
-        id: generateId(),
-        dayIndex,
-        mealType,
-        recipeId: recipe.id,
-        servings: recipe.servings,
-      });
-    }
-  }
-
+export function createEmptyPlan(preferences: MealPlanPreferences): MealPlan {
   return {
     id: generateId(),
     createdAt: new Date().toISOString(),
     preferences,
-    meals,
+    meals: [],
   };
 }
 

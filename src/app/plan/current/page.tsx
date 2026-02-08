@@ -12,6 +12,14 @@ import { BottomNav, Button, Card } from '@/components/ui';
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
 
+/**
+ * Get ordered day names starting from the plan's startDay.
+ * startDay: 0=Monday, 1=Tuesday, ... 6=Sunday
+ */
+function getOrderedDays(startDay: number): string[] {
+  return Array.from({ length: 7 }, (_, i) => DAYS[(startDay + i) % 7]);
+}
+
 type DrawerMode = 'swap' | 'add';
 
 interface DrawerState {
@@ -116,17 +124,16 @@ export default function CurrentPlan() {
     : [];
 
   const { preferences } = currentPlan;
+  const orderedDays = getOrderedDays(preferences.startDay);
 
-  // Group meals by day and slot (day + mealType)
-  const slotsByDay = DAYS.slice(0, preferences.numberOfDays).map((dayName, dayIndex) => {
-    const slots = MEAL_TYPES
-      .filter(type => preferences.includeMeals[type])
-      .map(mealType => ({
-        mealType,
-        meals: currentPlan.meals.filter(
-          m => m.dayIndex === dayIndex && m.mealType === mealType
-        ),
-      }));
+  // Build 7 days × 3 meal slots
+  const slotsByDay = orderedDays.map((dayName, dayIndex) => {
+    const slots = MEAL_TYPES.map(mealType => ({
+      mealType,
+      meals: currentPlan.meals.filter(
+        m => m.dayIndex === dayIndex && m.mealType === mealType
+      ),
+    }));
     return { dayName, dayIndex, slots };
   });
 
@@ -150,7 +157,7 @@ export default function CurrentPlan() {
               color: 'var(--color-accent)',
             }}
           >
-            Edit preferences
+            Change start day
           </Link>
         </div>
 

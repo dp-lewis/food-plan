@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { clearAppState, createDefaultPlan } from './helpers/test-utils';
+import { clearAppState } from './helpers/test-utils';
 
 /**
  * US-7.1: Import recipe from URL

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { clearAppState, createDefaultPlan } from './helpers/test-utils';
+import { clearAppState, createPlanWithMeals } from './helpers/test-utils';
 
 /**
  * US-4.1: View shopping list
@@ -19,7 +19,7 @@ test.describe('US-4.1: View shopping list', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await clearAppState(page);
-    await createDefaultPlan(page);
+    await createPlanWithMeals(page);
     await page.goto('/shopping-list');
   });
 

@@ -13,48 +13,35 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
 
 /**
- * Calculate which day of the plan "today" is, based on plan creation date.
- * Day 0 = the day the plan was created.
+ * Get today's dayIndex within the plan based on the plan's startDay.
+ * startDay uses 0=Monday ... 6=Sunday.
+ * Returns 0-6, where 0 is the plan's first day.
  */
-function getPlanDayIndex(planCreatedAt: string): number {
-  const created = new Date(planCreatedAt);
+function getTodayPlanIndex(startDay: number): number {
   const now = new Date();
-
-  // Reset both to start of day for accurate day difference
-  const createdDay = new Date(created.getFullYear(), created.getMonth(), created.getDate());
-  const todayDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-  const diffMs = todayDay.getTime() - createdDay.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  return Math.max(0, diffDays);
+  // JS getDay(): 0=Sunday, 1=Monday ... 6=Saturday
+  // Convert to our system: 0=Monday ... 6=Sunday
+  const jsDay = now.getDay();
+  const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
+  // How many days from startDay to today (wrapping around the week)
+  return (todayIndex - startDay + 7) % 7;
 }
 
 /**
- * Get the actual day name for a plan day index, based on when the plan was created.
+ * Get the day name for a plan dayIndex given the startDay.
  */
-function getDayNameForPlanDay(planCreatedAt: string, dayIndex: number): string {
-  const created = new Date(planCreatedAt);
-  const targetDate = new Date(created);
-  targetDate.setDate(created.getDate() + dayIndex);
-
-  return DAYS[targetDate.getDay() === 0 ? 6 : targetDate.getDay() - 1];
+function getDayName(startDay: number, dayIndex: number): string {
+  return DAYS[(startDay + dayIndex) % 7];
 }
 
 /**
  * Determine which slot is "up next" based on the current hour.
- * Returns all meals for the next slot the user needs to cook.
  */
 function getUpNextSlot(
   todayIndex: number,
-  numberOfDays: number,
   meals: Meal[],
   hour: number
 ): { meals: Meal[]; mealType: MealType; label: string } | null {
-  // Map hour ranges to the earliest meal type the user still needs to cook
-  // Before 11am → next is lunch (breakfast assumed done/in-progress)
-  // 11am-3pm → next is dinner
-  // After 3pm → next is tomorrow's first meal
   let candidateMealTypes: MealType[];
   let dayIndex = todayIndex;
   let label = 'Up next';
@@ -64,19 +51,14 @@ function getUpNextSlot(
   } else if (hour < 15) {
     candidateMealTypes = ['dinner'];
   } else {
-    // Look at tomorrow
-    dayIndex = todayIndex + 1;
-    if (dayIndex >= numberOfDays) {
-      // Past the last planned day — show nothing
-      return null;
-    }
+    // Look at tomorrow (wraps around the week)
+    dayIndex = (todayIndex + 1) % 7;
     candidateMealTypes = ['breakfast', 'lunch', 'dinner'];
     label = 'Tomorrow';
   }
 
   const dayMeals = meals.filter((m) => m.dayIndex === dayIndex);
 
-  // Find all meals for the first slot that has meals
   for (const mt of candidateMealTypes) {
     const slotMeals = dayMeals.filter((m) => m.mealType === mt);
     if (slotMeals.length > 0) {
@@ -84,16 +66,14 @@ function getUpNextSlot(
     }
   }
 
-  // Fallback: if we're looking at today and nothing matched, try tomorrow
+  // Fallback: if looking at today and nothing matched, try tomorrow
   if (dayIndex === todayIndex) {
-    const tomorrowIndex = todayIndex + 1;
-    if (tomorrowIndex < numberOfDays) {
-      const tomorrowMeals = meals.filter((m) => m.dayIndex === tomorrowIndex);
-      for (const mt of MEAL_ORDER) {
-        const slotMeals = tomorrowMeals.filter((m) => m.mealType === mt);
-        if (slotMeals.length > 0) {
-          return { meals: slotMeals, mealType: mt, label: 'Tomorrow' };
-        }
+    const tomorrowIndex = (todayIndex + 1) % 7;
+    const tomorrowMeals = meals.filter((m) => m.dayIndex === tomorrowIndex);
+    for (const mt of MEAL_ORDER) {
+      const slotMeals = tomorrowMeals.filter((m) => m.mealType === mt);
+      if (slotMeals.length > 0) {
+        return { meals: slotMeals, mealType: mt, label: 'Tomorrow' };
       }
     }
   }
@@ -159,15 +139,11 @@ export default function Dashboard() {
   // ─── Active plan state ───
   if (currentPlan) {
     const now = new Date();
-    const rawTodayIndex = getPlanDayIndex(currentPlan.createdAt);
-    const todayIndex = Math.min(rawTodayIndex, currentPlan.preferences.numberOfDays - 1);
     const hour = now.getHours();
+    const todayIndex = getTodayPlanIndex(currentPlan.preferences.startDay);
 
-    // If we're past the last day of the plan, show nothing (plan expired)
-    const planExpired = rawTodayIndex >= currentPlan.preferences.numberOfDays;
-
-    // Up next slot (may have multiple meals)
-    const upNextSlot = getUpNextSlot(todayIndex, currentPlan.preferences.numberOfDays, currentPlan.meals, hour);
+    // Up next slot
+    const upNextSlot = getUpNextSlot(todayIndex, currentPlan.meals, hour);
     const upNextMealsWithRecipes = upNextSlot
       ? upNextSlot.meals
           .map(meal => ({ meal, recipe: getRecipeById(meal.recipeId, userRecipes) }))
@@ -176,8 +152,8 @@ export default function Dashboard() {
     const hasUpNext = upNextMealsWithRecipes.length > 0;
 
     // Tomorrow's meals (for the preview line)
-    const tomorrowIndex = todayIndex + 1;
-    const showTomorrow = hour < 15 && tomorrowIndex < currentPlan.preferences.numberOfDays;
+    const tomorrowIndex = (todayIndex + 1) % 7;
+    const showTomorrow = hour < 15;
     const tomorrowMeals = showTomorrow
       ? currentPlan.meals
           .filter((m) => m.dayIndex === tomorrowIndex)
@@ -201,6 +177,8 @@ export default function Dashboard() {
     } else {
       primaryAction = { href: '/plan/current', label: 'View Full Plan' };
     }
+
+    const tomorrowDayName = getDayName(currentPlan.preferences.startDay, tomorrowIndex);
 
     return (
       <main id="main-content" className="min-h-screen p-4 pb-20" data-testid="dashboard">
@@ -275,7 +253,7 @@ export default function Dashboard() {
                   letterSpacing: '0.05em',
                 }}
               >
-                Tomorrow &middot; {getDayNameForPlanDay(currentPlan.createdAt, tomorrowIndex)}
+                Tomorrow &middot; {tomorrowDayName}
               </h2>
               <div className="space-y-1">
                 {tomorrowMeals.map((meal) => {

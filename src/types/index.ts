@@ -40,13 +40,7 @@ export interface Meal {
 }
 
 export interface MealPlanPreferences {
-  numberOfDays: number;
-  includeMeals: {
-    breakfast: boolean;
-    lunch: boolean;
-    dinner: boolean;
-  };
-  budget: BudgetLevel;
+  startDay: number; // 0=Monday, 1=Tuesday, ... 6=Sunday
 }
 
 export interface MealPlan {

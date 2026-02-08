@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { clearAppState, createDefaultPlan } from './helpers/test-utils';
+import { clearAppState, createPlanWithMeals } from './helpers/test-utils';
 
 /**
  * US-5.1: View current plan summary
@@ -11,7 +11,6 @@ import { clearAppState, createDefaultPlan } from './helpers/test-utils';
  * Acceptance Criteria:
  * - [ ] Dashboard shows current meal plan if one exists
  * - [ ] Shows "Up Next" meal slot prominently (all meals in that slot)
- * - [ ] Plan day calculated from creation date (day 0 = day plan was created)
  * - [ ] Shows tomorrow preview before 3pm
  * - [ ] Shows shopping list progress (X of Y items checked)
  * - [ ] Quick link to full calendar view
@@ -22,7 +21,7 @@ test.describe('US-5.1: View current plan summary', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await clearAppState(page);
-    await createDefaultPlan(page);
+    await createPlanWithMeals(page);
     // Navigate back to dashboard
     await page.goto('/');
   });
