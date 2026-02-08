@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useStore, defaultPreferences } from '@/store/store';
 import { generateMealPlan } from '@/lib/planGenerator';
 import { MealPlanPreferences } from '@/types';
-import { BottomNav, Stepper, ToggleGroup, Button } from '@/components/ui';
+import { BottomNav, ToggleGroup, Button } from '@/components/ui';
 
 export default function CreatePlan() {
   const router = useRouter();
@@ -63,15 +63,6 @@ export default function CreatePlan() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <Stepper
-            label="Number of people"
-            value={preferences.numberOfPeople}
-            onChange={(value) => setPreferences((p) => ({ ...p, numberOfPeople: value }))}
-            min={1}
-            max={12}
-            testId="people"
-          />
-
           <ToggleGroup
             label="Days to plan"
             options={dayOptions}

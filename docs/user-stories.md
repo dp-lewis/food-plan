@@ -15,7 +15,6 @@
 **So that** I don't have to decide what to cook each day
 
 **Acceptance Criteria:**
-- [ ] Can specify number of people (default: 4)
 - [ ] Can specify number of days (1-7, default: 7)
 - [ ] Can select which meals to plan (breakfast, lunch, dinner)
 - [ ] Clicking "Generate Plan" creates a plan from available recipes
@@ -31,7 +30,6 @@
 **So that** I can generate a plan quickly without configuring everything
 
 **Acceptance Criteria:**
-- [ ] Number of people defaults to 4
 - [ ] Days defaults to 7
 - [ ] All meal types (breakfast, lunch, dinner) selected by default
 - [ ] Can generate a plan with zero changes to defaults

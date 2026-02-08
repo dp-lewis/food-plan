@@ -36,7 +36,7 @@ export function generateMealPlan(preferences: MealPlanPreferences, userRecipes: 
         dayIndex,
         mealType,
         recipeId: recipe.id,
-        servings: preferences.numberOfPeople,
+        servings: recipe.servings,
       });
     }
   }

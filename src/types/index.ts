@@ -40,7 +40,6 @@ export interface Meal {
 }
 
 export interface MealPlanPreferences {
-  numberOfPeople: number;
   numberOfDays: number;
   includeMeals: {
     breakfast: boolean;

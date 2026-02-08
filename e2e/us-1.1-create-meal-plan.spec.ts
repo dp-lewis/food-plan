@@ -9,7 +9,6 @@ import { clearAppState } from './helpers/test-utils';
  * So that I don't have to decide what to cook each day
  *
  * Acceptance Criteria:
- * - [ ] Can specify number of people (default: 4)
  * - [ ] Can specify number of days (1-7, default: 7)
  * - [ ] Can select which meals to plan (breakfast, lunch, dinner)
  * - [ ] Clicking "Generate Plan" creates a plan from available recipes
@@ -22,19 +21,6 @@ test.describe('US-1.1: Create a new meal plan', () => {
     await page.goto('/');
     await clearAppState(page);
     await page.goto('/plan');
-  });
-
-  test('Can specify number of people (default: 4)', async ({ page }) => {
-    // Verify default
-    await expect(page.getByTestId('people-count')).toHaveText('4');
-
-    // Can change it
-    await page.getByTestId('people-decrement').click();
-    await expect(page.getByTestId('people-count')).toHaveText('3');
-
-    await page.getByTestId('people-increment').click();
-    await page.getByTestId('people-increment').click();
-    await expect(page.getByTestId('people-count')).toHaveText('5');
   });
 
   test('Can specify number of days (1-7, default: 7)', async ({ page }) => {

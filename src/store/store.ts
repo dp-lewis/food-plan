@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware';
 import { MealPlan, MealPlanPreferences, Recipe, CustomShoppingListItem, Meal, MealType } from '@/types';
 import { swapMeal } from '@/lib/planGenerator';
 import { categorizeIngredient } from '@/lib/ingredientParser';
+import { getRecipeById } from '@/data/recipes';
 import { ParsedRecipe } from '@/lib/recipeParser';
 
 interface AppState {
@@ -44,12 +45,16 @@ export const useStore = create<AppState>()(
         const state = get();
         if (!state.currentPlan) return;
 
+        // Use recipe's original servings (default to 4 if not found)
+        const recipe = getRecipeById(recipeId, state.userRecipes);
+        const servings = recipe?.servings ?? 4;
+
         const newMeal: Meal = {
           id: `meal-${Date.now()}-${Math.random().toString(36).slice(2)}`,
           dayIndex,
           mealType,
           recipeId,
-          servings: state.currentPlan.preferences.numberOfPeople,
+          servings,
         };
 
         set({
@@ -125,7 +130,6 @@ export const useStore = create<AppState>()(
 
 // Default preferences
 export const defaultPreferences: MealPlanPreferences = {
-  numberOfPeople: 4,
   numberOfDays: 7,
   includeMeals: {
     breakfast: true,
