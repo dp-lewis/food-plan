@@ -44,35 +44,57 @@ export default function RecipeDrawer({
 
       {/* Recipe list */}
       <div className="recipe-list" data-testid="recipe-drawer-list">
-        {recipes.map((recipe) => {
-          const isCurrent = recipe.id === currentRecipeId;
-          const totalTime = recipe.prepTime + recipe.cookTime;
+        {(() => {
+          const userRecipes = recipes.filter(r => r.isUserRecipe);
+          const builtInRecipes = recipes.filter(r => !r.isUserRecipe);
+          const hasUserRecipes = userRecipes.length > 0;
+          const hasBuiltInRecipes = builtInRecipes.length > 0;
+
+          const renderRecipe = (recipe: Recipe) => {
+            const isCurrent = recipe.id === currentRecipeId;
+            const totalTime = recipe.prepTime + recipe.cookTime;
+
+            return (
+              <button
+                key={recipe.id}
+                onClick={() => {
+                  if (!isCurrent) {
+                    onSelectRecipe(recipe.id);
+                    onClose();
+                  }
+                }}
+                disabled={isCurrent}
+                className={`recipe-card ${isCurrent ? 'recipe-card--current' : ''}`}
+                data-testid={`recipe-option-${recipe.id}`}
+                aria-pressed={isCurrent}
+              >
+                <div className="recipe-card__content">
+                  <span className="recipe-card__title">{recipe.title}</span>
+                  <div className="recipe-card__meta">
+                    <span className="recipe-card__time">{totalTime} mins</span>
+                    <span className="recipe-card__difficulty">{recipe.difficulty}</span>
+                  </div>
+                </div>
+                {isCurrent && <span className="recipe-card__badge">Current</span>}
+              </button>
+            );
+          };
 
           return (
-            <button
-              key={recipe.id}
-              onClick={() => {
-                if (!isCurrent) {
-                  onSelectRecipe(recipe.id);
-                  onClose();
-                }
-              }}
-              disabled={isCurrent}
-              className={`recipe-card ${isCurrent ? 'recipe-card--current' : ''}`}
-              data-testid={`recipe-option-${recipe.id}`}
-              aria-pressed={isCurrent}
-            >
-              <div className="recipe-card__content">
-                <span className="recipe-card__title">{recipe.title}</span>
-                <div className="recipe-card__meta">
-                  <span className="recipe-card__time">{totalTime} mins</span>
-                  <span className="recipe-card__difficulty">{recipe.difficulty}</span>
-                </div>
-              </div>
-              {isCurrent && <span className="recipe-card__badge">Current</span>}
-            </button>
+            <>
+              {hasUserRecipes && (
+                <>
+                  <div className="recipe-section-header">My Recipes</div>
+                  {userRecipes.map(renderRecipe)}
+                </>
+              )}
+              {hasUserRecipes && hasBuiltInRecipes && (
+                <div className="recipe-section-header">More Recipes</div>
+              )}
+              {builtInRecipes.map(renderRecipe)}
+            </>
           );
-        })}
+        })()}
       </div>
     </Drawer>
   );

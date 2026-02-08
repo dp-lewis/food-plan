@@ -13,6 +13,35 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
 
 /**
+ * Calculate which day of the plan "today" is, based on plan creation date.
+ * Day 0 = the day the plan was created.
+ */
+function getPlanDayIndex(planCreatedAt: string): number {
+  const created = new Date(planCreatedAt);
+  const now = new Date();
+
+  // Reset both to start of day for accurate day difference
+  const createdDay = new Date(created.getFullYear(), created.getMonth(), created.getDate());
+  const todayDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const diffMs = todayDay.getTime() - createdDay.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  return Math.max(0, diffDays);
+}
+
+/**
+ * Get the actual day name for a plan day index, based on when the plan was created.
+ */
+function getDayNameForPlanDay(planCreatedAt: string, dayIndex: number): string {
+  const created = new Date(planCreatedAt);
+  const targetDate = new Date(created);
+  targetDate.setDate(created.getDate() + dayIndex);
+
+  return DAYS[targetDate.getDay() === 0 ? 6 : targetDate.getDay() - 1];
+}
+
+/**
  * Determine which meal is "up next" based on the current hour.
  * Returns the next meal the user needs to cook, looking into tomorrow if today is done.
  */
@@ -129,10 +158,12 @@ export default function Dashboard() {
   // ─── Active plan state ───
   if (currentPlan) {
     const now = new Date();
-    const todayDow = now.getDay();
-    const adjustedTodayIndex = todayDow === 0 ? 6 : todayDow - 1;
-    const todayIndex = Math.min(adjustedTodayIndex, currentPlan.preferences.numberOfDays - 1);
+    const rawTodayIndex = getPlanDayIndex(currentPlan.createdAt);
+    const todayIndex = Math.min(rawTodayIndex, currentPlan.preferences.numberOfDays - 1);
     const hour = now.getHours();
+
+    // If we're past the last day of the plan, show nothing (plan expired)
+    const planExpired = rawTodayIndex >= currentPlan.preferences.numberOfDays;
 
     // Up next meal
     const upNext = getUpNextMeal(todayIndex, currentPlan.preferences.numberOfDays, currentPlan.meals, hour);
@@ -238,7 +269,7 @@ export default function Dashboard() {
                   letterSpacing: '0.05em',
                 }}
               >
-                Tomorrow &middot; {DAYS[tomorrowIndex]}
+                Tomorrow &middot; {getDayNameForPlanDay(currentPlan.createdAt, tomorrowIndex)}
               </h2>
               <div className="space-y-1">
                 {tomorrowMeals.map((meal) => {

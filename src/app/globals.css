@@ -337,3 +337,16 @@ textarea::placeholder {
   background: var(--color-bg-primary);
   border-radius: var(--border-radius-sm);
 }
+
+.recipe-section-header {
+  padding: var(--space-2) 0;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.recipe-section-header:not(:first-child) {
+  margin-top: var(--space-3);
+}

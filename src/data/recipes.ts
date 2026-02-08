@@ -685,11 +685,11 @@ export const recipes: Recipe[] = [
 ];
 
 export function getRecipesByMealType(mealType: string, userRecipes: Recipe[] = []): Recipe[] {
-  const allRecipes = [...recipes, ...userRecipes];
+  const allRecipes = [...userRecipes, ...recipes];
   return allRecipes.filter((r) => r.mealType === mealType);
 }
 
 export function getRecipeById(id: string, userRecipes: Recipe[] = []): Recipe | undefined {
-  const allRecipes = [...recipes, ...userRecipes];
+  const allRecipes = [...userRecipes, ...recipes];
   return allRecipes.find((r) => r.id === id);
 }
