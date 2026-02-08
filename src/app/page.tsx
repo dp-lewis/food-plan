@@ -42,15 +42,15 @@ function getDayNameForPlanDay(planCreatedAt: string, dayIndex: number): string {
 }
 
 /**
- * Determine which meal is "up next" based on the current hour.
- * Returns the next meal the user needs to cook, looking into tomorrow if today is done.
+ * Determine which slot is "up next" based on the current hour.
+ * Returns all meals for the next slot the user needs to cook.
  */
-function getUpNextMeal(
+function getUpNextSlot(
   todayIndex: number,
   numberOfDays: number,
   meals: Meal[],
   hour: number
-): { meal: Meal; label: string } | null {
+): { meals: Meal[]; mealType: MealType; label: string } | null {
   // Map hour ranges to the earliest meal type the user still needs to cook
   // Before 11am → next is lunch (breakfast assumed done/in-progress)
   // 11am-3pm → next is dinner
@@ -74,25 +74,26 @@ function getUpNextMeal(
     label = 'Tomorrow';
   }
 
-  const dayMeals = meals
-    .filter((m) => m.dayIndex === dayIndex)
-    .sort((a, b) => MEAL_ORDER.indexOf(a.mealType) - MEAL_ORDER.indexOf(b.mealType));
+  const dayMeals = meals.filter((m) => m.dayIndex === dayIndex);
 
-  // Find the first meal that matches our candidate types
+  // Find all meals for the first slot that has meals
   for (const mt of candidateMealTypes) {
-    const found = dayMeals.find((m) => m.mealType === mt);
-    if (found) return { meal: found, label };
+    const slotMeals = dayMeals.filter((m) => m.mealType === mt);
+    if (slotMeals.length > 0) {
+      return { meals: slotMeals, mealType: mt, label };
+    }
   }
 
   // Fallback: if we're looking at today and nothing matched, try tomorrow
   if (dayIndex === todayIndex) {
     const tomorrowIndex = todayIndex + 1;
     if (tomorrowIndex < numberOfDays) {
-      const tomorrowMeals = meals
-        .filter((m) => m.dayIndex === tomorrowIndex)
-        .sort((a, b) => MEAL_ORDER.indexOf(a.mealType) - MEAL_ORDER.indexOf(b.mealType));
-      if (tomorrowMeals.length > 0) {
-        return { meal: tomorrowMeals[0], label: 'Tomorrow' };
+      const tomorrowMeals = meals.filter((m) => m.dayIndex === tomorrowIndex);
+      for (const mt of MEAL_ORDER) {
+        const slotMeals = tomorrowMeals.filter((m) => m.mealType === mt);
+        if (slotMeals.length > 0) {
+          return { meals: slotMeals, mealType: mt, label: 'Tomorrow' };
+        }
       }
     }
   }
@@ -165,12 +166,14 @@ export default function Dashboard() {
     // If we're past the last day of the plan, show nothing (plan expired)
     const planExpired = rawTodayIndex >= currentPlan.preferences.numberOfDays;
 
-    // Up next meal
-    const upNext = getUpNextMeal(todayIndex, currentPlan.preferences.numberOfDays, currentPlan.meals, hour);
-    const upNextRecipe = upNext ? getRecipeById(upNext.meal.recipeId, userRecipes) : null;
-    const upNextRecipeUrl = upNextRecipe
-      ? upNextRecipe.isUserRecipe ? `/recipes/${upNextRecipe.id}` : `/recipe/${upNextRecipe.id}`
-      : null;
+    // Up next slot (may have multiple meals)
+    const upNextSlot = getUpNextSlot(todayIndex, currentPlan.preferences.numberOfDays, currentPlan.meals, hour);
+    const upNextMealsWithRecipes = upNextSlot
+      ? upNextSlot.meals
+          .map(meal => ({ meal, recipe: getRecipeById(meal.recipeId, userRecipes) }))
+          .filter((item): item is { meal: Meal; recipe: NonNullable<ReturnType<typeof getRecipeById>> } => item.recipe !== undefined)
+      : [];
+    const hasUpNext = upNextMealsWithRecipes.length > 0;
 
     // Tomorrow's meals (for the preview line)
     const tomorrowIndex = todayIndex + 1;
@@ -189,8 +192,12 @@ export default function Dashboard() {
     let primaryAction: { href: string; label: string };
     if (!shoppingStarted && shoppingStatus && shoppingStatus.total > 0) {
       primaryAction = { href: '/shopping-list', label: 'Go Shopping' };
-    } else if (upNextRecipeUrl) {
-      primaryAction = { href: upNextRecipeUrl, label: 'View Recipe' };
+    } else if (hasUpNext && upNextMealsWithRecipes.length === 1) {
+      const firstRecipe = upNextMealsWithRecipes[0].recipe;
+      const recipeUrl = firstRecipe.isUserRecipe ? `/recipes/${firstRecipe.id}` : `/recipe/${firstRecipe.id}`;
+      primaryAction = { href: recipeUrl, label: 'View Recipe' };
+    } else if (hasUpNext) {
+      primaryAction = { href: '/plan/current', label: 'View Recipes' };
     } else {
       primaryAction = { href: '/plan/current', label: 'View Full Plan' };
     }
@@ -200,7 +207,7 @@ export default function Dashboard() {
         <div className="max-w-md mx-auto">
 
           {/* ── Section 1: Up Next ── */}
-          {upNextRecipe && upNextRecipeUrl && upNext && (
+          {hasUpNext && upNextSlot && (
             <Card data-testid="up-next-card" className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <span
@@ -210,7 +217,7 @@ export default function Dashboard() {
                     color: 'var(--color-text-muted)',
                   }}
                 >
-                  {upNext.label}
+                  {upNextSlot.label}
                 </span>
                 <span
                   className="uppercase tracking-wide"
@@ -219,39 +226,38 @@ export default function Dashboard() {
                     color: 'var(--color-text-muted)',
                   }}
                 >
-                  {upNext.meal.mealType}
+                  {upNextSlot.mealType}
                 </span>
               </div>
-              <Link href={upNextRecipeUrl} data-testid="up-next-recipe-link">
-                <h1
-                  className="mb-1"
-                  style={{
-                    fontSize: 'var(--font-size-heading)',
-                    fontWeight: 'var(--font-weight-bold)',
-                    color: 'var(--color-text-primary)',
-                  }}
-                >
-                  {upNextRecipe.title}
-                </h1>
-                <p
-                  style={{
-                    fontSize: 'var(--font-size-caption)',
-                    color: 'var(--color-text-muted)',
-                  }}
-                >
-                  {upNextRecipe.prepTime + upNextRecipe.cookTime} mins
-                </p>
-              </Link>
-              <div className="mt-3">
-                <Button
-                  variant="secondary"
-                  size="small"
-                  onClick={() => openDrawer(upNext.meal.id, upNext.meal.mealType, upNext.meal.recipeId)}
-                  data-testid="up-next-swap-btn"
-                  aria-label={`Swap ${upNext.meal.mealType}: ${upNextRecipe.title}`}
-                >
-                  Swap
-                </Button>
+              <div className="space-y-3">
+                {upNextMealsWithRecipes.map(({ meal, recipe }, index) => {
+                  const recipeUrl = recipe.isUserRecipe ? `/recipes/${recipe.id}` : `/recipe/${recipe.id}`;
+                  const isFirst = index === 0;
+                  return (
+                    <div key={meal.id} data-testid={`up-next-meal-${meal.id}`}>
+                      <Link href={recipeUrl} data-testid={isFirst ? 'up-next-recipe-link' : undefined}>
+                        <p
+                          className="mb-1"
+                          style={{
+                            fontSize: isFirst ? 'var(--font-size-heading)' : 'var(--font-size-body)',
+                            fontWeight: 'var(--font-weight-bold)',
+                            color: 'var(--color-text-primary)',
+                          }}
+                        >
+                          {recipe.title}
+                        </p>
+                        <p
+                          style={{
+                            fontSize: 'var(--font-size-caption)',
+                            color: 'var(--color-text-muted)',
+                          }}
+                        >
+                          {recipe.prepTime + recipe.cookTime} mins
+                        </p>
+                      </Link>
+                    </div>
+                  );
+                })}
               </div>
             </Card>
           )}
