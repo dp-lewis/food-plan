@@ -47,7 +47,9 @@ export default function ToggleGroup({
 
   const buttonBaseStyles = {
     borderRadius: 'var(--border-radius-sm)',
-    border: 'var(--border-width) solid var(--color-border)',
+    borderWidth: 'var(--border-width)',
+    borderStyle: 'solid' as const,
+    borderColor: 'var(--color-border)',
     background: 'var(--color-bg-primary)',
     fontSize: 'var(--font-size-body)',
     color: 'var(--color-text-secondary)',
