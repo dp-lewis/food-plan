@@ -117,19 +117,6 @@
 
 ---
 
-### US-3.2: Adjust servings (stretch goal)
-
-**As a** meal planner
-**I want to** see adjusted ingredient quantities for different serving sizes
-**So that** I can scale recipes up or down for my family
-
-**Acceptance Criteria:**
-- [ ] Can change serving count
-- [ ] Ingredient quantities update automatically
-- [ ] Original recipe servings shown for reference
-
----
-
 ## Epic 4: Shopping List
 
 ### US-4.1: View shopping list
@@ -301,7 +288,7 @@
 |----------|---------|-----------|
 | **P0 - Must have** | US-1.1, US-2.1, US-3.1, US-4.1, US-5.1, US-6.1 | Core loop: create → view → shop |
 | **P1 - Should have** | US-1.2, US-2.2, US-2.3, US-4.2, US-5.2, US-5.3, US-7.1, US-7.2 | Polish and usability |
-| **P2 - Nice to have** | US-3.2, US-4.3 | Enhancements |
+| **P2 - Nice to have** | US-4.3 | Enhancements |
 
 ---
 
