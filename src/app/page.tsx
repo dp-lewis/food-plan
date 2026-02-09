@@ -47,14 +47,11 @@ function getUpNextSlot(
   let label = 'Up next';
 
   if (hour < 11) {
-    candidateMealTypes = ['lunch', 'dinner'];
-  } else if (hour < 15) {
-    candidateMealTypes = ['dinner'];
-  } else {
-    // Look at tomorrow (wraps around the week)
-    dayIndex = (todayIndex + 1) % 7;
     candidateMealTypes = ['breakfast', 'lunch', 'dinner'];
-    label = 'Tomorrow';
+  } else if (hour < 15) {
+    candidateMealTypes = ['lunch', 'dinner'];
+  } else {
+    candidateMealTypes = ['dinner'];
   }
 
   const dayMeals = meals.filter((m) => m.dayIndex === dayIndex);
@@ -153,7 +150,7 @@ export default function Dashboard() {
 
     // Tomorrow's meals (for the preview line)
     const tomorrowIndex = (todayIndex + 1) % 7;
-    const showTomorrow = hour < 15;
+    const showTomorrow = upNextSlot?.label !== 'Tomorrow';
     const tomorrowMeals = showTomorrow
       ? currentPlan.meals
           .filter((m) => m.dayIndex === tomorrowIndex)
