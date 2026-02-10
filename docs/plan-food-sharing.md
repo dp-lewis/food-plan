@@ -17,7 +17,7 @@
 ## Current State
 
 - All data lives in localStorage (single browser, single device)
-- No user accounts or authentication
+- **User accounts available** via Supabase Auth magic link (optional, no routes protected)
 - **Backend database set up** (Supabase PostgreSQL) with schema and seed data
 - No real-time infrastructure (Supabase Realtime available when needed)
 - One API route exists (`/api/parse-recipe`) showing the pattern for serverless endpoints
@@ -72,21 +72,41 @@ The strategy is:
 
 ---
 
-## Milestone 2: Authentication with Supabase Auth
+## Milestone 2: Authentication with Supabase Auth ~ COMPLETE
 
-**What:** Add user accounts so data can be associated with a specific person. Keep it simple - email magic link or OAuth (Google).
+**What:** Add user accounts so data can be associated with a specific person. Passwordless email magic link authentication.
 
-**Tasks:**
-- Configure Supabase Auth provider (Google OAuth recommended for lowest friction)
-- Create sign-in / sign-out UI (minimal - a button in a header or settings area)
-- Add middleware for session refresh (`src/middleware.ts`)
-- Protect no routes yet - auth is optional at this stage
+**PR:** [#8 - Add magic link authentication via Supabase Auth (M2)](https://github.com/dp-lewis/food-plan/pull/8)
 
-**Verify:**
-- Can sign in with Google (or chosen provider) and see session info
-- Can sign out
-- User record is created in `auth.users` on first sign-in
-- Existing app still works identically for signed-out users (localStorage path unchanged)
+**What was done:**
+- Created middleware (`src/middleware.ts`) for session refresh using cookie shuttle pattern
+  - Uses `getUser()` (not `getSession()`) to validate with auth server
+  - Clears stale `sb-*` cookies when refresh token is invalid
+- Created auth callback route (`src/app/auth/callback/route.ts`) to exchange magic link code for session
+- Created sign-out route (`src/app/auth/signout/route.ts`) — POST handler, redirects with 303
+- Created `AuthProvider` context (`src/components/AuthProvider.tsx`) with `useAuth()` hook providing `{ user, loading }`
+  - Subscribes to `onAuthStateChange` for real-time auth state updates
+- Wrapped app layout with `<AuthProvider>` in `src/app/layout.tsx`
+- Created sign-in page (`src/app/auth/signin/page.tsx`) with:
+  - Email input form for magic link OTP
+  - Success state ("Check your email" confirmation)
+  - Error handling for rate limiting and callback failures
+  - `useSearchParams` wrapped in `<Suspense>` (required by Next.js App Router)
+- Added sign-in/user UI to dashboard (`src/app/page.tsx`):
+  - Signed out: "Sign in" text link
+  - Signed in: user email as sign-out button
+  - Loading: nothing shown (no flash)
+- Added 4 new e2e tests (`e2e/auth-signin.spec.ts`)
+
+**Setup note:** Had to drop a stale `on_auth_user_created` trigger on `auth.users` that was calling a nonexistent `handle_new_user()` function, causing "Database error saving new user" on sign-up.
+
+**Verified:**
+- [x] `npm run build` passes
+- [x] All 91 Playwright tests pass (87 existing + 4 new)
+- [x] Magic link email sent and received
+- [x] Clicking magic link signs user in, redirects to dashboard
+- [x] Sign-out works from dashboard
+- [x] App works exactly as before for signed-out users
 
 ---
 
@@ -255,7 +275,7 @@ These are deliberately excluded from this plan to keep scope manageable:
 ## Dependency Summary
 
 ```
-M1 (Supabase DB) ✅ ──> M2 (Auth) ──> M3 (API/RLS) ──> M4 (Store Migration)
+M1 (Supabase DB) ✅ ──> M2 (Auth) ✅ ──> M3 (API/RLS) ──> M4 (Store Migration)
                                                               │
                                                               v
                                                         M5 (Share Link)
@@ -274,6 +294,17 @@ M1 (Supabase DB) ✅ ──> M2 (Auth) ──> M3 (API/RLS) ──> M4 (Store Mi
 ```
 
 Each milestone is a stable stopping point. The app works correctly after each one.
+
+## Key Files Added in M2
+
+| File | Purpose |
+|------|---------|
+| `src/middleware.ts` | Session refresh middleware (cookie shuttle pattern) |
+| `src/components/AuthProvider.tsx` | React context with `useAuth()` hook |
+| `src/app/auth/signin/page.tsx` | Magic link sign-in page |
+| `src/app/auth/callback/route.ts` | Exchange magic link code for session |
+| `src/app/auth/signout/route.ts` | Sign-out POST handler |
+| `e2e/auth-signin.spec.ts` | Auth UI e2e tests |
 
 ## Key Files Added in M1
 
