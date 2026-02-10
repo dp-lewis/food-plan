@@ -11,9 +11,15 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "db:gen-types": "npx supabase gen types typescript --project-id fmsmgzfbudbcuafqpylo > src/types/supabase.ts",
+    "db:migrate": "npx supabase db push",
+    "db:seed": "tsx supabase/seed.ts",
+    "db:reset": "npx supabase db reset --linked"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.95.3",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -37,7 +43,9 @@
     "eslint-plugin-storybook": "^10.2.5",
     "playwright": "^1.58.1",
     "storybook": "^10.2.5",
+    "supabase": "^2.76.7",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "5.9.3",
     "vite": "^7.3.1",
     "vitest": "^4.0.18"
