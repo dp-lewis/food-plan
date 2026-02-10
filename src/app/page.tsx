@@ -8,6 +8,7 @@ import { generateShoppingList, mergeShoppingLists } from '@/lib/shoppingList';
 import { MealType, Meal } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
 import { Card, Button, BottomNav, ProgressBar } from '@/components/ui';
+import { useAuth } from '@/components/AuthProvider';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -91,6 +92,7 @@ export default function Dashboard() {
   const checkedItems = useStore((state) => state.checkedItems);
   const customShoppingItems = useStore((state) => state.customShoppingItems);
   const swapMeal = useStore((state) => state.swapMeal);
+  const { user, loading: authLoading } = useAuth();
 
   const [drawerState, setDrawerState] = useState<DrawerState>({
     isOpen: false,
@@ -180,6 +182,41 @@ export default function Dashboard() {
     return (
       <main id="main-content" className="min-h-screen p-4 pb-20" data-testid="dashboard">
         <div className="max-w-md mx-auto">
+
+          {/* ── Auth header ── */}
+          <div className="flex justify-end mb-4" style={{ minHeight: '1.5rem' }}>
+            {!authLoading && (
+              user ? (
+                <form action="/auth/signout" method="post">
+                  <button
+                    type="submit"
+                    data-testid="user-menu-btn"
+                    style={{
+                      fontSize: 'var(--font-size-caption)',
+                      color: 'var(--color-text-muted)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                    }}
+                  >
+                    {user.email}
+                  </button>
+                </form>
+              ) : (
+                <Link
+                  href="/auth/signin"
+                  data-testid="sign-in-link"
+                  style={{
+                    fontSize: 'var(--font-size-caption)',
+                    color: 'var(--color-text-muted)',
+                  }}
+                >
+                  Sign in
+                </Link>
+              )
+            )}
+          </div>
 
           {/* ── Section 1: Up Next ── */}
           {hasUpNext && upNextSlot && (
@@ -361,6 +398,42 @@ export default function Dashboard() {
   // ─── Empty state: no plan yet ───
   return (
     <main id="main-content" className="min-h-screen flex flex-col items-center justify-center px-4 pb-20" data-testid="empty-state">
+      <div className="max-w-md w-full">
+        {/* ── Auth header ── */}
+        <div className="flex justify-end mb-4" style={{ minHeight: '1.5rem' }}>
+          {!authLoading && (
+            user ? (
+              <form action="/auth/signout" method="post">
+                <button
+                  type="submit"
+                  data-testid="user-menu-btn"
+                  style={{
+                    fontSize: 'var(--font-size-caption)',
+                    color: 'var(--color-text-muted)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                >
+                  {user.email}
+                </button>
+              </form>
+            ) : (
+              <Link
+                href="/auth/signin"
+                data-testid="sign-in-link"
+                style={{
+                  fontSize: 'var(--font-size-caption)',
+                  color: 'var(--color-text-muted)',
+                }}
+              >
+                Sign in
+              </Link>
+            )
+          )}
+        </div>
+      </div>
       <div className="max-w-md w-full text-center">
         <h1
           className="mb-2"

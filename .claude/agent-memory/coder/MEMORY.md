@@ -32,3 +32,22 @@ Never call `useMemo`/`useCallback`/`useState`/`useEffect` after a conditional `r
 ## useMemo for Stability
 
 When a component has state that changes frequently (e.g. `drawerState`) and expensive child renders, memoize the data computation with `useMemo`. This prevents re-computation but React still re-renders the JSX tree — actual DOM stability comes from stable keys and the hydration fix above.
+
+## useSearchParams Suspense Boundary
+
+`useSearchParams()` in Next.js App Router requires a Suspense boundary or the build fails with a prerender error. Pattern: put the component using `useSearchParams` in a child component, then wrap it in `<Suspense>` in the parent page component. See `src/app/auth/signin/page.tsx`.
+
+## Next.js 16 Middleware Deprecation
+
+Next.js 16 renamed `middleware.ts` to `proxy.ts` but `middleware.ts` still works with a deprecation warning. Non-breaking.
+
+## Auth Pattern (Milestone 2)
+
+Key files for Supabase magic link auth (OPTIONAL — no routes protected):
+- `src/middleware.ts` — refreshes Supabase session on every request (cookie shuttle pattern)
+- `src/components/AuthProvider.tsx` — React context with `useAuth()` hook: `{ user, loading }`
+- `src/app/auth/callback/route.ts` — exchanges magic link code for session
+- `src/app/auth/signout/route.ts` — POST handler, redirects to origin with 303
+- `src/app/auth/signin/page.tsx` — magic link form with success state, Suspense wrapping
+
+BottomNav back button testid is `bottom-nav-back` (not `back-link`).
