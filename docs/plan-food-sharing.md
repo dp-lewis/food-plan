@@ -1,8 +1,18 @@
 # Plan: Shared Food Plans with Live Shopping Lists
 
-## Goal
+## User Story
 
-Allow one user to share a food plan with another person so both can see the same meal plan and shopping list, with checked-off items updating in real time for both users as shopping takes place.
+**As a** family meal planner
+**I want to** share my food plan with my partner
+**So that** we can both see what's for dinner this week and check off shopping items as either of us picks things up, without doubling up or missing anything.
+
+### Acceptance Criteria
+
+- A user can generate a shareable link for their current plan
+- Another user can open that link and join the plan
+- Both users see the same meal calendar and shopping list
+- When either user checks off a shopping item, the other sees it update in real time
+- Both users can add or swap meals, and changes sync to the other person
 
 ## Current State
 
