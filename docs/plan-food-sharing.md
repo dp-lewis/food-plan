@@ -18,9 +18,18 @@
 
 - All data lives in localStorage (single browser, single device)
 - No user accounts or authentication
-- No backend database
-- No real-time infrastructure
+- **Backend database set up** (Supabase PostgreSQL) with schema and seed data
+- No real-time infrastructure (Supabase Realtime available when needed)
 - One API route exists (`/api/parse-recipe`) showing the pattern for serverless endpoints
+
+## Technology Decisions
+
+| Choice | Selected | Rationale |
+|--------|----------|-----------|
+| Database | **Supabase** (PostgreSQL) | Free tier, built-in auth, realtime, CLI migrations |
+| ORM/Client | **@supabase/supabase-js** | Native client, no extra ORM layer needed |
+| Auth | **Supabase Auth** | Comes with the platform, handles sessions via cookies |
+| Realtime | **Supabase Realtime** | Built-in, no extra infra for M7 |
 
 ## Approach
 
@@ -34,62 +43,69 @@ The strategy is:
 
 ---
 
-## Milestone 1: Database Setup with Prisma and PostgreSQL
+## Milestone 1: Database Setup with Supabase ~ COMPLETE
 
-**What:** Set up Prisma ORM, connect to a PostgreSQL instance (Neon or Supabase free tier), and define the initial schema matching the current data model.
+**What:** Set up Supabase PostgreSQL schema and seed it with built-in recipes. No functional changes to the app.
 
-**Tasks:**
-- Install Prisma and `@prisma/client`
-- Configure database connection via environment variable (`DATABASE_URL`)
-- Create Prisma schema with models: `User`, `MealPlan`, `Meal`, `Recipe`, `ShoppingListItem`, `CustomShoppingItem`
-- Run initial migration
-- Add a seed script that populates the database with the existing static recipes
+**PR:** [#7 - Add Supabase database schema and seed (M1)](https://github.com/dp-lewis/food-plan/pull/7)
 
-**Verify:**
-- `npx prisma migrate dev` runs without errors
-- `npx prisma studio` shows empty tables with correct columns and relationships
-- Seed script populates recipe data
-- Existing app still works exactly as before (no functional changes yet)
+**What was done:**
+- Installed `@supabase/supabase-js`, `@supabase/ssr`, `supabase` CLI, `tsx`
+- Initialized Supabase project and linked to remote (`fmsmgzfbudbcuafqpylo`)
+- Created initial migration (`00001_initial_schema.sql`) with:
+  - 4 enum types: `meal_type`, `difficulty`, `budget_level`, `ingredient_category`
+  - 5 tables: `recipes`, `meal_plans`, `meals`, `checked_items`, `custom_shopping_items`
+  - `updated_at` triggers on `recipes` and `meal_plans`
+  - `share_code` column on `meal_plans` (forward-looking for M5)
+  - RLS disabled (will be enabled with auth in M2)
+- Created browser client (`src/lib/supabase/client.ts`) and server client (`src/lib/supabase/server.ts`)
+- Auto-generated TypeScript types from remote schema (`src/types/supabase.ts`)
+- Created seed script (`supabase/seed.ts`) — upserts 25 built-in recipes
+- Added npm scripts: `db:gen-types`, `db:migrate`, `db:seed`, `db:reset`
+
+**Verified:**
+- [x] Migration applied to remote without errors
+- [x] 25 recipes seeded successfully
+- [x] `npm run build` passes
+- [x] App works exactly as before (localStorage unchanged)
+- [x] All 87 Playwright tests pass
 
 ---
 
-## Milestone 2: Authentication with NextAuth.js
+## Milestone 2: Authentication with Supabase Auth
 
 **What:** Add user accounts so data can be associated with a specific person. Keep it simple - email magic link or OAuth (Google).
 
 **Tasks:**
-- Install NextAuth.js (Auth.js v5 for Next.js 15 App Router)
-- Configure at least one auth provider (Google OAuth recommended for lowest friction)
-- Add `Account` and `Session` tables to Prisma schema, migrate
+- Configure Supabase Auth provider (Google OAuth recommended for lowest friction)
 - Create sign-in / sign-out UI (minimal - a button in a header or settings area)
-- Add a session provider wrapper to the app layout
+- Add middleware for session refresh (`src/middleware.ts`)
 - Protect no routes yet - auth is optional at this stage
 
 **Verify:**
 - Can sign in with Google (or chosen provider) and see session info
 - Can sign out
-- User record is created in the database on first sign-in
+- User record is created in `auth.users` on first sign-in
 - Existing app still works identically for signed-out users (localStorage path unchanged)
 
 ---
 
 ## Milestone 3: API Routes for CRUD Operations
 
-**What:** Create server-side API routes that read and write meal plans, recipes, and shopping list state to the database. These routes are not wired to the UI yet.
+**What:** Create server-side API routes (or direct Supabase client calls) that read and write meal plans, recipes, and shopping list state to the database. These routes are not wired to the UI yet.
 
 **Tasks:**
-- `POST /api/plans` - create a meal plan for the authenticated user
-- `GET /api/plans/current` - get the user's current meal plan with meals
-- `PUT /api/plans/[id]` - update a plan (add/remove/swap meals)
-- `GET /api/shopping-list/[planId]` - get shopping list state (checked items) for a plan
-- `PUT /api/shopping-list/[planId]` - update checked items for a plan
-- `POST /api/recipes` - save a user recipe
-- `GET /api/recipes` - list user's recipes
-- Add input validation and auth checks to each route
+- Create a data access layer (`src/lib/supabase/queries.ts`) for:
+  - Create/read/update meal plans
+  - Add/remove/swap meals within a plan
+  - Read/update shopping list checked items
+  - Save/list/delete user recipes
+- Enable Row Level Security (RLS) policies on all tables
+- Add auth checks — users can only access their own data
 
 **Verify:**
-- Each endpoint works correctly when tested with curl or a REST client
-- Unauthenticated requests return 401
+- Each operation works correctly when tested
+- RLS prevents cross-user data access
 - Data persists in the database across requests
 - Existing app still works with localStorage (UI not yet connected)
 
@@ -121,7 +137,7 @@ The strategy is:
 **What:** A signed-in user can generate a share link for their current plan. Another user who opens the link gets a read-only view initially.
 
 **Tasks:**
-- Add `shareCode` field to the `MealPlan` model (nullable, unique, short random string)
+- `share_code` column already exists on `meal_plans` (added in M1, nullable, unique)
 - Add API route `POST /api/plans/[id]/share` to generate a share code
 - Add API route `GET /api/shared/[code]` to retrieve a plan by share code
 - Add a "Share" button on the plan view page that generates and copies the share link
@@ -142,10 +158,10 @@ The strategy is:
 **What:** A signed-in user who opens a share link can "join" the plan, making it their active plan too. Both users now share the same underlying plan data.
 
 **Tasks:**
-- Add a `PlanMember` join table: `userId`, `planId`, `role` (owner/member)
-- When the plan creator generates a plan, they become the owner in `PlanMember`
+- Add a `plan_members` table via migration: `user_id`, `plan_id`, `role` (owner/member)
+- When the plan creator generates a plan, they become the owner in `plan_members`
 - On the `/shared/[code]` page, show a "Use This Plan" button for signed-in users
-- Accepting the plan creates a `PlanMember` row and sets it as the user's current plan
+- Accepting the plan creates a `plan_members` row and sets it as the user's current plan
 - Update the plan query to work for both owners and members
 - Update API auth checks: members can read the plan, only owners can modify meals (for now)
 
@@ -164,11 +180,9 @@ The strategy is:
 **What:** Both the plan owner and members can check off shopping list items, and changes appear in real time for everyone.
 
 **Tasks:**
-- Move checked items from a per-user array to a per-plan table: `ShoppingItemCheck` with `planId`, `itemId`, `checkedBy`, `checkedAt`
-- Update the shopping list API to read/write from this shared table
-- Add real-time updates using one of:
-  - **Option A: Polling** (simpler) - poll `GET /api/shopping-list/[planId]` every few seconds when the shopping list page is open
-  - **Option B: Server-Sent Events** (better UX) - push updates to connected clients via an SSE endpoint
+- `checked_items` table already exists with `meal_plan_id`, `item_id`, `checked_by` (created in M1)
+- Update the shopping list to read/write from this shared table
+- Add real-time updates using **Supabase Realtime** (subscribe to `checked_items` changes for the active plan)
 - Update the shopping list UI to show who checked each item (small avatar or initials)
 - Both owner and members can check/uncheck items
 
@@ -241,22 +255,34 @@ These are deliberately excluded from this plan to keep scope manageable:
 ## Dependency Summary
 
 ```
-M1 (Database) ──> M2 (Auth) ──> M3 (API Routes) ──> M4 (Store Migration)
-                                                           │
-                                                           v
-                                                     M5 (Share Link)
-                                                           │
-                                                           v
-                                                     M6 (Join Plan)
-                                                           │
-                                                           v
-                                                     M7 (Shared Shopping)
-                                                           │
-                                                           v
-                                                     M8 (Full Collab)
-                                                           │
-                                                           v
-                                                     M9 (Polish)
+M1 (Supabase DB) ✅ ──> M2 (Auth) ──> M3 (API/RLS) ──> M4 (Store Migration)
+                                                              │
+                                                              v
+                                                        M5 (Share Link)
+                                                              │
+                                                              v
+                                                        M6 (Join Plan)
+                                                              │
+                                                              v
+                                                        M7 (Shared Shopping)
+                                                              │
+                                                              v
+                                                        M8 (Full Collab)
+                                                              │
+                                                              v
+                                                        M9 (Polish)
 ```
 
 Each milestone is a stable stopping point. The app works correctly after each one.
+
+## Key Files Added in M1
+
+| File | Purpose |
+|------|---------|
+| `supabase/config.toml` | Supabase CLI project config |
+| `supabase/migrations/00001_initial_schema.sql` | Schema: 4 enums, 5 tables, triggers |
+| `supabase/seed.ts` | Seeds 25 built-in recipes |
+| `src/lib/supabase/client.ts` | Browser Supabase client |
+| `src/lib/supabase/server.ts` | Server Supabase client (cookie auth) |
+| `src/types/supabase.ts` | Auto-generated DB types |
+| `.env.local.example` | Required env vars template |
