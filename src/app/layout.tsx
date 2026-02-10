@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ServiceWorkerRegistration } from "./ServiceWorkerRegistration";
+import { StoreHydration } from "@/components/StoreHydration";
 
 export const metadata: Metadata = {
   title: "Food Plan",
@@ -32,6 +33,7 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
+        <StoreHydration />
         {children}
         <ServiceWorkerRegistration />
       </body>

@@ -75,6 +75,9 @@ export async function createPlanWithMeals(page: Page, startDay = 5) {
     localStorage.setItem('food-plan-storage', JSON.stringify(state));
   }, startDay);
 
-  // Navigate to plan view so Zustand picks up the seeded state
+  // Navigate to plan view so Zustand picks up the seeded state.
   await page.goto('/plan/current');
+  // Wait for at least one meal element to confirm the store has hydrated and
+  // the plan is fully rendered before returning.
+  await page.waitForSelector('[data-testid^="meal-"]', { state: 'visible', timeout: 15000 });
 }

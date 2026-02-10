@@ -124,6 +124,7 @@ export const useStore = create<AppState>()(
         customShoppingItems: state.customShoppingItems,
         // Note: pendingImportedRecipe is intentionally NOT persisted
       }),
+      skipHydration: true,
     }
   )
 );

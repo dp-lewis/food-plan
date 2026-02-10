@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
@@ -108,13 +108,53 @@ export default function CurrentPlan() {
     }
   };
 
+  // Hooks must be called unconditionally before any early returns.
+  const orderedDays = useMemo(
+    () => getOrderedDays(currentPlan?.preferences.startDay ?? 0),
+    [currentPlan?.preferences.startDay]
+  );
+
+  // Build 7 days × 3 meal slots — memoized so DOM nodes are stable across
+  // re-renders that don't change plan data (e.g. opening/closing the drawer).
+  const slotsByDay = useMemo(
+    () =>
+      orderedDays.map((dayName, dayIndex) => {
+        const slots = MEAL_TYPES.map(mealType => ({
+          mealType,
+          meals: (currentPlan?.meals ?? []).filter(
+            m => m.dayIndex === dayIndex && m.mealType === mealType
+          ),
+        }));
+        return { dayName, dayIndex, slots };
+      }),
+    [currentPlan?.meals, orderedDays]
+  );
+
+  const [hasHydrated, setHasHydrated] = useState(false);
+
   useEffect(() => {
-    if (!currentPlan) {
+    // Wait for Zustand to rehydrate from localStorage before acting on state.
+    const unsub = useStore.persist.onHydrate(() => {/* no-op */});
+    const unsubFinish = useStore.persist.onFinishHydration(() => {
+      setHasHydrated(true);
+    });
+    // If hydration already completed before this effect runs, check directly.
+    if (useStore.persist.hasHydrated()) {
+      setHasHydrated(true);
+    }
+    return () => {
+      unsub();
+      unsubFinish();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (hasHydrated && !currentPlan) {
       router.push('/');
     }
-  }, [currentPlan, router]);
+  }, [hasHydrated, currentPlan, router]);
 
-  if (!currentPlan) {
+  if (!hasHydrated || !currentPlan) {
     return null;
   }
 
@@ -122,20 +162,6 @@ export default function CurrentPlan() {
     ? getRecipesByMealType(drawerState.mealType, userRecipes)
         .filter(r => !drawerState.excludeRecipeIds.includes(r.id))
     : [];
-
-  const { preferences } = currentPlan;
-  const orderedDays = getOrderedDays(preferences.startDay);
-
-  // Build 7 days × 3 meal slots
-  const slotsByDay = orderedDays.map((dayName, dayIndex) => {
-    const slots = MEAL_TYPES.map(mealType => ({
-      mealType,
-      meals: currentPlan.meals.filter(
-        m => m.dayIndex === dayIndex && m.mealType === mealType
-      ),
-    }));
-    return { dayName, dayIndex, slots };
-  });
 
   return (
     <main id="main-content" className="min-h-screen p-4 pb-24" data-testid="meal-plan">

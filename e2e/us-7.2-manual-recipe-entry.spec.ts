@@ -220,18 +220,44 @@ test.describe('US-7.2: Create recipe manually', () => {
     await page.getByTestId('add-ingredient-btn').click();
     await page.getByTestId('save-recipe-btn').click();
 
-    // Generate a meal plan
+    // Retrieve the saved user recipe ID from localStorage
+    const recipeId = await page.evaluate(() => {
+      const stored = localStorage.getItem('food-plan-storage');
+      if (!stored) return null;
+      const state = JSON.parse(stored);
+      const recipes = state.state.userRecipes ?? [];
+      return recipes.length > 0 ? recipes[0].id : null;
+    });
+    expect(recipeId).not.toBeNull();
+
+    // Create an empty plan via the UI
     await page.goto('/plan');
     await page.getByTestId('generate-plan-btn').click();
     await page.waitForURL('/plan/current');
 
-    // Go to shopping list
-    await page.getByTestId('shopping-list-btn').click();
+    // Inject the user recipe into the plan's meals directly via localStorage
+    await page.evaluate((rid) => {
+      const stored = localStorage.getItem('food-plan-storage');
+      if (!stored) return;
+      const state = JSON.parse(stored);
+      state.state.currentPlan.meals.push({
+        id: `meal-injected-${Date.now()}`,
+        dayIndex: 0,
+        mealType: 'dinner',
+        recipeId: rid,
+        servings: 4,
+      });
+      localStorage.setItem('food-plan-storage', JSON.stringify(state));
+    }, recipeId);
+
+    // Navigate to shopping list (reload so Zustand picks up the updated state)
+    await page.goto('/shopping-list');
     await expect(page.getByTestId('shopping-list')).toBeVisible();
 
-    // Shopping list should have items (from either built-in or user recipes)
-    const items = page.locator('[data-testid^="item-"]');
-    await expect(items.first()).toBeVisible();
+    // The manual recipe ingredients should appear on the shopping list
+    // (ingredient names are capitalized by the parser, e.g. "Beef mince")
+    await expect(page.getByText('Beef mince')).toBeVisible();
+    await expect(page.getByText('Onion')).toBeVisible();
   });
 
   test('Empty state shows both create and import options', async ({ page }) => {
