@@ -66,3 +66,8 @@ export interface CustomShoppingListItem {
   unit: string;                    // Optional, empty string default
   category: IngredientCategory;    // Auto-detected via categorizeIngredient()
 }
+
+// Server action result type
+export type ActionResult<T> =
+  | { data: T; error: null }
+  | { data: null; error: string };

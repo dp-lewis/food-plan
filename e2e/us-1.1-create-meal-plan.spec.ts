@@ -37,11 +37,11 @@ test.describe('US-1.1: Create a new meal plan', () => {
     await page.getByTestId('generate-plan-btn').click();
     await page.waitForURL('/plan/current');
 
-    // Plan should exist but have no meals (all slots show "No meals planned")
+    // Wait for hydration, then verify all slots show "No meals planned"
     const emptySlots = page.getByText('No meals planned');
-    const count = await emptySlots.count();
+    await expect(emptySlots.first()).toBeVisible();
     // 7 days × 3 slots = 21 empty slots
-    expect(count).toBe(21);
+    expect(await emptySlots.count()).toBe(21);
   });
 
   test('Plan is saved to localStorage', async ({ page }) => {

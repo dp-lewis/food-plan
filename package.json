@@ -15,7 +15,8 @@
     "db:gen-types": "npx supabase gen types typescript --project-id fmsmgzfbudbcuafqpylo > src/types/supabase.ts",
     "db:migrate": "npx supabase db push",
     "db:seed": "tsx supabase/seed.ts",
-    "db:reset": "npx supabase db reset --linked"
+    "db:reset": "npx supabase db reset --linked",
+    "test:rls": "npx vitest run --project unit rls.integration"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",

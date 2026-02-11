@@ -215,7 +215,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      user_has_plan_access: { Args: { plan_uuid: string }; Returns: boolean }
+      user_has_plan_access:
+        | {
+            Args: { plan_uuid: string }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.user_has_plan_access(plan_uuid => text), public.user_has_plan_access(plan_uuid => uuid). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
+        | {
+            Args: { plan_uuid: string }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.user_has_plan_access(plan_uuid => text), public.user_has_plan_access(plan_uuid => uuid). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
     }
     Enums: {
       budget_level: "low" | "medium" | "high"

@@ -9,6 +9,18 @@ const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(file
 export default defineConfig({
   test: {
     projects: [{
+      resolve: {
+        alias: {
+          '@': path.resolve(dirname, './src'),
+        },
+      },
+      test: {
+        name: 'unit',
+        include: ['src/**/__tests__/**/*.test.ts'],
+        environment: 'node',
+        setupFiles: ['src/lib/supabase/__tests__/setup-env.ts'],
+      },
+    }, {
       extends: true,
       plugins: [
       // The plugin will run tests for the stories defined in your Storybook config
