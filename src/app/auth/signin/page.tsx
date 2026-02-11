@@ -5,6 +5,18 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Alert, Button, Card, Input, BottomNav } from '@/components/ui';
 
+const spinnerStyle: React.CSSProperties = {
+  display: 'inline-block',
+  width: '16px',
+  height: '16px',
+  borderRadius: '50%',
+  border: '2px solid transparent',
+  borderTopColor: 'var(--color-text-inverse)',
+  borderRightColor: 'var(--color-text-inverse)',
+  animation: 'spin 0.7s linear infinite',
+  flexShrink: 0,
+};
+
 function SignInForm() {
   const searchParams = useSearchParams();
   const urlError = searchParams.get('error');
@@ -116,6 +128,7 @@ function SignInForm() {
               placeholder="123456"
               className="mb-4"
               data-testid="otp-input"
+              disabled={verifying}
             />
 
             {verifyError && (
@@ -130,7 +143,12 @@ function SignInForm() {
               disabled={verifying || otp.length !== 6}
               data-testid="verify-btn"
             >
-              {verifying ? 'Verifying…' : 'Verify'}
+              {verifying ? (
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <span data-testid="verify-spinner" style={spinnerStyle} aria-hidden="true" />
+                  Verifying…
+                </span>
+              ) : 'Verify'}
             </Button>
           </form>
         </Card>
@@ -197,7 +215,12 @@ function SignInForm() {
             disabled={loading || !email}
             data-testid="send-magic-link-btn"
           >
-            {loading ? 'Sending…' : 'Send magic link'}
+            {loading ? (
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <span data-testid="send-spinner" style={spinnerStyle} aria-hidden="true" />
+                Sending…
+              </span>
+            ) : 'Send magic link'}
           </Button>
         </form>
       </Card>
@@ -214,6 +237,7 @@ export default function SignInPage() {
       className="min-h-screen flex flex-col items-center justify-center px-4 pb-20"
       data-testid="signin-page"
     >
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       <div className="max-w-md w-full">
         <Suspense>
           <SignInForm />
