@@ -1,18 +1,22 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Alert, Button, Card, Input, BottomNav } from '@/components/ui';
 
 function SignInForm() {
   const searchParams = useSearchParams();
   const urlError = searchParams.get('error');
+  const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +47,28 @@ function SignInForm() {
     setSubmitted(true);
   };
 
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setVerifyError(null);
+    setVerifying(true);
+
+    const supabase = createClient();
+    const { error: otpError } = await supabase.auth.verifyOtp({
+      email,
+      token: otp,
+      type: 'email',
+    });
+
+    setVerifying(false);
+
+    if (otpError) {
+      setVerifyError(otpError.message);
+      return;
+    }
+
+    router.push('/');
+  };
+
   if (submitted) {
     return (
       <>
@@ -58,17 +84,70 @@ function SignInForm() {
             Check your email
           </h1>
           <p
+            className="mb-4"
             style={{
               fontSize: 'var(--font-size-body)',
               color: 'var(--color-text-muted)',
             }}
           >
-            We sent a magic link to <strong>{email}</strong>. Click the link in
-            the email to sign in.
+            We sent a code to <strong>{email}</strong>. Enter the 6-digit code
+            from the email to sign in.
           </p>
+          <p
+            className="mb-4"
+            style={{
+              fontSize: 'var(--font-size-caption)',
+              color: 'var(--color-text-muted)',
+            }}
+          >
+            Or tap the magic link in the email if you&apos;re using a browser.
+          </p>
+
+          <form onSubmit={handleVerify} noValidate>
+            <Input
+              label="6-digit code"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={6}
+              autoComplete="one-time-code"
+              value={otp}
+              onChange={setOtp}
+              placeholder="123456"
+              className="mb-4"
+              data-testid="otp-input"
+            />
+
+            {verifyError && (
+              <div className="mb-4">
+                <Alert variant="error">{verifyError}</Alert>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={verifying || otp.length !== 6}
+              data-testid="verify-btn"
+            >
+              {verifying ? 'Verifying…' : 'Verify'}
+            </Button>
+          </form>
         </Card>
 
-        <BottomNav backHref="/" backLabel="Back" />
+        <BottomNav
+          backHref="/"
+          backLabel="Back"
+          secondaryAction={{
+            label: 'Resend code',
+            onClick: () => {
+              setSubmitted(false);
+              setOtp('');
+              setVerifyError(null);
+            },
+            testId: 'resend-btn',
+          }}
+        />
       </>
     );
   }
