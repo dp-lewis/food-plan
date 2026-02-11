@@ -29,6 +29,18 @@ Never call `useMemo`/`useCallback`/`useState`/`useEffect` after a conditional `r
 
 **Fix**: After creating the user recipe and an empty plan, inject the recipe into the plan via `page.evaluate()` + `localStorage`, then navigate to `/shopping-list` directly. See `us-7.1` and `us-7.2` shopping list tests for the pattern.
 
+## Store Sync Pattern (Milestone 4)
+
+Write-through: local `set()` first, then `if (get()._userId) { serverAction().catch(console.error) }`.
+
+`_userId` / `_isSyncing` are in AppState but excluded from `partialize` — never hit localStorage.
+
+`swapMeal` from `@/lib/planGenerator` is aliased `swapMealInPlan` in import to avoid collision with store method.
+
+`StoreSync` uses `useRef<string | null>` to detect sign-in/sign-out transitions. Sign-in: server data wins; if server empty and local exists, upload local. Sign-out: clear store.
+
+Key files: `src/store/store.ts`, `src/components/StoreSync.tsx`.
+
 ## useMemo for Stability
 
 When a component has state that changes frequently (e.g. `drawerState`) and expensive child renders, memoize the data computation with `useMemo`. This prevents re-computation but React still re-renders the JSX tree — actual DOM stability comes from stable keys and the hydration fix above.

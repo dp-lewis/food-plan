@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ServiceWorkerRegistration } from "./ServiceWorkerRegistration";
 import { StoreHydration } from "@/components/StoreHydration";
+import { StoreSync } from "@/components/StoreSync";
 import { AuthProvider } from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
@@ -36,6 +37,7 @@ export default function RootLayout({
         </a>
         <AuthProvider>
           <StoreHydration />
+          <StoreSync />
           {children}
         </AuthProvider>
         <ServiceWorkerRegistration />
