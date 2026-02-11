@@ -33,9 +33,8 @@ function SignInForm() {
       },
     });
 
-    setLoading(false);
-
     if (authError) {
+      setLoading(false);
       if (authError.status === 429) {
         setError('Too many requests. Please wait a moment before trying again.');
       } else {
@@ -59,9 +58,8 @@ function SignInForm() {
       type: 'email',
     });
 
-    setVerifying(false);
-
     if (otpError) {
+      setVerifying(false);
       setVerifyError(otpError.message);
       return;
     }
