@@ -258,6 +258,24 @@
 
 ---
 
+## Epic 8: Authentication
+
+### US-8.1: Sign in with OTP code (PWA-compatible)
+
+**As a** PWA user on iOS
+**I want to** sign in using a 6-digit code from my email
+**So that** I can authenticate directly in the installed app without being redirected to Safari
+
+**Acceptance Criteria:**
+- [ ] Can enter email and request a sign-in code
+- [ ] After requesting, sees a 6-digit code input form
+- [ ] Can enter the 6-digit code and verify to sign in
+- [ ] Shows error message if verification fails
+- [ ] Can resend the code by going back to the email form
+- [ ] Magic link in the email still works for browser users
+
+---
+
 ## Story Map Overview
 
 ```
@@ -286,7 +304,7 @@
 
 | Priority | Stories | Rationale |
 |----------|---------|-----------|
-| **P0 - Must have** | US-1.1, US-2.1, US-3.1, US-4.1, US-5.1, US-6.1 | Core loop: create → view → shop |
+| **P0 - Must have** | US-1.1, US-2.1, US-3.1, US-4.1, US-5.1, US-6.1, US-8.1 | Core loop: create → view → shop + auth |
 | **P1 - Should have** | US-1.2, US-2.2, US-2.3, US-4.2, US-5.2, US-5.3, US-7.1, US-7.2 | Polish and usability |
 | **P2 - Nice to have** | US-4.3 | Enhancements |
 
