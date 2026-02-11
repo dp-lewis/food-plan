@@ -60,6 +60,16 @@ Key files for Supabase magic link auth (OPTIONAL — no routes protected):
 - `src/components/AuthProvider.tsx` — React context with `useAuth()` hook: `{ user, loading }`
 - `src/app/auth/callback/route.ts` — exchanges magic link code for session
 - `src/app/auth/signout/route.ts` — POST handler, redirects to origin with 303
-- `src/app/auth/signin/page.tsx` — magic link form with success state, Suspense wrapping
+- `src/app/auth/signin/page.tsx` — OTP code entry form (6-digit) + magic link fallback, Suspense wrapping
 
 BottomNav back button testid is `bottom-nav-back` (not `back-link`).
+
+## BottomNav Actions
+
+Props: `primaryAction`, `secondaryAction`, `tertiaryAction` — each is `{ label, href?, onClick?, testId? }`.
+No `actions` array prop exists. Test IDs use `testId` field (not `data-testid`).
+
+## Environment: No node_modules
+
+The sandbox has no network. `npm run build` / `tsc --noEmit` produce "Cannot find module" errors for ALL files.
+These are pre-existing. Filter tsc output for your specific file to confirm no NEW errors were introduced.
