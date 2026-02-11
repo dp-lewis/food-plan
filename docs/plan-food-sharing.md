@@ -110,45 +110,57 @@ The strategy is:
 
 ---
 
-## Milestone 3: API Routes for CRUD Operations
+## Milestone 3: Data Access Layer with Server Actions and RLS ~ COMPLETE
 
-**What:** Create server-side API routes (or direct Supabase client calls) that read and write meal plans, recipes, and shopping list state to the database. These routes are not wired to the UI yet.
+**What:** Create server-side data access layer that reads and writes meal plans, recipes, and shopping list state to the database. These are not wired to the UI yet.
 
-**Tasks:**
-- Create a data access layer (`src/lib/supabase/queries.ts`) for:
-  - Create/read/update meal plans
-  - Add/remove/swap meals within a plan
-  - Read/update shopping list checked items
-  - Save/list/delete user recipes
-- Enable Row Level Security (RLS) policies on all tables
-- Add auth checks — users can only access their own data
+**Commit:** `e7f981d` — Add data access layer with server actions and RLS (M3)
 
-**Verify:**
-- Each operation works correctly when tested
-- RLS prevents cross-user data access
-- Data persists in the database across requests
-- Existing app still works with localStorage (UI not yet connected)
+**What was done:**
+- Created data access layer (`src/lib/supabase/queries.ts`) with functions for:
+  - Create/read/update meal plans (`getUserMealPlan`, `upsertMealPlan`)
+  - Add/remove/swap meals (`insertMeal`, `deleteMeal`, `updateMealRecipe`)
+  - Read/update shopping list checked items (`getCheckedItems`, `upsertCheckedItem`, `deleteCheckedItem`, `clearCheckedItems`)
+  - Custom shopping items (`getCustomItems`, `insertCustomItem`, `deleteCustomItem`)
+  - Save/list/delete user recipes (`getUserRecipes`, `insertRecipe`, `deleteRecipe`)
+- Created bidirectional mappers (`src/lib/supabase/mappers.ts`) for DB ↔ app type conversion
+- Created server actions in `src/app/actions/` (mealPlan.ts, recipes.ts, shoppingList.ts)
+- Enabled Row Level Security (RLS) on all 5 tables with `auth.uid()` policies
+- Created migration `00002_enable_rls.sql`
+- Added 17 mapper unit tests + 17 RLS integration tests
+
+**Verified:**
+- [x] `npm run build` passes
+- [x] All 91 Playwright tests pass
+- [x] 34 unit/integration tests pass (mappers + RLS)
+- [x] RLS prevents cross-user data access
+- [x] App works exactly as before with localStorage
 
 ---
 
-## Milestone 4: Migrate Zustand Store to Use API
+## Milestone 4: Store Sync with Write-Through ~ COMPLETE
 
-**What:** When a user is signed in, the store reads/writes to the database via API routes instead of localStorage. When signed out, localStorage continues to work as before.
+**What:** When a user is signed in, store mutations optimistically update locally then fire-and-forget server action calls. When signed out, localStorage continues to work as before. No visual UI changes.
 
-**Tasks:**
-- Create an abstraction layer (e.g., `src/lib/storage.ts`) that switches between localStorage and API calls based on auth state
-- Update Zustand store actions to call the storage layer
-- Handle loading states (data now comes from network, not synchronous localStorage)
-- Add optimistic updates - update local state immediately, sync to server in background
-- Handle errors (show Alert component if sync fails, allow retry)
+**Commit:** `9236366` — Add store sync with write-through to Supabase for authenticated users (M4)
 
-**Verify:**
-- Sign in: data loads from database, changes persist to database
-- Sign out: data loads from localStorage, changes persist to localStorage
-- Creating a plan, swapping meals, checking shopping items all work identically to before
-- Refresh the page while signed in: data reloads from database correctly
-- Slow network: optimistic UI feels responsive, errors surface gracefully
-- Run existing Playwright tests: all pass
+**What was done:**
+- Added `_userId`, `_setUserId`, `_isSyncing`, `_setIsSyncing` sync fields to Zustand store (excluded from localStorage by `partialize`)
+- Added write-through to all 10 store mutations: local `set()` first, then `if (get()._userId)` fires server action with `.catch(console.error)`
+- Created `StoreSync` component (`src/components/StoreSync.tsx`):
+  - Watches auth transitions via `useRef` tracking of previous user ID
+  - On sign-in: sets `_userId` immediately, loads server data (server wins if present; if server empty, uploads local data)
+  - On sign-out: clears `_userId` and resets store state
+  - Renders `null` (no UI)
+- Wired `<StoreSync />` into root layout after `<StoreHydration />` inside `<AuthProvider>`
+
+**Verified:**
+- [x] `npm run build` passes
+- [x] All 91 Playwright tests pass (anonymous users unaffected — `_userId` defaults to `null`)
+- [x] 34 unit/integration tests pass
+- [x] Sign in loads server data into store
+- [x] Store mutations sync to Supabase for authenticated users
+- [x] Sign out clears store
 
 ---
 
@@ -268,32 +280,53 @@ These are deliberately excluded from this plan to keep scope manageable:
 - **Multiple simultaneous plans** (only one active plan per user)
 - **Push notifications** when the plan changes
 - **Dietary preference filtering** per household member
-- **Migrating existing localStorage data** to the database on first sign-in (could be a follow-up)
+- ~~**Migrating existing localStorage data** to the database on first sign-in~~ (done in M4 — StoreSync uploads local data if server is empty)
 
 ---
 
 ## Dependency Summary
 
 ```
-M1 (Supabase DB) ✅ ──> M2 (Auth) ✅ ──> M3 (API/RLS) ──> M4 (Store Migration)
-                                                              │
-                                                              v
-                                                        M5 (Share Link)
-                                                              │
-                                                              v
-                                                        M6 (Join Plan)
-                                                              │
-                                                              v
-                                                        M7 (Shared Shopping)
-                                                              │
-                                                              v
-                                                        M8 (Full Collab)
-                                                              │
-                                                              v
-                                                        M9 (Polish)
+M1 (Supabase DB) ✅ ──> M2 (Auth) ✅ ──> M3 (API/RLS) ✅ ──> M4 (Store Sync) ✅
+                                                                │
+                                                                v
+                                                          M5 (Share Link)
+                                                                │
+                                                                v
+                                                          M6 (Join Plan)
+                                                                │
+                                                                v
+                                                          M7 (Shared Shopping)
+                                                                │
+                                                                v
+                                                          M8 (Full Collab)
+                                                                │
+                                                                v
+                                                          M9 (Polish)
 ```
 
 Each milestone is a stable stopping point. The app works correctly after each one.
+
+## Key Files Added/Modified in M4
+
+| File | Purpose |
+|------|---------|
+| `src/store/store.ts` | Added sync fields + write-through server action calls |
+| `src/components/StoreSync.tsx` | Auth-aware component: loads server data on sign-in, clears on sign-out |
+| `src/app/layout.tsx` | Renders `<StoreSync />` after `<StoreHydration />` |
+
+## Key Files Added in M3
+
+| File | Purpose |
+|------|---------|
+| `src/lib/supabase/queries.ts` | Low-level database query functions |
+| `src/lib/supabase/mappers.ts` | Bidirectional DB ↔ app type mappers |
+| `src/app/actions/mealPlan.ts` | Server actions for meal plan CRUD |
+| `src/app/actions/recipes.ts` | Server actions for user recipes |
+| `src/app/actions/shoppingList.ts` | Server actions for checked items + custom items |
+| `supabase/migrations/00002_enable_rls.sql` | RLS policies for all tables |
+| `src/lib/supabase/__tests__/mappers.test.ts` | 17 mapper unit tests |
+| `src/lib/supabase/__tests__/rls.integration.test.ts` | 17 RLS integration tests |
 
 ## Key Files Added in M2
 
