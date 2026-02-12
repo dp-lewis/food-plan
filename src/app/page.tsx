@@ -440,7 +440,7 @@ export default function Dashboard() {
               onClick={handleSignOut}
               data-testid="signout-confirm-btn"
             >
-              Sign out
+              {signOutLoading ? 'Signing out…' : 'Sign out'}
             </Button>
           </div>
         </Drawer>
@@ -547,7 +547,7 @@ export default function Dashboard() {
             onClick={handleSignOut}
             data-testid="signout-confirm-btn"
           >
-            Sign out
+            {signOutLoading ? 'Signing out…' : 'Sign out'}
           </Button>
         </div>
       </Drawer>
