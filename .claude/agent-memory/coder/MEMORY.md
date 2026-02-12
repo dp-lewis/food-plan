@@ -73,3 +73,9 @@ No `actions` array prop exists. Test IDs use `testId` field (not `data-testid`).
 
 The sandbox has no network. `npm run build` / `tsc --noEmit` produce "Cannot find module" errors for ALL files.
 These are pre-existing. Filter tsc output for your specific file to confirm no NEW errors were introduced.
+
+## Sign-out Flow (Confirmation Drawer)
+
+Programmatic sign-out: `fetch('/auth/signout', { method: 'POST' })` then `router.push('/'); router.refresh()`.
+The `Drawer` component is imported directly from `@/components/ui/Drawer` (not via barrel).
+Both render branches (active plan + empty state) share the same `signOutDrawerOpen`/`signOutLoading` state declared at top of the `Dashboard` component — each branch renders its own `<Drawer>` instance with the shared state.
