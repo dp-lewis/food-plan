@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import type { Tables } from '@/types/supabase';
-import type { Recipe, Meal, MealPlan, CustomShoppingListItem } from '@/types';
+import type { Recipe, Meal, MealPlan, CustomShoppingListItem, SharedPlanData } from '@/types';
 import {
   dbRecipeToApp,
   dbMealToApp,
@@ -247,4 +247,87 @@ export async function deleteCustomItem(itemId: string): Promise<void> {
     .delete()
     .eq('id', itemId);
   if (error) throw error;
+}
+
+// ---------------------------------------------------------------------------
+// Sharing
+// ---------------------------------------------------------------------------
+
+export async function getShareCode(planId: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('meal_plans')
+    .select('share_code')
+    .eq('id', planId)
+    .single();
+  if (error) throw error;
+  return data?.share_code ?? null;
+}
+
+export async function setShareCode(
+  planId: string,
+  shareCode: string,
+): Promise<void> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('meal_plans')
+    .update({ share_code: shareCode })
+    .eq('id', planId);
+  if (error) throw error;
+}
+
+export async function clearShareCode(planId: string): Promise<void> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('meal_plans')
+    .update({ share_code: null })
+    .eq('id', planId);
+  if (error) throw error;
+}
+
+export async function getMealPlanByShareCode(
+  shareCode: string,
+): Promise<SharedPlanData | null> {
+  const supabase = await createClient();
+
+  // Fetch the shared plan
+  const { data: planRow, error: planError } = await supabase
+    .from('meal_plans')
+    .select('*')
+    .eq('share_code', shareCode)
+    .maybeSingle();
+  if (planError) throw planError;
+  if (!planRow) return null;
+
+  // Fetch meals for this plan
+  const { data: mealRows, error: mealsError } = await supabase
+    .from('meals')
+    .select('*')
+    .eq('meal_plan_id', planRow.id);
+  if (mealsError) throw mealsError;
+
+  // Fetch user recipes referenced by meals
+  const recipeIds = [...new Set((mealRows ?? []).map((m) => m.recipe_id))];
+  let recipes: Recipe[] = [];
+  if (recipeIds.length > 0) {
+    const { data: recipeRows, error: recipesError } = await supabase
+      .from('recipes')
+      .select('*')
+      .in('id', recipeIds);
+    if (recipesError) throw recipesError;
+    recipes = (recipeRows ?? []).map(dbRecipeToApp);
+  }
+
+  // Fetch custom shopping items for this plan
+  const { data: customRows, error: customError } = await supabase
+    .from('custom_shopping_items')
+    .select('*')
+    .eq('meal_plan_id', planRow.id);
+  if (customError) throw customError;
+
+  return {
+    plan: dbMealPlanToApp(planRow, mealRows ?? []),
+    recipes,
+    customItems: (customRows ?? []).map(dbCustomItemToApp),
+  };
 }

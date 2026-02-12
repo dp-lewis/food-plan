@@ -8,6 +8,8 @@ import { getRecipeById, getRecipesByMealType } from '@/data/recipes';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
 import { BottomNav, Button, Card } from '@/components/ui';
+import { useAuth } from '@/components/AuthProvider';
+import { generateShareLink } from '@/app/actions/share';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -39,6 +41,9 @@ export default function CurrentPlan() {
   const addMeal = useStore((state) => state.addMeal);
   const removeMeal = useStore((state) => state.removeMeal);
   const userRecipes = useStore((state) => state.userRecipes);
+
+  const { user } = useAuth();
+  const [shareStatus, setShareStatus] = useState<'idle' | 'loading' | 'copied'>('idle');
 
   const [drawerState, setDrawerState] = useState<DrawerState>({
     isOpen: false,
@@ -105,6 +110,33 @@ export default function CurrentPlan() {
         const randomRecipe = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
         addMeal(drawerState.dayIndex, drawerState.mealType, randomRecipe.id);
       }
+    }
+  };
+
+  const handleShare = async () => {
+    if (!currentPlan || shareStatus === 'loading') return;
+    setShareStatus('loading');
+    try {
+      const result = await generateShareLink(currentPlan.id);
+      if (result.error) {
+        setShareStatus('idle');
+        return;
+      }
+      const url = result.data!;
+      // Try Web Share API first (mobile), fallback to clipboard
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: 'Meal Plan', url });
+        } catch {
+          // User cancelled share - that's fine
+        }
+      } else {
+        await navigator.clipboard.writeText(url);
+      }
+      setShareStatus('copied');
+      setTimeout(() => setShareStatus('idle'), 2000);
+    } catch {
+      setShareStatus('idle');
     }
   };
 
@@ -319,6 +351,11 @@ export default function CurrentPlan() {
 
       <BottomNav
         backHref="/"
+        secondaryAction={user ? {
+          onClick: handleShare,
+          label: shareStatus === 'copied' ? 'Link Copied!' : shareStatus === 'loading' ? 'Sharing...' : 'Share',
+          testId: 'share-plan-btn',
+        } : undefined}
         primaryAction={{ href: '/shopping-list', label: 'View Shopping List', testId: 'shopping-list-btn' }}
         maxWidth="2xl"
       />

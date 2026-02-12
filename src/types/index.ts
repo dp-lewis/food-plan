@@ -67,6 +67,12 @@ export interface CustomShoppingListItem {
   category: IngredientCategory;    // Auto-detected via categorizeIngredient()
 }
 
+export interface SharedPlanData {
+  plan: MealPlan;
+  recipes: Recipe[];
+  customItems: CustomShoppingListItem[];
+}
+
 // Server action result type
 export type ActionResult<T> =
   | { data: T; error: null }

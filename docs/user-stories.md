@@ -276,6 +276,26 @@
 
 ---
 
+## Epic 9: Plan Sharing
+
+### US-9.1: Share a meal plan via link
+
+**As a** family meal planner
+**I want to** share my meal plan via a link
+**So that** my partner or family members can see what's planned for the week
+
+**Acceptance Criteria:**
+- [ ] Share button visible on plan view for signed-in users
+- [ ] Share button NOT visible for anonymous users
+- [ ] Clicking Share copies a shareable link to clipboard
+- [ ] Shared link shows the meal plan read-only (no edit controls)
+- [ ] Shared link shows the shopping list read-only (no checkboxes)
+- [ ] Invalid or revoked share links show an error message
+- [ ] Sharing the same plan again returns the same link (idempotent)
+- [ ] Shared view works for unauthenticated visitors
+
+---
+
 ## Story Map Overview
 
 ```
