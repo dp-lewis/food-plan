@@ -20,6 +20,9 @@ const meta: Meta<typeof Button> = {
     disabled: {
       control: 'boolean',
     },
+    loading: {
+      control: 'boolean',
+    },
   },
 };
 
@@ -61,6 +64,24 @@ export const Disabled: Story = {
     disabled: true,
     children: 'Disabled Button',
   },
+};
+
+export const Loading: Story = {
+  args: {
+    variant: 'primary',
+    loading: true,
+    children: 'Sending…',
+  },
+};
+
+export const LoadingVariants: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+      <Button variant="primary" loading>Sending…</Button>
+      <Button variant="secondary" loading>Loading…</Button>
+      <Button variant="ghost" loading>Loading…</Button>
+    </div>
+  ),
 };
 
 export const AllVariants: Story = {

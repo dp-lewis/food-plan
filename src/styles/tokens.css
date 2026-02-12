@@ -127,3 +127,7 @@
   --z-modal: 30;
   --z-toast: 40;
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

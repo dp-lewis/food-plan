@@ -33,9 +33,8 @@ function SignInForm() {
       },
     });
 
-    setLoading(false);
-
     if (authError) {
+      setLoading(false);
       if (authError.status === 429) {
         setError('Too many requests. Please wait a moment before trying again.');
       } else {
@@ -59,9 +58,8 @@ function SignInForm() {
       type: 'email',
     });
 
-    setVerifying(false);
-
     if (otpError) {
+      setVerifying(false);
       setVerifyError(otpError.message);
       return;
     }
@@ -116,6 +114,7 @@ function SignInForm() {
               placeholder="123456"
               className="mb-4"
               data-testid="otp-input"
+              disabled={verifying}
             />
 
             {verifyError && (
@@ -128,6 +127,7 @@ function SignInForm() {
               type="submit"
               className="w-full"
               disabled={verifying || otp.length !== 6}
+              loading={verifying}
               data-testid="verify-btn"
             >
               {verifying ? 'Verifying…' : 'Verify'}
@@ -195,6 +195,7 @@ function SignInForm() {
             type="submit"
             className="w-full"
             disabled={loading || !email}
+            loading={loading}
             data-testid="send-magic-link-btn"
           >
             {loading ? 'Sending…' : 'Send magic link'}
