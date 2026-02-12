@@ -209,16 +209,18 @@ export default function Dashboard() {
                   type="button"
                   data-testid="user-menu-btn"
                   onClick={() => setSignOutDrawerOpen(true)}
+                  disabled={signOutLoading}
                   style={{
                     fontSize: 'var(--font-size-caption)',
                     color: 'var(--color-text-muted)',
                     background: 'none',
                     border: 'none',
-                    cursor: 'pointer',
+                    cursor: signOutLoading ? 'default' : 'pointer',
                     padding: 0,
+                    opacity: signOutLoading ? 0.5 : 1,
                   }}
                 >
-                  {user.email}
+                  {signOutLoading ? 'Signing out…' : user.email}
                 </button>
               ) : (
                 <Link
@@ -460,16 +462,18 @@ export default function Dashboard() {
                 type="button"
                 data-testid="user-menu-btn"
                 onClick={() => setSignOutDrawerOpen(true)}
+                disabled={signOutLoading}
                 style={{
                   fontSize: 'var(--font-size-caption)',
                   color: 'var(--color-text-muted)',
                   background: 'none',
                   border: 'none',
-                  cursor: 'pointer',
+                  cursor: signOutLoading ? 'default' : 'pointer',
                   padding: 0,
+                  opacity: signOutLoading ? 0.5 : 1,
                 }}
               >
-                {user.email}
+                {signOutLoading ? 'Signing out…' : user.email}
               </button>
             ) : (
               <Link
