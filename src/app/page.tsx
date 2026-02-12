@@ -109,14 +109,9 @@ export default function Dashboard() {
 
   const handleSignOut = async () => {
     setSignOutLoading(true);
-    try {
-      await fetch('/auth/signout', { method: 'POST' });
-      router.push('/');
-      router.refresh();
-    } finally {
-      setSignOutLoading(false);
-      setSignOutDrawerOpen(false);
-    }
+    await fetch('/auth/signout', { method: 'POST' });
+    router.push('/');
+    router.refresh();
   };
 
   const openDrawer = (mealId: string, mealType: MealType, currentRecipeId: string) => {
