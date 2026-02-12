@@ -2,12 +2,14 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
 import { getRecipeById, getRecipesByMealType } from '@/data/recipes';
 import { generateShoppingList, mergeShoppingLists } from '@/lib/shoppingList';
 import { MealType, Meal } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
 import { Card, Button, BottomNav, ProgressBar } from '@/components/ui';
+import Drawer from '@/components/ui/Drawer';
 import { useAuth } from '@/components/AuthProvider';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -101,6 +103,22 @@ export default function Dashboard() {
     currentRecipeId: null,
   });
 
+  const [signOutDrawerOpen, setSignOutDrawerOpen] = useState(false);
+  const [signOutLoading, setSignOutLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    setSignOutLoading(true);
+    try {
+      await fetch('/auth/signout', { method: 'POST' });
+      router.push('/');
+      router.refresh();
+    } finally {
+      setSignOutLoading(false);
+      setSignOutDrawerOpen(false);
+    }
+  };
+
   const openDrawer = (mealId: string, mealType: MealType, currentRecipeId: string) => {
     setDrawerState({ isOpen: true, mealId, mealType, currentRecipeId });
   };
@@ -187,22 +205,21 @@ export default function Dashboard() {
           <div className="flex justify-end mb-4" style={{ minHeight: '1.5rem' }}>
             {!authLoading && (
               user ? (
-                <form action="/auth/signout" method="post">
-                  <button
-                    type="submit"
-                    data-testid="user-menu-btn"
-                    style={{
-                      fontSize: 'var(--font-size-caption)',
-                      color: 'var(--color-text-muted)',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0,
-                    }}
-                  >
-                    {user.email}
-                  </button>
-                </form>
+                <button
+                  type="button"
+                  data-testid="user-menu-btn"
+                  onClick={() => setSignOutDrawerOpen(true)}
+                  style={{
+                    fontSize: 'var(--font-size-caption)',
+                    color: 'var(--color-text-muted)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                >
+                  {user.email}
+                </button>
               ) : (
                 <Link
                   href="/auth/signin"
@@ -391,6 +408,42 @@ export default function Dashboard() {
           onSelectRecipe={handleSelectRecipe}
           onSurpriseMe={handleSurpriseMe}
         />
+
+        {/* Sign out confirmation drawer */}
+        <Drawer
+          isOpen={signOutDrawerOpen}
+          onClose={() => setSignOutDrawerOpen(false)}
+          title="Sign out"
+        >
+          <p
+            style={{
+              fontSize: 'var(--font-size-body)',
+              color: 'var(--color-text-secondary)',
+              marginBottom: 'var(--space-6)',
+            }}
+            data-testid="signout-confirmation-text"
+          >
+            Are you sure you want to sign out?
+          </p>
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => setSignOutDrawerOpen(false)}
+              data-testid="signout-cancel-btn"
+            >
+              Cancel
+            </Button>
+            <Button
+              className="flex-1"
+              loading={signOutLoading}
+              onClick={handleSignOut}
+              data-testid="signout-confirm-btn"
+            >
+              Sign out
+            </Button>
+          </div>
+        </Drawer>
       </main>
     );
   }
@@ -403,22 +456,21 @@ export default function Dashboard() {
         <div className="flex justify-end mb-4" style={{ minHeight: '1.5rem' }}>
           {!authLoading && (
             user ? (
-              <form action="/auth/signout" method="post">
-                <button
-                  type="submit"
-                  data-testid="user-menu-btn"
-                  style={{
-                    fontSize: 'var(--font-size-caption)',
-                    color: 'var(--color-text-muted)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: 0,
-                  }}
-                >
-                  {user.email}
-                </button>
-              </form>
+              <button
+                type="button"
+                data-testid="user-menu-btn"
+                onClick={() => setSignOutDrawerOpen(true)}
+                style={{
+                  fontSize: 'var(--font-size-caption)',
+                  color: 'var(--color-text-muted)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                }}
+              >
+                {user.email}
+              </button>
             ) : (
               <Link
                 href="/auth/signin"
@@ -463,6 +515,42 @@ export default function Dashboard() {
         showBack={false}
         primaryAction={{ href: '/recipes', label: 'Recipes', testId: 'my-recipes-link' }}
       />
+
+      {/* Sign out confirmation drawer */}
+      <Drawer
+        isOpen={signOutDrawerOpen}
+        onClose={() => setSignOutDrawerOpen(false)}
+        title="Sign out"
+      >
+        <p
+          style={{
+            fontSize: 'var(--font-size-body)',
+            color: 'var(--color-text-secondary)',
+            marginBottom: 'var(--space-6)',
+          }}
+          data-testid="signout-confirmation-text"
+        >
+          Are you sure you want to sign out?
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            className="flex-1"
+            onClick={() => setSignOutDrawerOpen(false)}
+            data-testid="signout-cancel-btn"
+          >
+            Cancel
+          </Button>
+          <Button
+            className="flex-1"
+            loading={signOutLoading}
+            onClick={handleSignOut}
+            data-testid="signout-confirm-btn"
+          >
+            Sign out
+          </Button>
+        </div>
+      </Drawer>
     </main>
   );
 }
