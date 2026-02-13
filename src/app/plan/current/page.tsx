@@ -356,7 +356,7 @@ export default function CurrentPlan() {
           label: shareStatus === 'copied' ? 'Link Copied!' : shareStatus === 'loading' ? 'Sharing...' : 'Share',
           testId: 'share-plan-btn',
         } : undefined}
-        primaryAction={{ href: '/shopping-list', label: 'View Shopping List', testId: 'shopping-list-btn' }}
+        primaryAction={{ href: '/shopping-list', label: 'Shopping List', testId: 'shopping-list-btn' }}
         maxWidth="2xl"
       />
 
