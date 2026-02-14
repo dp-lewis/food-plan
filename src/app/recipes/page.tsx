@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
 import { BottomNav, Button, Card, EmptyState, Drawer, PageHeader } from '@/components/ui';
+import { LinkIcon } from 'lucide-react';
 
 export default function MyRecipes() {
   const router = useRouter();
@@ -100,13 +101,20 @@ export default function MyRecipes() {
                 className="block"
               >
                 <Card>
-                  <h2 className="text-base font-semibold text-foreground">
-                    {recipe.title}
-                  </h2>
-                  <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                    <span className="capitalize">{recipe.mealType}</span>
-                    <span>·</span>
-                    <span>{recipe.sourceName ? `from ${recipe.sourceName}` : 'Your recipe'}</span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <h2 className="text-base font-semibold text-foreground">
+                        {recipe.title}
+                      </h2>
+                      <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                        <span className="capitalize">{recipe.mealType}</span>
+                        <span>·</span>
+                        <span>{recipe.sourceName ? `from ${recipe.sourceName}` : 'Your recipe'}</span>
+                      </div>
+                    </div>
+                    {recipe.sourceUrl && (
+                      <LinkIcon className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
+                    )}
                   </div>
                 </Card>
               </Link>

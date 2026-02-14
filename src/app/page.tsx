@@ -11,7 +11,7 @@ import RecipeDrawer from '@/components/RecipeDrawer';
 import { Card, Button, BottomNav, ProgressBar, PageHeader } from '@/components/ui';
 import Drawer from '@/components/ui/Drawer';
 import { useAuth } from '@/components/AuthProvider';
-import { ChefHat } from 'lucide-react';
+import { ChefHat, ShoppingCart, Calendar } from 'lucide-react';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -178,17 +178,18 @@ export default function Dashboard() {
     const shoppingStarted = shoppingStatus && shoppingStatus.checked > 0;
 
     // Context-aware primary action
-    let primaryAction: { href: string; label: string };
+    let primaryAction: { href: string; label: string; subtitle: string; icon: typeof ShoppingCart };
     if (!shoppingStarted && shoppingStatus && shoppingStatus.total > 0) {
-      primaryAction = { href: '/shopping-list', label: 'Go Shopping' };
+      const remaining = shoppingStatus.total - shoppingStatus.checked;
+      primaryAction = { href: '/shopping-list', label: 'Go Shopping', subtitle: `${remaining} items remaining`, icon: ShoppingCart };
     } else if (hasUpNext && upNextMealsWithRecipes.length === 1) {
       const firstRecipe = upNextMealsWithRecipes[0].recipe;
       const recipeUrl = firstRecipe.isUserRecipe ? `/recipes/${firstRecipe.id}` : `/recipe/${firstRecipe.id}`;
-      primaryAction = { href: recipeUrl, label: 'View Recipe' };
+      primaryAction = { href: recipeUrl, label: 'View Recipe', subtitle: `${firstRecipe.prepTime + firstRecipe.cookTime} mins total`, icon: ChefHat };
     } else if (hasUpNext) {
-      primaryAction = { href: '/plan/current', label: 'View Recipes' };
+      primaryAction = { href: '/plan/current', label: 'View Recipes', subtitle: `${upNextMealsWithRecipes.length} meals`, icon: ChefHat };
     } else {
-      primaryAction = { href: '/plan/current', label: 'View Full Plan' };
+      primaryAction = { href: '/plan/current', label: 'View Full Plan', subtitle: `Day ${todayIndex + 1} of 7`, icon: Calendar };
     }
 
     const tomorrowDayName = getDayName(currentPlan.preferences.startDay, tomorrowIndex);
@@ -316,12 +317,24 @@ export default function Dashboard() {
           )}
 
           {/* ── Section 4: Quick actions ── */}
-          <div className="flex gap-2">
-            <Link href={primaryAction.href} className="flex-1" data-testid="primary-action-link">
-              <Button className="w-full">{primaryAction.label}</Button>
+          <div className="grid grid-cols-1 gap-3">
+            <Link href={primaryAction.href} data-testid="primary-action-link">
+              <Button className="w-full h-auto py-4 justify-start text-left">
+                <primaryAction.icon className="w-5 h-5 mr-3 flex-shrink-0" />
+                <div>
+                  <div className="font-semibold">{primaryAction.label}</div>
+                  <div className="text-sm font-normal opacity-70">{primaryAction.subtitle}</div>
+                </div>
+              </Button>
             </Link>
-            <Link href="/plan/current" className="flex-1" data-testid="view-full-plan-link">
-              <Button variant="secondary" className="w-full">Full Plan</Button>
+            <Link href="/plan/current" data-testid="view-full-plan-link">
+              <Button variant="secondary" className="w-full h-auto py-4 justify-start text-left">
+                <Calendar className="w-5 h-5 mr-3 flex-shrink-0" />
+                <div>
+                  <div className="font-semibold">Full Plan</div>
+                  <div className="text-sm font-normal opacity-70">Day {todayIndex + 1} of 7</div>
+                </div>
+              </Button>
             </Link>
           </div>
 

@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getRecipeById } from '@/data/recipes';
 import { MetaChip, PageHeader } from '@/components/ui';
+import { Clock, Users, ChefHat, DollarSign } from 'lucide-react';
 
 export default function RecipeDetail() {
   const params = useParams();
@@ -42,18 +43,20 @@ export default function RecipeDetail() {
         {/* Meta info */}
         <div className="flex flex-wrap gap-3 mb-6 pb-6 border-b border-border">
           <div data-testid="recipe-time">
-            <MetaChip label="Total time" value={`${totalTime} mins`} />
+            <MetaChip label="Total time" value={`${totalTime} mins`} icon={<Clock className="w-4 h-4" />} />
           </div>
           <div data-testid="recipe-servings">
-            <MetaChip label="Servings" value={recipe.servings} />
+            <MetaChip label="Servings" value={recipe.servings} icon={<Users className="w-4 h-4" />} />
           </div>
           <MetaChip
             label="Difficulty"
             value={recipe.difficulty.charAt(0).toUpperCase() + recipe.difficulty.slice(1)}
+            icon={<ChefHat className="w-4 h-4" />}
           />
           <MetaChip
             label="Cost"
             value={recipe.estimatedCost.charAt(0).toUpperCase() + recipe.estimatedCost.slice(1)}
+            icon={<DollarSign className="w-4 h-4" />}
           />
         </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
@@ -21,6 +21,32 @@ const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
  */
 function getOrderedDays(startDay: number): string[] {
   return Array.from({ length: 7 }, (_, i) => DAYS[(startDay + i) % 7]);
+}
+
+/**
+ * Get today's dayIndex within the plan based on the plan's startDay.
+ * startDay uses 0=Monday ... 6=Sunday.
+ * Returns 0-6, where 0 is the plan's first day.
+ */
+function getTodayPlanIndex(startDay: number): number {
+  const now = new Date();
+  const jsDay = now.getDay();
+  const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
+  return (todayIndex - startDay + 7) % 7;
+}
+
+/**
+ * Get the formatted date string (e.g. "Feb 15") for a given dayIndex in the plan.
+ */
+function getDateForDayIndex(startDay: number, dayIndex: number): string {
+  const now = new Date();
+  const jsDay = now.getDay();
+  const todayWeekday = jsDay === 0 ? 6 : jsDay - 1; // 0=Mon...6=Sun
+  const todayPlanIndex = (todayWeekday - startDay + 7) % 7;
+  const diff = dayIndex - todayPlanIndex;
+  const date = new Date(now);
+  date.setDate(date.getDate() + diff);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 type DrawerMode = 'swap' | 'add';
@@ -187,6 +213,19 @@ export default function CurrentPlan() {
     }
   }, [hasHydrated, currentPlan, router]);
 
+  const todayIndex = useMemo(
+    () => currentPlan ? getTodayPlanIndex(currentPlan.preferences.startDay) : 0,
+    [currentPlan]
+  );
+
+  const todayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (hasHydrated && currentPlan && todayRef.current) {
+      todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [hasHydrated, currentPlan]);
+
   if (!hasHydrated || !currentPlan) {
     return null;
   }
@@ -227,10 +266,26 @@ export default function CurrentPlan() {
         </div>
 
         <div className="space-y-4">
-          {slotsByDay.map(({ dayName, dayIndex, slots }) => (
-            <Card key={dayName} padding="none" data-testid={`day-${dayIndex}`}>
+          {slotsByDay.map(({ dayName, dayIndex, slots }) => {
+            const isToday = dayIndex === todayIndex;
+            return (
+            <Card
+              key={dayName}
+              padding="none"
+              data-testid={`day-${dayIndex}`}
+              className={`scroll-mt-20 ${isToday ? 'border-2 border-primary' : ''}`}
+              ref={isToday ? todayRef : undefined}
+            >
               <div className="px-4 py-2 bg-muted font-semibold text-base text-foreground">
-                {dayName}
+                <div className="flex items-center gap-2">
+                  {dayName}
+                  {isToday && (
+                    <span className="text-xs font-medium bg-primary-foreground text-primary px-2 py-0.5 rounded">Today</span>
+                  )}
+                </div>
+                <div className="text-xs font-normal text-muted-foreground">
+                  {getDateForDayIndex(currentPlan.preferences.startDay, dayIndex)}
+                </div>
               </div>
               <div className="divide-y divide-border">
                 {slots.map(({ mealType, meals }) => {
@@ -245,16 +300,17 @@ export default function CurrentPlan() {
 
                       {/* Meals in this slot */}
                       {meals.length === 0 ? (
-                        <div className="px-4 pb-3 flex items-center justify-between text-muted-foreground">
-                          <span className="text-base italic">
-                            No meals planned
-                          </span>
+                        <div className="px-4 pb-3 space-y-2">
+                          <div className="p-3 border border-dashed border-border rounded-lg text-center text-sm text-muted-foreground">
+                            No meal planned
+                          </div>
                           <Button
                             variant="secondary"
                             size="small"
                             onClick={() => openAddDrawer(dayIndex, mealType, slotRecipeIds)}
                             data-testid={`add-meal-${dayIndex}-${mealType}`}
                             aria-label={`Add ${mealType}`}
+                            className="w-full"
                           >
                             + Add
                           </Button>
@@ -318,7 +374,8 @@ export default function CurrentPlan() {
                 })}
               </div>
             </Card>
-          ))}
+            );
+          })}
         </div>
 
       </main>

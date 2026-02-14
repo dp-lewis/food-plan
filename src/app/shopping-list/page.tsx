@@ -11,6 +11,7 @@ export default function ShoppingList() {
   const currentPlan = useStore((state) => state.currentPlan);
   const checkedItems = useStore((state) => state.checkedItems);
   const toggleCheckedItem = useStore((state) => state.toggleCheckedItem);
+  const clearCheckedItems = useStore((state) => state.clearCheckedItems);
   const userRecipes = useStore((state) => state.userRecipes);
   const customShoppingItems = useStore((state) => state.customShoppingItems);
   const addCustomItem = useStore((state) => state.addCustomItem);
@@ -135,6 +136,15 @@ export default function ShoppingList() {
               <span className="text-xs text-primary-foreground/70" data-testid="progress-counter">
                 {checkedCount} / {totalItems} items
               </span>
+              {checkedCount > 0 && (
+                <button
+                  onClick={clearCheckedItems}
+                  className="text-xs text-primary-foreground/70 hover:text-primary-foreground"
+                  data-testid="clear-checked-btn"
+                >
+                  Clear checked
+                </button>
+              )}
             </div>
             <ProgressBar value={checkedCount} max={totalItems} />
           </div>
