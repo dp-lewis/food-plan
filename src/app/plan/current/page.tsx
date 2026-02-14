@@ -219,10 +219,12 @@ export default function CurrentPlan() {
   );
 
   const todayRef = useRef<HTMLDivElement>(null);
+  const hasScrolledToToday = useRef(false);
 
   useEffect(() => {
-    if (hasHydrated && currentPlan && todayRef.current) {
+    if (hasHydrated && currentPlan && todayRef.current && !hasScrolledToToday.current) {
       todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      hasScrolledToToday.current = true;
     }
   }, [hasHydrated, currentPlan]);
 
