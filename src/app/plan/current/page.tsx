@@ -304,7 +304,7 @@ export default function CurrentPlan() {
                       {meals.length === 0 ? (
                         <div className="px-4 pb-3 space-y-2">
                           <div className="p-3 border border-dashed border-border rounded-lg text-center text-sm text-muted-foreground">
-                            No meal planned
+                            No meals planned
                           </div>
                           <Button
                             variant="secondary"
