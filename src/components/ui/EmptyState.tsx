@@ -13,7 +13,7 @@ export default function EmptyState({ icon, title, description, action }: EmptySt
     <div className="text-center p-8">
       {icon && (
         <div
-          className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--color-accent-light)] flex items-center justify-center text-[2rem]"
+          className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-light flex items-center justify-center text-[2rem]"
           role="presentation"
           aria-hidden="true"
         >

@@ -77,7 +77,7 @@ export default function ToggleGroup({
               className={cn(
                 toggleBaseVariants({ variant }),
                 isActive && variant === 'compact' && 'bg-primary border-primary text-primary-foreground',
-                isActive && variant === 'default' && 'bg-[var(--color-accent-light)] border-primary text-primary',
+                isActive && variant === 'default' && 'bg-primary-light border-primary text-primary',
               )}
               aria-pressed={isActive}
               data-testid={testIdPrefix ? `${testIdPrefix}-${option.value}` : undefined}

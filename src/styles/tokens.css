@@ -1,17 +1,14 @@
 /**
  * Food Plan - Design Tokens
  *
- * Legacy tokens: only --color-accent-light and Alert semantic colors
- * remain as arbitrary-value references in components.
- * Everything else uses shadcn-convention aliases via Tailwind.
+ * Legacy tokens: Alert semantic colors remain as arbitrary-value
+ * references in components. Everything else uses shadcn aliases.
  */
 
 :root {
   /* ==========================================
      COLORS (legacy — component arbitrary values)
      ========================================== */
-
-  --color-accent-light: #dcfce7;     /* ToggleGroup, EmptyState, RecipeDrawer */
 
   /* Semantic - Used by Alert arbitrary values */
   --color-success: #16a34a;
@@ -36,6 +33,7 @@
      ========================================== */
 
   --primary: #16a34a;
+  --primary-light: #dcfce7;
   --primary-foreground: #ffffff;
   --background: #ffffff;
   --foreground: #111827;

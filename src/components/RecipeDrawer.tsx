@@ -36,7 +36,7 @@ export default function RecipeDrawer({
           onSurpriseMe();
           onClose();
         }}
-        className="w-full py-3 px-4 bg-[var(--color-accent-light)] border border-primary rounded-sm text-primary font-semibold text-base min-h-11 mb-4 transition-all cursor-pointer hover:bg-primary hover:text-primary-foreground"
+        className="w-full py-3 px-4 bg-primary-light border border-primary rounded-sm text-primary font-semibold text-base min-h-11 mb-4 transition-all cursor-pointer hover:bg-primary hover:text-primary-foreground"
         data-testid="surprise-me-btn"
         aria-label={`Choose a random ${mealTypeLabel.toLowerCase()} recipe`}
       >
@@ -68,7 +68,7 @@ export default function RecipeDrawer({
                 className={cn(
                   'w-full py-3 px-4 rounded-sm text-left min-h-11 flex items-center justify-between transition-[border-color] duration-150 cursor-pointer border',
                   isCurrent
-                    ? 'border-primary bg-[var(--color-accent-light)] cursor-default'
+                    ? 'border-primary bg-primary-light cursor-default'
                     : 'border-border bg-background hover:border-primary'
                 )}
                 data-testid={`recipe-option-${recipe.id}`}
