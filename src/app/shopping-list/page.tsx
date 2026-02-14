@@ -66,7 +66,7 @@ export default function ShoppingList() {
     return (
       <div className="min-h-screen bg-background">
         <PageHeader title="Shopping List" backHref="/" sticky />
-        <main className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
+        <main className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
           <div className="text-center py-8">
             <p className="text-muted-foreground mb-4">
               No meal plan found. Create one to generate a shopping list, or add items manually.
@@ -150,7 +150,7 @@ export default function ShoppingList() {
           </div>
         )}
       </PageHeader>
-      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
         {/* Grouped list */}
         <div className="space-y-6">
           {Array.from(groupedItems.entries()).map(([category, items]) => (

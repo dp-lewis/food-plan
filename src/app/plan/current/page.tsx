@@ -232,7 +232,7 @@ export default function CurrentPlan() {
     return (
       <div className="min-h-screen bg-background" data-testid="meal-plan">
         <PageHeader title="Meal Plan" backHref="/" sticky />
-        <main className="max-w-2xl mx-auto px-4 py-6 pb-32 space-y-6">
+        <main className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
           <div className="flex items-center justify-end">
             <div className="h-4 w-28 bg-muted animate-pulse rounded" />
           </div>
@@ -299,7 +299,7 @@ export default function CurrentPlan() {
           </div>
         }
       />
-      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
         <div className="flex items-center justify-end">
           <Link
             href="/plan"
