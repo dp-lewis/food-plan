@@ -1,27 +1,21 @@
 /**
  * Food Plan - Design Tokens
  *
- * Old tokens are retained only where still referenced by globals.css
- * (drawer/recipe classes) or component arbitrary values.
+ * Legacy tokens retained only where still referenced by globals.css
+ * (focus styles, skip-link, placeholder) or component arbitrary values.
  * Shadcn-convention aliases at the bottom drive all Tailwind classes.
  */
 
 :root {
   /* ==========================================
-     COLORS (legacy — used by globals.css classes & Alert arbitrary values)
+     COLORS (legacy — used by globals.css & component arbitrary values)
      ========================================== */
 
-  --color-accent: #16a34a;           /* Used by focus styles, drawer/recipe classes */
-  --color-accent-light: #dcfce7;     /* Backgrounds, highlights */
+  --color-accent: #16a34a;           /* Focus styles in globals.css */
+  --color-accent-light: #dcfce7;     /* ToggleGroup, EmptyState, RecipeDrawer */
 
-  --color-text-primary: #111827;     /* Used by drawer/recipe classes */
-  --color-text-muted: #6b7280;       /* Used by drawer/recipe classes, placeholder */
-  --color-text-inverse: #ffffff;     /* Used by skip-link, surprise-me hover */
-
-  --color-bg-primary: #ffffff;       /* Used by drawer/recipe classes */
-  --color-bg-tertiary: #f3f4f6;      /* Used by drawer close hover */
-
-  --color-border: #e5e7eb;           /* Used by drawer/recipe classes */
+  --color-text-muted: #6b7280;       /* Placeholder styling in globals.css */
+  --color-text-inverse: #ffffff;     /* Skip-link in globals.css */
 
   /* Semantic - Used by Alert arbitrary values */
   --color-success: #16a34a;
@@ -40,41 +34,21 @@
   --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
                  Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-  /* Used by drawer/recipe classes in globals.css */
-  --font-size-heading: 1.5rem;
-  --font-size-body: 1rem;
-  --font-size-caption: 0.875rem;
-  --font-weight-bold: 600;
-  --line-height-normal: 1.5;
+  --font-weight-bold: 600;           /* Skip-link in globals.css */
+  --line-height-normal: 1.5;         /* Body in globals.css */
 
   /* ==========================================
      SPACING (only values still referenced)
      ========================================== */
 
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-
-  /* ==========================================
-     SIZING
-     ========================================== */
-
-  --touch-target-min: 2.75rem;       /* 44px */
+  --space-2: 0.5rem;                 /* Skip-link in globals.css */
+  --space-4: 1rem;                   /* Skip-link in globals.css */
 
   /* ==========================================
      BORDERS
      ========================================== */
 
-  --border-width: 1px;
-  --border-radius-sm: 0.375rem;
-  --border-radius-lg: 0.75rem;
-
-  /* ==========================================
-     TRANSITIONS
-     ========================================== */
-
-  --transition-fast: 150ms ease;
+  --border-radius-sm: 0.375rem;      /* Skip-link in globals.css */
 
   /* ==========================================
      SHADCN-CONVENTION ALIASES
