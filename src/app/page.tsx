@@ -231,7 +231,7 @@ export default function Dashboard() {
           }
           sticky
         />
-        <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
+        <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
 
           {/* ── Section 1: Up Next ── */}
           {hasUpNext && upNextSlot && (
@@ -429,7 +429,7 @@ export default function Dashboard() {
         }
         sticky
       />
-      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
         <div className="text-center py-12">
           <h2 className="mb-2 text-2xl font-semibold text-foreground">
             What&apos;s for dinner this week?
