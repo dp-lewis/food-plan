@@ -1,25 +1,11 @@
 /**
  * Food Plan - Design Tokens
  *
- * Legacy tokens: Alert semantic colors remain as arbitrary-value
- * references in components. Everything else uses shadcn aliases.
+ * All tokens follow shadcn conventions and map to Tailwind
+ * utility classes via @theme inline in globals.css.
  */
 
 :root {
-  /* ==========================================
-     COLORS (legacy — component arbitrary values)
-     ========================================== */
-
-  /* Semantic - Used by Alert arbitrary values */
-  --color-success: #16a34a;
-  --color-success-light: #dcfce7;
-  --color-warning: #d97706;
-  --color-warning-light: #fef3c7;
-  --color-error: #dc2626;
-  --color-error-light: #fee2e2;
-  --color-info: #2563eb;
-  --color-info-light: #dbeafe;
-
   /* ==========================================
      TYPOGRAPHY
      ========================================== */
@@ -52,6 +38,16 @@
   --input-background: #f9fafb;
   --ring: #16a34a;
   --radius: 0.5rem;
+
+  /* Semantic colors (Alert variants) */
+  --success: #16a34a;
+  --success-light: #dcfce7;
+  --warning: #d97706;
+  --warning-light: #fef3c7;
+  --error: #dc2626;
+  --error-light: #fee2e2;
+  --info: #2563eb;
+  --info-light: #dbeafe;
 
   /* Text size aliases for base layer */
   --text-2xl: 1.5rem;
