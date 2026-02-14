@@ -305,7 +305,7 @@ export default function CurrentPlan() {
             href="/plan"
             className="text-sm text-primary"
           >
-            Change start day
+            Reset plan
           </Link>
         </div>
 
