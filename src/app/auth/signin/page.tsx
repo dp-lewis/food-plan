@@ -71,33 +71,14 @@ function SignInForm() {
     return (
       <>
         <Card data-testid="signin-success">
-          <h1
-            className="mb-2"
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
+          <h1 className="mb-2 text-2xl font-semibold text-foreground">
             Check your email
           </h1>
-          <p
-            className="mb-4"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
+          <p className="mb-4 text-base text-muted-foreground">
             We sent a code to <strong>{email}</strong>. Enter the 6-digit code
             from the email to sign in.
           </p>
-          <p
-            className="mb-4"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
+          <p className="mb-4 text-sm text-muted-foreground">
             Or tap the magic link in the email if you&apos;re using a browser.
           </p>
 
@@ -144,13 +125,7 @@ function SignInForm() {
               setVerifyError(null);
             }}
             data-testid="resend-btn"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-accent)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-            }}
+            className="text-sm text-primary bg-transparent border-none cursor-pointer"
           >
             Resend code
           </button>
@@ -161,14 +136,7 @@ function SignInForm() {
 
   return (
     <>
-      <h1
-        className="mb-6"
-        style={{
-          fontSize: 'var(--font-size-heading)',
-          fontWeight: 'var(--font-weight-bold)',
-          color: 'var(--color-text-primary)',
-        }}
-      >
+      <h1 className="mb-6 text-2xl font-semibold text-foreground">
         Sign in
       </h1>
 

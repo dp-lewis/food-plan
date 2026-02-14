@@ -106,11 +106,7 @@ export default function Drawer({ isOpen, onClose, title, children }: DrawerProps
         <div className="drawer-header">
           <h2
             id="drawer-title"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
+            className="text-base font-semibold text-foreground"
           >
             {title}
           </h2>

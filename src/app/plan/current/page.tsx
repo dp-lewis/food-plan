@@ -220,10 +220,7 @@ export default function CurrentPlan() {
         <div className="flex items-center justify-end">
           <Link
             href="/plan"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-accent)',
-            }}
+            className="text-sm text-primary"
           >
             Change start day
           </Link>
@@ -232,46 +229,24 @@ export default function CurrentPlan() {
         <div className="space-y-4">
           {slotsByDay.map(({ dayName, dayIndex, slots }) => (
             <Card key={dayName} padding="none" data-testid={`day-${dayIndex}`}>
-              <div
-                className="px-4 py-2"
-                style={{
-                  backgroundColor: 'var(--color-bg-tertiary)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
+              <div className="px-4 py-2 bg-muted font-semibold text-base text-foreground">
                 {dayName}
               </div>
-              <div className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
+              <div className="divide-y divide-border">
                 {slots.map(({ mealType, meals }) => {
                   const slotRecipeIds = meals.map(m => m.recipeId);
 
                   return (
                     <div key={mealType} data-testid={`slot-${dayIndex}-${mealType}`}>
                       {/* Meal type header */}
-                      <div
-                        className="px-4 pt-3 pb-1"
-                        style={{
-                          fontSize: 'var(--font-size-caption)',
-                          color: 'var(--color-text-muted)',
-                        }}
-                      >
+                      <div className="px-4 pt-3 pb-1 text-sm text-muted-foreground">
                         <span className="uppercase tracking-wide">{mealType}</span>
                       </div>
 
                       {/* Meals in this slot */}
                       {meals.length === 0 ? (
-                        <div
-                          className="px-4 pb-3 flex items-center justify-between"
-                          style={{ color: 'var(--color-text-muted)' }}
-                        >
-                          <span
-                            style={{
-                              fontSize: 'var(--font-size-body)',
-                              fontStyle: 'italic',
-                            }}
-                          >
+                        <div className="px-4 pb-3 flex items-center justify-between text-muted-foreground">
+                          <span className="text-base italic">
                             No meals planned
                           </span>
                           <Button
@@ -304,21 +279,10 @@ export default function CurrentPlan() {
                                   href={recipeUrl}
                                   className="flex-1 transition-colors"
                                 >
-                                  <p
-                                    style={{
-                                      fontSize: 'var(--font-size-body)',
-                                      color: 'var(--color-text-primary)',
-                                      fontWeight: 'var(--font-weight-bold)',
-                                    }}
-                                  >
+                                  <p className="text-base text-foreground font-semibold">
                                     {recipe.title}
                                   </p>
-                                  <p
-                                    style={{
-                                      fontSize: 'var(--font-size-caption)',
-                                      color: 'var(--color-text-muted)',
-                                    }}
-                                  >
+                                  <p className="text-sm text-muted-foreground">
                                     {recipe.prepTime + recipe.cookTime} mins
                                   </p>
                                 </Link>
@@ -342,7 +306,7 @@ export default function CurrentPlan() {
                               onClick={() => openAddDrawer(dayIndex, mealType, slotRecipeIds)}
                               data-testid={`add-meal-${dayIndex}-${mealType}`}
                               aria-label={`Add ${mealType}`}
-                              style={{ color: 'var(--color-accent)' }}
+                              className="text-primary"
                             >
                               + Add {mealType}
                             </Button>

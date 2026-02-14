@@ -157,7 +157,3 @@
   --text-xl: 1.25rem;
   --text-lg: 1.125rem;
 }
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}

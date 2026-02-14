@@ -8,37 +8,12 @@ export interface ProgressBarProps {
 export default function ProgressBar({ value, max, showLabel = false, label }: ProgressBarProps) {
   const percentage = max > 0 ? Math.min((value / max) * 100, 100) : 0;
 
-  const containerStyles = {
-    width: '100%',
-  };
-
-  const trackStyles = {
-    height: '0.5rem',
-    borderRadius: '9999px',
-    backgroundColor: 'var(--color-bg-tertiary)',
-    overflow: 'hidden',
-  };
-
-  const barStyles = {
-    height: '100%',
-    borderRadius: '9999px',
-    backgroundColor: 'var(--color-accent)',
-    width: `${percentage}%`,
-    transition: 'width 0.3s ease',
-  };
-
-  const labelStyles = {
-    marginTop: 'var(--space-1)',
-    fontSize: 'var(--font-size-caption)',
-    color: 'var(--color-text-muted)',
-    textAlign: 'right' as const,
-  };
-
   return (
-    <div style={containerStyles}>
-      <div style={trackStyles}>
+    <div className="w-full">
+      <div className="h-2 rounded-full bg-muted overflow-hidden">
         <div
-          style={barStyles}
+          className="h-full rounded-full bg-primary transition-[width] duration-300"
+          style={{ width: `${percentage}%` }}
           role="progressbar"
           aria-valuenow={value}
           aria-valuemin={0}
@@ -47,7 +22,7 @@ export default function ProgressBar({ value, max, showLabel = false, label }: Pr
         />
       </div>
       {showLabel && (
-        <div style={labelStyles}>
+        <div className="mt-1 text-sm text-muted-foreground text-right">
           {value} / {max}
         </div>
       )}

@@ -50,41 +50,19 @@ export default function SharedPlanView({ data }: { data: SharedPlanData }) {
         <div className="space-y-4">
           {slotsByDay.map(({ dayName, dayIndex, slots }) => (
             <Card key={dayName} padding="none" data-testid={`day-${dayIndex}`}>
-              <div
-                className="px-4 py-2"
-                style={{
-                  backgroundColor: 'var(--color-bg-tertiary)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
+              <div className="px-4 py-2 bg-muted font-semibold text-base text-foreground">
                 {dayName}
               </div>
-              <div className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
+              <div className="divide-y divide-border">
                 {slots.map(({ mealType, meals }) => (
                   <div key={mealType} data-testid={`slot-${dayIndex}-${mealType}`}>
-                    <div
-                      className="px-4 pt-3 pb-1"
-                      style={{
-                        fontSize: 'var(--font-size-caption)',
-                        color: 'var(--color-text-muted)',
-                      }}
-                    >
+                    <div className="px-4 pt-3 pb-1 text-sm text-muted-foreground">
                       <span className="uppercase tracking-wide">{mealType}</span>
                     </div>
 
                     {meals.length === 0 ? (
-                      <div
-                        className="px-4 pb-3"
-                        style={{ color: 'var(--color-text-muted)' }}
-                      >
-                        <span
-                          style={{
-                            fontSize: 'var(--font-size-body)',
-                            fontStyle: 'italic',
-                          }}
-                        >
+                      <div className="px-4 pb-3 text-muted-foreground">
+                        <span className="text-base italic">
                           No meals planned
                         </span>
                       </div>
@@ -98,21 +76,10 @@ export default function SharedPlanView({ data }: { data: SharedPlanData }) {
                             className="px-4 py-2"
                             data-testid={`meal-${meal.id}`}
                           >
-                            <p
-                              style={{
-                                fontSize: 'var(--font-size-body)',
-                                color: 'var(--color-text-primary)',
-                                fontWeight: 'var(--font-weight-bold)',
-                              }}
-                            >
+                            <p className="text-base text-foreground font-semibold">
                               {recipe.title}
                             </p>
-                            <p
-                              style={{
-                                fontSize: 'var(--font-size-caption)',
-                                color: 'var(--color-text-muted)',
-                              }}
-                            >
+                            <p className="text-sm text-muted-foreground">
                               {recipe.prepTime + recipe.cookTime} mins
                             </p>
                           </div>
@@ -129,28 +96,13 @@ export default function SharedPlanView({ data }: { data: SharedPlanData }) {
         {/* Shopping List - read only */}
         {shoppingList.length > 0 && (
           <div className="mt-8" data-testid="shared-shopping-list">
-            <h2
-              className="mb-4"
-              style={{
-                fontSize: 'var(--font-size-heading)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
+            <h2 className="mb-4 text-2xl font-semibold text-foreground">
               Shopping List
             </h2>
             <div className="space-y-6">
               {Array.from(groupedItems.entries()).map(([category, items]) => (
                 <section key={category} data-testid={`category-${category}`}>
-                  <h3
-                    className="mb-3 pb-2"
-                    style={{
-                      fontSize: 'var(--font-size-body)',
-                      fontWeight: 'var(--font-weight-bold)',
-                      color: 'var(--color-text-primary)',
-                      borderBottom: 'var(--border-width) solid var(--color-border)',
-                    }}
-                  >
+                  <h3 className="mb-3 pb-2 text-base font-semibold text-foreground border-b border-border">
                     {CATEGORY_LABELS[category]}
                   </h3>
                   <ul className="space-y-1">
@@ -158,13 +110,9 @@ export default function SharedPlanView({ data }: { data: SharedPlanData }) {
                       <li
                         key={item.id}
                         data-testid={`item-${item.id}`}
-                        className="px-1 py-1"
-                        style={{
-                          fontSize: 'var(--font-size-body)',
-                          color: 'var(--color-text-primary)',
-                        }}
+                        className="px-1 py-1 text-base text-foreground"
                       >
-                        <span style={{ color: 'var(--color-text-muted)' }}>
+                        <span className="text-muted-foreground">
                           {item.quantity} {item.unit}
                         </span>{' '}
                         {item.ingredient}

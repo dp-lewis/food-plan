@@ -13,17 +13,10 @@ export default async function SharedPlanPage({
     return (
       <main className="min-h-screen p-4 pb-24" data-testid="shared-plan-error">
         <div className="max-w-2xl mx-auto text-center py-12">
-          <h1
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-              marginBottom: 'var(--space-4)',
-            }}
-          >
+          <h1 className="text-2xl font-semibold text-foreground mb-4">
             Plan Not Found
           </h1>
-          <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-body)' }}>
+          <p className="text-muted-foreground text-base">
             This shared plan link is invalid or has been revoked.
           </p>
         </div>

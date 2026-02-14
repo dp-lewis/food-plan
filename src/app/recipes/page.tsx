@@ -100,22 +100,10 @@ export default function MyRecipes() {
                 className="block"
               >
                 <Card>
-                  <h2
-                    style={{
-                      fontSize: 'var(--font-size-body)',
-                      fontWeight: 'var(--font-weight-bold)',
-                      color: 'var(--color-text-primary)',
-                    }}
-                  >
+                  <h2 className="text-base font-semibold text-foreground">
                     {recipe.title}
                   </h2>
-                  <div
-                    className="flex items-center gap-2 mt-1"
-                    style={{
-                      fontSize: 'var(--font-size-caption)',
-                      color: 'var(--color-text-muted)',
-                    }}
-                  >
+                  <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                     <span className="capitalize">{recipe.mealType}</span>
                     <span>·</span>
                     <span>{recipe.sourceName ? `from ${recipe.sourceName}` : 'Your recipe'}</span>
@@ -156,37 +144,19 @@ export default function MyRecipes() {
                 }
               }}
               placeholder="https://www.recipetineats.com/..."
-              className="flex-1"
+              className="flex-1 bg-background border border-border text-base text-foreground px-3 py-2 rounded-sm"
               data-testid="import-url-input"
-              style={{
-                backgroundColor: 'var(--color-bg-primary)',
-                border: 'var(--border-width) solid var(--color-border)',
-                fontSize: 'var(--font-size-body)',
-                color: 'var(--color-text-primary)',
-                padding: 'var(--space-2) var(--space-3)',
-                borderRadius: 'var(--border-radius-sm)',
-              }}
             />
           </div>
           {error && (
             <p
-              className="mt-2"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-error)',
-              }}
+              className="mt-2 text-sm text-destructive"
               data-testid="import-error"
             >
               {error}
             </p>
           )}
-          <p
-            className="mt-2 mb-4"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
+          <p className="mt-2 mb-4 text-sm text-muted-foreground">
             Paste a recipe URL from sites like RecipeTin Eats, BBC Good Food, or any site with structured recipe data.
           </p>
           <Button

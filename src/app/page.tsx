@@ -230,22 +230,10 @@ export default function Dashboard() {
           {hasUpNext && upNextSlot && (
             <Card data-testid="up-next-card" className="mb-4">
               <div className="flex items-center justify-between mb-2">
-                <span
-                  className="uppercase tracking-wide"
-                  style={{
-                    fontSize: 'var(--font-size-caption)',
-                    color: 'var(--color-text-muted)',
-                  }}
-                >
+                <span className="uppercase tracking-wide text-sm text-muted-foreground">
                   {upNextSlot.label}
                 </span>
-                <span
-                  className="uppercase tracking-wide"
-                  style={{
-                    fontSize: 'var(--font-size-caption)',
-                    color: 'var(--color-text-muted)',
-                  }}
-                >
+                <span className="uppercase tracking-wide text-sm text-muted-foreground">
                   {upNextSlot.mealType}
                 </span>
               </div>
@@ -256,22 +244,10 @@ export default function Dashboard() {
                   return (
                     <div key={meal.id} data-testid={`up-next-meal-${meal.id}`}>
                       <Link href={recipeUrl} data-testid={isFirst ? 'up-next-recipe-link' : undefined}>
-                        <p
-                          className="mb-1"
-                          style={{
-                            fontSize: isFirst ? 'var(--font-size-heading)' : 'var(--font-size-body)',
-                            fontWeight: 'var(--font-weight-bold)',
-                            color: 'var(--color-text-primary)',
-                          }}
-                        >
+                        <p className={`mb-1 font-semibold text-foreground ${isFirst ? 'text-2xl' : 'text-base'}`}>
                           {recipe.title}
                         </p>
-                        <p
-                          style={{
-                            fontSize: 'var(--font-size-caption)',
-                            color: 'var(--color-text-muted)',
-                          }}
-                        >
+                        <p className="text-sm text-muted-foreground">
                           {recipe.prepTime + recipe.cookTime} mins
                         </p>
                       </Link>
@@ -285,16 +261,7 @@ export default function Dashboard() {
           {/* ── Section 2: Tomorrow preview ── */}
           {showTomorrow && tomorrowMeals.length > 0 && (
             <Card data-testid="tomorrow-preview" className="mb-4">
-              <h2
-                className="mb-2"
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--color-text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                }}
-              >
+              <h2 className="mb-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Tomorrow &middot; {tomorrowDayName}
               </h2>
               <div className="space-y-1">
@@ -304,20 +271,12 @@ export default function Dashboard() {
                   return (
                     <div
                       key={meal.id}
-                      className="flex items-baseline gap-2"
-                      style={{ fontSize: 'var(--font-size-body)' }}
+                      className="flex items-baseline gap-2 text-base"
                     >
-                      <span
-                        className="uppercase"
-                        style={{
-                          fontSize: 'var(--font-size-caption)',
-                          color: 'var(--color-text-muted)',
-                          minWidth: '4.5rem',
-                        }}
-                      >
+                      <span className="uppercase text-sm text-muted-foreground min-w-[4.5rem]">
                         {meal.mealType}
                       </span>
-                      <span style={{ color: 'var(--color-text-primary)' }}>
+                      <span className="text-foreground">
                         {recipe.title}
                       </span>
                     </div>
@@ -332,32 +291,16 @@ export default function Dashboard() {
             <Link href="/shopping-list" data-testid="shopping-status-link">
               <Card className="mb-4" data-testid="shopping-status-card">
                 {shoppingDone ? (
-                  <p
-                    style={{
-                      fontSize: 'var(--font-size-body)',
-                      color: 'var(--color-text-muted)',
-                    }}
-                  >
+                  <p className="text-base text-muted-foreground">
                     Shopping complete
                   </p>
                 ) : (
                   <>
                     <div className="flex items-center justify-between mb-2">
-                      <span
-                        style={{
-                          fontSize: 'var(--font-size-body)',
-                          fontWeight: 'var(--font-weight-bold)',
-                          color: 'var(--color-text-primary)',
-                        }}
-                      >
+                      <span className="text-base font-semibold text-foreground">
                         Shopping list
                       </span>
-                      <span
-                        style={{
-                          fontSize: 'var(--font-size-caption)',
-                          color: 'var(--color-text-muted)',
-                        }}
-                      >
+                      <span className="text-sm text-muted-foreground">
                         {shoppingStatus.checked} of {shoppingStatus.total} items
                       </span>
                     </div>
@@ -400,11 +343,7 @@ export default function Dashboard() {
           title="Sign out"
         >
           <p
-            style={{
-              fontSize: 'var(--font-size-body)',
-              color: 'var(--color-text-secondary)',
-              marginBottom: 'var(--space-6)',
-            }}
+            className="text-base text-muted-foreground mb-6"
             data-testid="signout-confirmation-text"
           >
             Are you sure you want to sign out?
@@ -468,23 +407,10 @@ export default function Dashboard() {
       />
       <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
         <div className="text-center py-12">
-          <h2
-            className="mb-2"
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
+          <h2 className="mb-2 text-2xl font-semibold text-foreground">
             What&apos;s for dinner this week?
           </h2>
-          <p
-            className="mb-8"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
+          <p className="mb-8 text-base text-muted-foreground">
             Create a plan and we&apos;ll sort out your shopping list.
           </p>
           <Link href="/plan" data-testid="create-first-plan-btn">
@@ -502,11 +428,7 @@ export default function Dashboard() {
         title="Sign out"
       >
         <p
-          style={{
-            fontSize: 'var(--font-size-body)',
-            color: 'var(--color-text-secondary)',
-            marginBottom: 'var(--space-6)',
-          }}
+          className="text-base text-muted-foreground mb-6"
           data-testid="signout-confirmation-text"
         >
           Are you sure you want to sign out?

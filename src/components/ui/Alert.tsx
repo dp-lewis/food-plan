@@ -1,40 +1,27 @@
 import { ReactNode } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
 
-export interface AlertProps {
-  variant?: 'error' | 'success' | 'warning' | 'info';
+export const alertVariants = cva('px-3 py-2 rounded-md text-sm text-center', {
+  variants: {
+    variant: {
+      error: 'bg-[var(--color-error-light)] text-destructive',
+      success: 'bg-[var(--color-success-light)] text-[var(--color-success)]',
+      warning: 'bg-[var(--color-warning-light)] text-[var(--color-warning)]',
+      info: 'bg-[var(--color-info-light)] text-[var(--color-info)]',
+    },
+  },
+  defaultVariants: { variant: 'error' },
+});
+
+export interface AlertProps extends VariantProps<typeof alertVariants> {
   children: ReactNode;
+  className?: string;
 }
 
-export default function Alert({ variant = 'error', children }: AlertProps) {
-  const variantStyles = {
-    error: {
-      backgroundColor: 'var(--color-error-light)',
-      color: 'var(--color-error)',
-    },
-    success: {
-      backgroundColor: 'var(--color-success-light)',
-      color: 'var(--color-success)',
-    },
-    warning: {
-      backgroundColor: 'var(--color-warning-light)',
-      color: 'var(--color-warning)',
-    },
-    info: {
-      backgroundColor: 'var(--color-info-light)',
-      color: 'var(--color-info)',
-    },
-  };
-
-  const baseStyles = {
-    padding: '0.5rem 0.75rem',
-    borderRadius: 'var(--radius-md)',
-    fontSize: 'var(--font-size-caption)',
-    textAlign: 'center' as const,
-    ...variantStyles[variant],
-  };
-
+export default function Alert({ variant, className, children }: AlertProps) {
   return (
-    <p role="alert" style={baseStyles}>
+    <p role="alert" className={cn(alertVariants({ variant }), className)}>
       {children}
     </p>
   );

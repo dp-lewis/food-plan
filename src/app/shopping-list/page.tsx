@@ -67,14 +67,11 @@ export default function ShoppingList() {
         <PageHeader title="Shopping List" backHref="/" sticky />
         <main className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
           <div className="text-center py-8">
-            <p style={{ color: 'var(--color-text-muted)', marginBottom: 'var(--space-4)' }}>
+            <p className="text-muted-foreground mb-4">
               No meal plan found. Create one to generate a shopping list, or add items manually.
             </p>
-            <Link
-              href="/plan"
-              className="primary-button inline-flex items-center justify-center"
-            >
-              Create Meal Plan
+            <Link href="/plan">
+              <Button className="w-full">Create Meal Plan</Button>
             </Link>
           </div>
         </main>
@@ -102,25 +99,11 @@ export default function ShoppingList() {
                   }
                 }}
                 placeholder="e.g., toilet paper, 2 bottles milk"
-                className="flex-1"
+                className="flex-1 bg-background border border-border text-base text-foreground px-3 py-2 rounded-sm"
                 data-testid="add-item-input"
-                style={{
-                  backgroundColor: 'var(--color-bg-primary)',
-                  border: 'var(--border-width) solid var(--color-border)',
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-primary)',
-                  padding: 'var(--space-2) var(--space-3)',
-                  borderRadius: 'var(--border-radius-sm)',
-                }}
               />
             </div>
-            <p
-              className="mt-2 mb-4"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
+            <p className="mt-2 mb-4 text-sm text-muted-foreground">
               Include quantity if needed (e.g., &quot;2 bottles cleaning spray&quot;)
             </p>
             <Button
@@ -162,15 +145,7 @@ export default function ShoppingList() {
         <div className="space-y-6">
           {Array.from(groupedItems.entries()).map(([category, items]) => (
             <section key={category} data-testid={`category-${category}`}>
-              <h2
-                className="mb-3 pb-2"
-                style={{
-                  fontSize: 'var(--font-size-body)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--color-text-primary)',
-                  borderBottom: 'var(--border-width) solid var(--color-border)',
-                }}
-              >
+              <h2 className="mb-3 pb-2 text-base font-semibold text-foreground border-b border-border">
                 {CATEGORY_LABELS[category]}
               </h2>
               <ul className="space-y-1">
@@ -190,7 +165,7 @@ export default function ShoppingList() {
                           label={`${item.quantity} ${item.unit} ${item.ingredient}`}
                           id={item.id}
                         >
-                          <span style={{ color: 'var(--color-text-muted)' }}>
+                          <span className="text-muted-foreground">
                             {item.quantity} {item.unit}
                           </span>{' '}
                           {item.ingredient}
@@ -199,16 +174,9 @@ export default function ShoppingList() {
                       {isCustom && (
                         <button
                           onClick={() => removeCustomItem(item.id)}
-                          className="p-2 ml-2"
+                          className="p-2 ml-2 text-destructive text-base bg-transparent border-none cursor-pointer"
                           data-testid={`delete-${item.id}`}
                           aria-label={`Remove ${item.ingredient}`}
-                          style={{
-                            color: 'var(--color-error)',
-                            fontSize: 'var(--font-size-body)',
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer',
-                          }}
                         >
                           <span aria-hidden="true">×</span>
                         </button>
@@ -245,25 +213,11 @@ export default function ShoppingList() {
                 }
               }}
               placeholder="e.g., toilet paper, 2 bottles milk"
-              className="flex-1"
+              className="flex-1 bg-background border border-border text-base text-foreground px-3 py-2 rounded-sm"
               data-testid="add-item-input"
-              style={{
-                backgroundColor: 'var(--color-bg-primary)',
-                border: 'var(--border-width) solid var(--color-border)',
-                fontSize: 'var(--font-size-body)',
-                color: 'var(--color-text-primary)',
-                padding: 'var(--space-2) var(--space-3)',
-                borderRadius: 'var(--border-radius-sm)',
-              }}
             />
           </div>
-          <p
-            className="mt-2 mb-4"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
+          <p className="mt-2 mb-4 text-sm text-muted-foreground">
             Include quantity if needed (e.g., &quot;2 bottles cleaning spray&quot;)
           </p>
           <Button

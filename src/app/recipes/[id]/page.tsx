@@ -26,11 +26,10 @@ export default function UserRecipeDetail() {
         <PageHeader title="Recipe" backHref="/recipes" />
         <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
           <div className="text-center py-12">
-            <p style={{ color: 'var(--color-text-muted)' }}>Recipe not found</p>
+            <p className="text-muted-foreground">Recipe not found</p>
             <Link
               href="/recipes"
-              className="mt-4 inline-block"
-              style={{ color: 'var(--color-accent)' }}
+              className="mt-4 inline-block text-primary"
             >
               Go back to My Recipes
             </Link>
@@ -48,19 +47,13 @@ export default function UserRecipeDetail() {
       <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
         <p
           data-testid="recipe-source"
-          style={{
-            fontSize: 'var(--font-size-caption)',
-            color: 'var(--color-text-muted)',
-          }}
+          className="text-sm text-muted-foreground"
         >
           {recipe.sourceName ? `Imported from ${recipe.sourceName}` : 'Your recipe'}
         </p>
 
         {/* Meta info */}
-        <div
-          className="flex flex-wrap gap-3 mb-6 pb-6"
-          style={{ borderBottom: 'var(--border-width) solid var(--color-border)' }}
-        >
+        <div className="flex flex-wrap gap-3 mb-6 pb-6 border-b border-border">
           <div data-testid="recipe-time">
             <MetaChip label="Total time" value={`${totalTime} mins`} />
           </div>
@@ -75,29 +68,17 @@ export default function UserRecipeDetail() {
 
         {/* Ingredients */}
         <section className="mb-6">
-          <h2
-            className="mb-3"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
+          <h2 className="mb-3 text-base font-semibold text-foreground">
             Ingredients
           </h2>
           <ul className="space-y-2" data-testid="ingredients-list">
             {recipe.ingredients.map((ing, index) => (
               <li
                 key={index}
-                className="flex items-center gap-3"
-                style={{
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-secondary)',
-                }}
+                className="flex items-center gap-3 text-base text-muted-foreground"
               >
                 <span
-                  className="w-5 h-5 rounded border flex-shrink-0"
-                  style={{ borderColor: 'var(--color-border)' }}
+                  className="w-5 h-5 rounded border border-border flex-shrink-0"
                   aria-hidden="true"
                 />
                 <span>
@@ -111,24 +92,12 @@ export default function UserRecipeDetail() {
         {/* Notes */}
         {recipe.notes && (
           <section className="mb-6">
-            <h2
-              className="mb-2"
-              style={{
-                fontSize: 'var(--font-size-body)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
+            <h2 className="mb-2 text-base font-semibold text-foreground">
               Notes
             </h2>
             <p
               data-testid="recipe-notes"
-              className="p-3 rounded-lg"
-              style={{
-                fontSize: 'var(--font-size-body)',
-                color: 'var(--color-text-secondary)',
-                backgroundColor: 'var(--color-bg-tertiary)',
-              }}
+              className="p-3 rounded-lg text-base text-muted-foreground bg-muted"
             >
               {recipe.notes}
             </p>
@@ -142,24 +111,12 @@ export default function UserRecipeDetail() {
               href={recipe.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full text-center py-4 rounded-lg"
+              className="block w-full text-center py-4 rounded-lg bg-primary text-primary-foreground text-base font-semibold"
               data-testid="view-recipe-link"
-              style={{
-                backgroundColor: 'var(--color-accent)',
-                color: 'var(--color-text-inverse)',
-                fontSize: 'var(--font-size-body)',
-                fontWeight: 'var(--font-weight-bold)',
-              }}
             >
               View Recipe on {recipe.sourceName || 'Original Site'} →
             </a>
-            <p
-              className="text-center mt-2"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
+            <p className="text-center mt-2 text-sm text-muted-foreground">
               Cooking instructions are on the original website
             </p>
           </section>
@@ -170,11 +127,7 @@ export default function UserRecipeDetail() {
           variant="secondary"
           onClick={handleDelete}
           data-testid="delete-recipe-btn"
-          style={{
-            width: '100%',
-            borderColor: 'var(--color-error, #c00)',
-            color: 'var(--color-error, #c00)',
-          }}
+          className="w-full border-destructive text-destructive"
         >
           Delete Recipe
         </Button>

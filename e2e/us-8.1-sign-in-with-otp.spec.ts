@@ -154,7 +154,7 @@ test.describe('US-8.1: Sign in with OTP code', () => {
     await page.getByTestId('verify-btn').click();
 
     // Should show error alert
-    await expect(page.locator('[role="alert"]')).toBeVisible();
+    await expect(page.locator('p[role="alert"]')).toBeVisible();
   });
 
   test('Can resend the code by going back to the email form', async ({ page }) => {

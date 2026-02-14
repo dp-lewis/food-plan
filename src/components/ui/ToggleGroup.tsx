@@ -1,5 +1,8 @@
 'use client';
 
+import { cva } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
+
 export interface ToggleOption {
   value: string;
   label: string;
@@ -14,6 +17,19 @@ export interface ToggleGroupProps {
   variant?: 'default' | 'compact';
   testIdPrefix?: string;
 }
+
+const toggleBaseVariants = cva(
+  'rounded-sm border border-border bg-background text-base cursor-pointer transition-all h-11',
+  {
+    variants: {
+      variant: {
+        default: 'px-4 py-2',
+        compact: 'w-11 font-semibold',
+      },
+    },
+    defaultVariants: { variant: 'default' },
+  }
+);
 
 export default function ToggleGroup({
   options,
@@ -37,52 +53,19 @@ export default function ToggleGroup({
     }
   };
 
-  const labelStyles = {
-    display: 'block',
-    marginBottom: 'var(--space-2)',
-    fontSize: 'var(--font-size-body)',
-    fontWeight: 'var(--font-weight-bold)' as const,
-    color: 'var(--color-text-primary)',
-  };
-
-  const buttonBaseStyles = {
-    borderRadius: 'var(--border-radius-sm)',
-    borderWidth: 'var(--border-width)',
-    borderStyle: 'solid' as const,
-    borderColor: 'var(--color-border)',
-    background: 'var(--color-bg-primary)',
-    fontSize: 'var(--font-size-body)',
-    color: 'var(--color-text-secondary)',
-    cursor: 'pointer',
-    transition: 'all var(--transition-fast)',
-    minHeight: 'var(--touch-target-min)',
-  };
-
-  const compactStyles = {
-    width: 'var(--touch-target-min)',
-    height: 'var(--touch-target-min)',
-    fontWeight: 'var(--font-weight-bold)' as const,
-  };
-
-  const defaultStyles = {
-    padding: 'var(--space-2) var(--space-4)',
-  };
-
-  const activeStyles = {
-    background: variant === 'compact' ? 'var(--color-accent)' : 'var(--color-accent-light)',
-    borderColor: 'var(--color-accent)',
-    color: variant === 'compact' ? 'var(--color-text-inverse)' : 'var(--color-accent)',
-  };
-
   const groupId = label ? `toggle-group-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined;
 
   return (
     <div>
-      {label && <label id={groupId} style={labelStyles}>{label}</label>}
+      {label && (
+        <label id={groupId} className="block mb-2 text-base font-semibold text-foreground">
+          {label}
+        </label>
+      )}
       <div
         role="group"
         aria-labelledby={groupId}
-        style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}
+        className="flex gap-2 flex-wrap"
       >
         {options.map((option) => {
           const isActive = selectedValues.includes(option.value);
@@ -91,11 +74,11 @@ export default function ToggleGroup({
               key={option.value}
               type="button"
               onClick={() => handleClick(option.value)}
-              style={{
-                ...buttonBaseStyles,
-                ...(variant === 'compact' ? compactStyles : defaultStyles),
-                ...(isActive ? activeStyles : {}),
-              }}
+              className={cn(
+                toggleBaseVariants({ variant }),
+                isActive && variant === 'compact' && 'bg-primary border-primary text-primary-foreground',
+                isActive && variant === 'default' && 'bg-[var(--color-accent-light)] border-primary text-primary',
+              )}
               aria-pressed={isActive}
               data-testid={testIdPrefix ? `${testIdPrefix}-${option.value}` : undefined}
             >

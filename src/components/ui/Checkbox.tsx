@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface CheckboxProps {
   checked: boolean;
@@ -19,41 +20,6 @@ export default function Checkbox({
   strikethrough = true,
   id,
 }: CheckboxProps) {
-  const buttonStyles = {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 'var(--space-3)',
-    padding: 'var(--space-2) var(--space-1)',
-    margin: '0 calc(var(--space-1) * -1)',
-    borderRadius: 'var(--border-radius-sm)',
-    minHeight: 'var(--touch-target-min)',
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    textAlign: 'left' as const,
-  };
-
-  const checkboxStyles = {
-    width: '1.25rem',
-    height: '1.25rem',
-    borderRadius: 'var(--border-radius-sm)',
-    border: `var(--border-width) solid ${checked ? 'var(--color-accent)' : 'var(--color-border)'}`,
-    backgroundColor: checked ? 'var(--color-accent)' : 'transparent',
-    flexShrink: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    transition: 'all var(--transition-fast)',
-  };
-
-  const labelStyles = {
-    fontSize: 'var(--font-size-body)',
-    color: checked ? 'var(--color-text-muted)' : 'var(--color-text-secondary)',
-    textDecoration: checked && strikethrough ? 'line-through' : 'none',
-    transition: 'all var(--transition-fast)',
-  };
-
   return (
     <button
       type="button"
@@ -62,9 +28,14 @@ export default function Checkbox({
       aria-checked={checked}
       aria-label={label}
       data-testid={id ? `checkbox-${id}` : undefined}
-      style={buttonStyles}
+      className="w-full flex items-center gap-3 py-2 px-1 -mx-1 rounded-sm h-11 bg-transparent border-none cursor-pointer text-left"
     >
-      <span style={checkboxStyles}>
+      <span
+        className={cn(
+          'w-5 h-5 rounded-sm border flex-shrink-0 flex items-center justify-center transition-all',
+          checked ? 'border-primary bg-primary' : 'border-border'
+        )}
+      >
         {checked && (
           <svg
             width="12"
@@ -81,7 +52,14 @@ export default function Checkbox({
           </svg>
         )}
       </span>
-      <span style={labelStyles}>{children || label}</span>
+      <span
+        className={cn(
+          'text-base transition-all text-muted-foreground',
+          checked && strikethrough && 'line-through'
+        )}
+      >
+        {children || label}
+      </span>
     </button>
   );
 }

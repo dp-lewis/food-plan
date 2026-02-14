@@ -16,11 +16,10 @@ export default function RecipeDetail() {
         <PageHeader title="Recipe" onBack={() => router.back()} />
         <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
           <div className="text-center py-12">
-            <p style={{ color: 'var(--color-text-muted)' }}>Recipe not found</p>
+            <p className="text-muted-foreground">Recipe not found</p>
             <Link
               href="/"
-              className="mt-4 inline-block"
-              style={{ color: 'var(--color-accent)' }}
+              className="mt-4 inline-block text-primary"
             >
               Go back home
             </Link>
@@ -36,20 +35,12 @@ export default function RecipeDetail() {
     <div className="min-h-screen bg-background" data-testid="recipe-page">
       <PageHeader title={recipe.title} onBack={() => router.back()} titleTestId="recipe-title" />
       <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
-        <p
-          style={{
-            fontSize: 'var(--font-size-body)',
-            color: 'var(--color-text-secondary)',
-          }}
-        >
+        <p className="text-base text-muted-foreground">
           {recipe.description}
         </p>
 
         {/* Meta info */}
-        <div
-          className="flex flex-wrap gap-3 mb-6 pb-6"
-          style={{ borderBottom: 'var(--border-width) solid var(--color-border)' }}
-        >
+        <div className="flex flex-wrap gap-3 mb-6 pb-6 border-b border-border">
           <div data-testid="recipe-time">
             <MetaChip label="Total time" value={`${totalTime} mins`} />
           </div>
@@ -68,30 +59,16 @@ export default function RecipeDetail() {
 
         {/* Ingredients */}
         <section className="mb-6">
-          <h2
-            className="mb-3"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
+          <h2 className="mb-3 text-base font-semibold text-foreground">
             Ingredients
           </h2>
           <ul className="space-y-2" data-testid="ingredients-list">
             {recipe.ingredients.map((ing, index) => (
               <li
                 key={index}
-                className="flex items-center gap-3"
-                style={{
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-secondary)',
-                }}
+                className="flex items-center gap-3 text-base text-muted-foreground"
               >
-                <span
-                  className="w-5 h-5 rounded border flex-shrink-0"
-                  style={{ borderColor: 'var(--color-border)' }}
-                />
+                <span className="w-5 h-5 rounded border border-border flex-shrink-0" />
                 <span>
                   {ing.quantity} {ing.unit} {ing.name}
                 </span>
@@ -102,36 +79,16 @@ export default function RecipeDetail() {
 
         {/* Instructions */}
         <section>
-          <h2
-            className="mb-3"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
+          <h2 className="mb-3 text-base font-semibold text-foreground">
             Instructions
           </h2>
           <ol className="space-y-4" data-testid="instructions-list">
             {recipe.instructions.map((step, index) => (
               <li key={index} className="flex gap-3">
-                <span
-                  className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{
-                    backgroundColor: 'var(--color-accent)',
-                    color: 'var(--color-text-inverse)',
-                    fontSize: 'var(--font-size-caption)',
-                    fontWeight: 'var(--font-weight-bold)',
-                  }}
-                >
+                <span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-primary text-primary-foreground text-sm font-semibold">
                   {index + 1}
                 </span>
-                <p
-                  style={{
-                    fontSize: 'var(--font-size-body)',
-                    color: 'var(--color-text-secondary)',
-                  }}
-                >
+                <p className="text-base text-muted-foreground">
                   {step}
                 </p>
               </li>
