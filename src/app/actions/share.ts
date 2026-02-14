@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import type { ActionResult } from '@/types';
 import { getShareCode, setShareCode, clearShareCode } from '@/lib/supabase/queries';
 import { headers } from 'next/headers';
+import { generateUUID } from '@/lib/uuid';
 
 async function getAuthUser() {
   const supabase = await createClient();
@@ -17,7 +18,7 @@ export async function generateShareLink(planId: string): Promise<ActionResult<st
     await getAuthUser();
     let shareCode = await getShareCode(planId);
     if (!shareCode) {
-      shareCode = crypto.randomUUID();
+      shareCode = generateUUID();
       await setShareCode(planId, shareCode);
     }
     const origin =

@@ -79,3 +79,34 @@ These are pre-existing. Filter tsc output for your specific file to confirm no N
 Programmatic sign-out: `fetch('/auth/signout', { method: 'POST' })` then `router.push('/'); router.refresh()`.
 The `Drawer` component is imported directly from `@/components/ui/Drawer` (not via barrel).
 Both render branches (active plan + empty state) share the same `signOutDrawerOpen`/`signOutLoading` state declared at top of the `Dashboard` component — each branch renders its own `<Drawer>` instance with the shared state.
+
+## FAB (Floating Action Button) Implementation
+
+**Pattern** (as of refactor for iPhone usability):
+- FAB sizing: 56px (w-14 h-14) meets 44px minimum touch target
+- FAB positioning: `absolute left-1/2 -translate-x-1/2 bottom-[calc(100%-28px)]` overlaps nav bar by 28px
+- Z-index layering: Nav `z-20`, FAB `z-30`
+- Elevation: `shadow-lg` base, `hover:shadow-xl` on hover
+- Accessibility: Always include `aria-label` for icon-only FAB
+- Container: Use `relative` parent for FAB positioning
+
+**Design tokens**: `bg-primary text-primary-foreground hover:bg-primary/90`
+**Mobile-first**: FAB solves cramped navigation on small screens and iPhone corner cutoffs
+
+## Browser Compatibility: UUID Generation
+
+**Problem**: `crypto.randomUUID()` is not supported in older mobile browsers (especially older iOS Safari versions).
+
+**Solution**: Created `src/lib/uuid.ts` with `generateUUID()` function that:
+- First attempts to use native `crypto.randomUUID()` when available
+- Falls back to `crypto.getRandomValues()` with proper UUID v4 format
+- Pattern: `'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'` where:
+  - `4` is the version number (UUID v4)
+  - `y` is one of 8, 9, a, or b (variant bits)
+
+**Usage**: Always import and use `generateUUID()` from `@/lib/uuid` instead of `crypto.randomUUID()` directly.
+
+**Files using generateUUID()**:
+- `src/lib/planGenerator.ts` - Meal plan ID generation
+- `src/store/store.ts` - Custom shopping list item IDs
+- `src/app/actions/share.ts` - Share code generation
