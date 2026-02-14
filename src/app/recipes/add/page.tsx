@@ -130,7 +130,7 @@ export default function AddRecipe() {
   if (step === 'url') {
     return (
       <div className="min-h-screen bg-background" data-testid="add-recipe-page">
-        <PageHeader title="Import Recipe" backHref="/recipes" />
+        <PageHeader title="Import Recipe" backHref="/recipes" sticky />
         <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
           <p className="text-base text-muted-foreground">
             Paste a recipe URL from sites like RecipeTin Eats, BBC Good Food, or any site with structured recipe data.
@@ -172,7 +172,7 @@ export default function AddRecipe() {
   if (step === 'preview' || step === 'saving') {
     return (
       <div className="min-h-screen bg-background" data-testid="preview-recipe-page">
-        <PageHeader title="Review & Save" onBack={() => setStep('url')} />
+        <PageHeader title="Review & Save" onBack={() => setStep('url')} sticky />
         <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
           <p className="text-base text-muted-foreground">
             Review the imported data and make any corrections before saving.

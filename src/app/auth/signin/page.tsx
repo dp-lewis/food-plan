@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { User } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Alert, Button, Card, Input, PageHeader } from '@/components/ui';
 
@@ -185,7 +186,16 @@ function SignInForm() {
 export default function SignInPage() {
   return (
     <div className="min-h-screen bg-background" data-testid="signin-page">
-      <PageHeader title="Sign In" backHref="/" />
+      <PageHeader
+        title={
+          <div className="flex items-center gap-2">
+            <User className="w-5 h-5" />
+            <span>Sign In</span>
+          </div>
+        }
+        backHref="/"
+        sticky
+      />
       <main
         id="main-content"
         className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6"

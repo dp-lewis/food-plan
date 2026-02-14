@@ -96,8 +96,8 @@ export default function BottomNav({
       <nav
         aria-label="Main navigation"
         data-testid="bottom-nav"
-        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-20 px-2 pt-2 pb-6 pointer-events-none"
-        style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }}
+        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-20 px-2 pt-2 pb-3 pointer-events-none"
+        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }}
       >
         <div className="max-w-2xl mx-auto relative">
           {/* Tab buttons - fixed max-width container to stay centered on wider screens */}

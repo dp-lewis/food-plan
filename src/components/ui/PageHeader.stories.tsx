@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import PageHeader from './PageHeader';
+import { Utensils } from 'lucide-react';
 
 const meta: Meta<typeof PageHeader> = {
   title: 'UI/PageHeader',
@@ -62,6 +63,22 @@ export const WithChildren: Story = {
           <div className="h-full bg-white rounded-full" style={{ width: '60%' }} />
         </div>
       </div>
+    ),
+  },
+};
+
+export const WithIcon: Story = {
+  args: {
+    title: (
+      <div className="flex items-center gap-2">
+        <Utensils className="w-5 h-5" />
+        <span>delibereat</span>
+      </div>
+    ),
+    actions: (
+      <button className="p-1 rounded-md hover:bg-white/10 text-white text-sm">
+        Sign in
+      </button>
     ),
   },
 };
