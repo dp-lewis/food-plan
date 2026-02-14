@@ -382,7 +382,7 @@ export default function CurrentPlan() {
 
       </main>
 
-      <BottomNav />
+      <BottomNav onShareClick={() => console.log('sharing')} />
 
       {/* Recipe selection drawer */}
       <RecipeDrawer
