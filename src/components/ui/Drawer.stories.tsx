@@ -20,8 +20,8 @@ export const Default: Story = {
     isOpen: true,
     title: 'Drawer Title',
     children: (
-      <div style={{ padding: '1rem 0' }}>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>
+      <div className="py-4">
+        <p className="text-muted-foreground mb-4">
           This is the drawer content. You can put anything here.
         </p>
         <Button variant="primary">Take Action</Button>
@@ -36,20 +36,11 @@ export const WithList: Story = {
     isOpen: true,
     title: 'Select an Option',
     children: (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div className="flex flex-col gap-2">
         {['Option 1', 'Option 2', 'Option 3', 'Option 4'].map((option) => (
           <button
             key={option}
-            style={{
-              padding: '0.75rem 1rem',
-              borderRadius: 'var(--radius-md)',
-              border: 'var(--border-width) solid var(--color-border)',
-              backgroundColor: 'var(--color-bg-primary)',
-              textAlign: 'left',
-              cursor: 'pointer',
-              fontSize: 'var(--font-size-body)',
-              color: 'var(--color-text-primary)',
-            }}
+            className="py-3 px-4 rounded-md border border-border bg-background text-left cursor-pointer text-base text-foreground"
           >
             {option}
           </button>
@@ -65,7 +56,7 @@ export const Interactive: Story = {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-      <div style={{ padding: '2rem' }}>
+      <div className="p-8">
         <Button variant="primary" onClick={() => setIsOpen(true)}>
           Open Drawer
         </Button>
@@ -74,7 +65,7 @@ export const Interactive: Story = {
           onClose={() => setIsOpen(false)}
           title="Interactive Drawer"
         >
-          <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>
+          <p className="text-muted-foreground mb-4">
             Click the backdrop, press Escape, or click the close button to close this drawer.
           </p>
           <Button variant="secondary" onClick={() => setIsOpen(false)}>
@@ -91,20 +82,16 @@ export const LongContent: Story = {
     isOpen: true,
     title: 'Scrollable Content',
     children: (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="flex flex-col gap-3">
         {Array.from({ length: 15 }, (_, i) => (
           <div
             key={i}
-            style={{
-              padding: '1rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--color-bg-tertiary)',
-            }}
+            className="p-4 rounded-md bg-muted"
           >
-            <p style={{ fontWeight: 'var(--font-weight-bold)', color: 'var(--color-text-primary)' }}>
+            <p className="font-semibold text-foreground">
               Item {i + 1}
             </p>
-            <p style={{ fontSize: 'var(--font-size-caption)', color: 'var(--color-text-muted)' }}>
+            <p className="text-sm text-muted-foreground">
               Description for item {i + 1}
             </p>
           </div>

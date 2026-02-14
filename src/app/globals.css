@@ -88,20 +88,7 @@ textarea::placeholder {
   opacity: 1;
 }
 
-/* Recipe Drawer */
-.drawer-container {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-}
-
-.drawer-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  animation: fade-in 150ms ease-out;
-}
-
+/* Drawer animations (referenced by Tailwind arbitrary values) */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -111,19 +98,6 @@ textarea::placeholder {
   }
 }
 
-.drawer-panel {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  max-height: 75vh;
-  background: var(--color-bg-primary);
-  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
-  display: flex;
-  flex-direction: column;
-  animation: slide-up 0.2s ease-out;
-}
-
 @keyframes slide-up {
   from {
     transform: translateY(100%);
@@ -131,142 +105,4 @@ textarea::placeholder {
   to {
     transform: translateY(0);
   }
-}
-
-.drawer-handle {
-  width: 36px;
-  height: 4px;
-  background: var(--color-border);
-  border-radius: 2px;
-  margin: var(--space-3) auto var(--space-2);
-}
-
-.drawer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 var(--space-4) var(--space-3);
-  border-bottom: var(--border-width) solid var(--color-border);
-}
-
-.drawer-close-btn {
-  width: var(--touch-target-min);
-  height: var(--touch-target-min);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-heading);
-  color: var(--color-text-muted);
-  border-radius: var(--border-radius-sm);
-}
-
-.drawer-close-btn:hover {
-  background: var(--color-bg-tertiary);
-}
-
-.drawer-content {
-  padding: var(--space-4);
-  overflow-y: auto;
-  flex: 1;
-}
-
-.surprise-me-btn {
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-accent-light);
-  border: var(--border-width) solid var(--color-accent);
-  border-radius: var(--border-radius-sm);
-  color: var(--color-accent);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-body);
-  min-height: var(--touch-target-min);
-  margin-bottom: var(--space-4);
-  transition: all var(--transition-fast);
-}
-
-.surprise-me-btn:hover {
-  background: var(--color-accent);
-  color: var(--color-text-inverse);
-}
-
-.recipe-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.recipe-card {
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  background: var(--color-bg-primary);
-  text-align: left;
-  min-height: var(--touch-target-min);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: border-color var(--transition-fast);
-}
-
-.recipe-card:hover:not(:disabled) {
-  border-color: var(--color-accent);
-}
-
-.recipe-card:disabled {
-  cursor: default;
-}
-
-.recipe-card--current {
-  border-color: var(--color-accent);
-  background: var(--color-accent-light);
-}
-
-.recipe-card__content {
-  flex: 1;
-}
-
-.recipe-card__title {
-  display: block;
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-}
-
-.recipe-card__meta {
-  display: flex;
-  gap: var(--space-2);
-  margin-top: var(--space-1);
-}
-
-.recipe-card__time,
-.recipe-card__difficulty {
-  font-size: var(--font-size-caption);
-  color: var(--color-text-muted);
-}
-
-.recipe-card__difficulty {
-  text-transform: capitalize;
-}
-
-.recipe-card__badge {
-  font-size: var(--font-size-caption);
-  color: var(--color-accent);
-  font-weight: var(--font-weight-bold);
-  padding: var(--space-1) var(--space-2);
-  background: var(--color-bg-primary);
-  border-radius: var(--border-radius-sm);
-}
-
-.recipe-section-header {
-  padding: var(--space-2) 0;
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.recipe-section-header:not(:first-child) {
-  margin-top: var(--space-3);
 }

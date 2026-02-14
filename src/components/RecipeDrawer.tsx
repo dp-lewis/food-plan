@@ -2,6 +2,7 @@
 
 import { Recipe, MealType } from '@/types';
 import { Drawer } from './ui';
+import { cn } from '@/lib/utils';
 
 interface RecipeDrawerProps {
   isOpen: boolean;
@@ -35,7 +36,7 @@ export default function RecipeDrawer({
           onSurpriseMe();
           onClose();
         }}
-        className="surprise-me-btn"
+        className="w-full py-3 px-4 bg-[var(--color-accent-light)] border border-primary rounded-sm text-primary font-semibold text-base min-h-11 mb-4 transition-all cursor-pointer hover:bg-primary hover:text-primary-foreground"
         data-testid="surprise-me-btn"
         aria-label={`Choose a random ${mealTypeLabel.toLowerCase()} recipe`}
       >
@@ -43,7 +44,7 @@ export default function RecipeDrawer({
       </button>
 
       {/* Recipe list */}
-      <div className="recipe-list" data-testid="recipe-drawer-list">
+      <div className="flex flex-col gap-2" data-testid="recipe-drawer-list">
         {(() => {
           const userRecipes = recipes.filter(r => r.isUserRecipe);
           const builtInRecipes = recipes.filter(r => !r.isUserRecipe);
@@ -64,18 +65,23 @@ export default function RecipeDrawer({
                   }
                 }}
                 disabled={isCurrent}
-                className={`recipe-card ${isCurrent ? 'recipe-card--current' : ''}`}
+                className={cn(
+                  'w-full py-3 px-4 rounded-sm text-left min-h-11 flex items-center justify-between transition-[border-color] duration-150 cursor-pointer border',
+                  isCurrent
+                    ? 'border-primary bg-[var(--color-accent-light)] cursor-default'
+                    : 'border-border bg-background hover:border-primary'
+                )}
                 data-testid={`recipe-option-${recipe.id}`}
                 aria-pressed={isCurrent}
               >
-                <div className="recipe-card__content">
-                  <span className="recipe-card__title">{recipe.title}</span>
-                  <div className="recipe-card__meta">
-                    <span className="recipe-card__time">{totalTime} mins</span>
-                    <span className="recipe-card__difficulty">{recipe.difficulty}</span>
+                <div className="flex-1">
+                  <span className="block text-base font-semibold text-foreground">{recipe.title}</span>
+                  <div className="flex gap-2 mt-1">
+                    <span className="text-sm text-muted-foreground">{totalTime} mins</span>
+                    <span className="text-sm text-muted-foreground capitalize">{recipe.difficulty}</span>
                   </div>
                 </div>
-                {isCurrent && <span className="recipe-card__badge">Current</span>}
+                {isCurrent && <span className="text-sm text-primary font-semibold px-2 py-1 bg-background rounded-sm">Current</span>}
               </button>
             );
           };
@@ -84,12 +90,12 @@ export default function RecipeDrawer({
             <>
               {hasUserRecipes && (
                 <>
-                  <div className="recipe-section-header">My Recipes</div>
+                  <div className="py-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide">My Recipes</div>
                   {userRecipes.map(renderRecipe)}
                 </>
               )}
               {hasUserRecipes && hasBuiltInRecipes && (
-                <div className="recipe-section-header">More Recipes</div>
+                <div className="py-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide mt-3">More Recipes</div>
               )}
               {builtInRecipes.map(renderRecipe)}
             </>
