@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
 import { parseIngredient } from '@/lib/ingredientParser';
 import { MealType, Difficulty, BudgetLevel, Ingredient, IngredientCategory } from '@/types';
-import { BottomNav, Input, Select, Button } from '@/components/ui';
+import { Input, Select, Button, PageHeader } from '@/components/ui';
 
 const CATEGORIES: IngredientCategory[] = ['produce', 'dairy', 'meat', 'pantry', 'frozen', 'uncategorized'];
 
@@ -85,21 +85,10 @@ export default function NewRecipe() {
   };
 
   return (
-    <main className="min-h-screen p-4 pb-20" data-testid="new-recipe-page">
-      <div className="max-w-md mx-auto">
-        <h1
-          className="mb-2"
-          style={{
-            fontSize: 'var(--font-size-heading)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text-primary)',
-          }}
-        >
-          Create Recipe
-        </h1>
-
+    <div className="min-h-screen bg-background" data-testid="new-recipe-page">
+      <PageHeader title="Create Recipe" backHref="/recipes" />
+      <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
         <p
-          className="mb-6"
           style={{
             fontSize: 'var(--font-size-body)',
             color: 'var(--color-text-secondary)',
@@ -330,9 +319,7 @@ export default function NewRecipe() {
             </p>
           )}
         </div>
-      </div>
-
-      <BottomNav backHref="/recipes" />
-    </main>
+      </main>
+    </div>
   );
 }

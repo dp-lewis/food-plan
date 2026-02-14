@@ -27,7 +27,7 @@ test.describe('US-7.2: Create recipe manually', () => {
 
   test('Can navigate to manual recipe form from My Recipes', async ({ page }) => {
     await page.goto('/recipes');
-    await page.getByTestId('create-recipe-btn').click();
+    await page.getByTestId('empty-create-btn').click();
     await expect(page).toHaveURL('/recipes/new');
     await expect(page.getByTestId('new-recipe-page')).toBeVisible();
   });

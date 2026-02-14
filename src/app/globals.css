@@ -2,15 +2,40 @@
 @import "../styles/tokens.css";
 
 @theme inline {
-  --color-background: var(--color-bg-primary);
-  --color-foreground: var(--color-text-primary);
-  --color-accent: var(--color-accent);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-family);
 }
 
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground antialiased; }
+  h1 { font-size: var(--text-2xl); font-weight: 600; }
+  h2 { font-size: var(--text-xl); font-weight: 600; }
+  h3 { font-size: var(--text-lg); font-weight: 600; }
+}
+
 body {
-  background: var(--color-bg-secondary);
-  color: var(--color-text-secondary);
   font-family: var(--font-family);
   line-height: var(--line-height-normal);
 }

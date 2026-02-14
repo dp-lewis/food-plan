@@ -6,7 +6,7 @@ import { useStore } from '@/store/store';
 import { ParsedRecipe } from '@/lib/recipeParser';
 import { parseIngredient } from '@/lib/ingredientParser';
 import { MealType, Difficulty, BudgetLevel, Ingredient, IngredientCategory } from '@/types';
-import { BottomNav, Input, Select, Alert, Button, Card } from '@/components/ui';
+import { Input, Select, Alert, Button, Card, PageHeader } from '@/components/ui';
 
 type Step = 'url' | 'preview' | 'saving';
 
@@ -129,21 +129,10 @@ export default function AddRecipe() {
   // URL Input Step
   if (step === 'url') {
     return (
-      <main className="min-h-screen p-4 pb-20" data-testid="add-recipe-page">
-        <div className="max-w-md mx-auto">
-          <h1
-            className="mb-2"
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            Import Recipe from URL
-          </h1>
-
+      <div className="min-h-screen bg-background" data-testid="add-recipe-page">
+        <PageHeader title="Import Recipe" backHref="/recipes" />
+        <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
           <p
-            className="mb-6"
             style={{
               fontSize: 'var(--font-size-body)',
               color: 'var(--color-text-secondary)',
@@ -179,42 +168,18 @@ export default function AddRecipe() {
               {loading ? 'Fetching...' : 'Fetch Recipe'}
             </Button>
           </div>
-        </div>
-
-        <BottomNav backHref="/recipes" />
-      </main>
+        </main>
+      </div>
     );
   }
 
   // Preview/Edit Step
   if (step === 'preview' || step === 'saving') {
     return (
-      <main className="min-h-screen p-4 pb-20" data-testid="preview-recipe-page">
-        <div className="max-w-md mx-auto">
-          <button
-            onClick={() => setStep('url')}
-            className="inline-flex items-center gap-1 mb-4"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            ← Back to URL
-          </button>
-
-          <h1
-            className="mb-2"
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            Review & Save
-          </h1>
-
+      <div className="min-h-screen bg-background" data-testid="preview-recipe-page">
+        <PageHeader title="Review & Save" onBack={() => setStep('url')} />
+        <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
           <p
-            className="mb-6"
             style={{
               fontSize: 'var(--font-size-body)',
               color: 'var(--color-text-secondary)',
@@ -364,10 +329,8 @@ export default function AddRecipe() {
               {step === 'saving' ? 'Saving...' : 'Save Recipe'}
             </Button>
           </div>
-        </div>
-
-        <BottomNav backHref="/recipes" />
-      </main>
+        </main>
+      </div>
     );
   }
 

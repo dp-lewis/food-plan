@@ -26,10 +26,10 @@ test.describe('Auth Sign-in Page', () => {
     await expect(page.getByTestId('signin-page')).toBeVisible();
   });
 
-  test('BottomNav back button returns to dashboard from sign-in', async ({ page }) => {
+  test('PageHeader back button returns to dashboard from sign-in', async ({ page }) => {
     await page.goto('/auth/signin');
     await page.getByTestId('signin-page').waitFor();
-    await page.getByTestId('bottom-nav-back').click();
+    await page.getByTestId('page-header-back').click();
     await page.waitForURL('/');
   });
 });

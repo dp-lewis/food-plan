@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
-import { BottomNav, MetaChip, Button } from '@/components/ui';
+import { MetaChip, Button, PageHeader } from '@/components/ui';
 
 export default function UserRecipeDetail() {
   const params = useParams();
@@ -22,44 +22,31 @@ export default function UserRecipeDetail() {
 
   if (!recipe) {
     return (
-      <main className="min-h-screen p-4 pb-20">
-        <div className="max-w-md mx-auto text-center py-12">
-          <p style={{ color: 'var(--color-text-muted)' }}>Recipe not found</p>
-          <Link
-            href="/recipes"
-            className="mt-4 inline-block"
-            style={{ color: 'var(--color-accent)' }}
-          >
-            Go back to My Recipes
-          </Link>
-        </div>
-
-        <BottomNav backHref="/recipes" />
-      </main>
+      <div className="min-h-screen bg-background">
+        <PageHeader title="Recipe" backHref="/recipes" />
+        <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+          <div className="text-center py-12">
+            <p style={{ color: 'var(--color-text-muted)' }}>Recipe not found</p>
+            <Link
+              href="/recipes"
+              className="mt-4 inline-block"
+              style={{ color: 'var(--color-accent)' }}
+            >
+              Go back to My Recipes
+            </Link>
+          </div>
+        </main>
+      </div>
     );
   }
 
   const totalTime = recipe.prepTime + recipe.cookTime;
 
   return (
-    <main className="min-h-screen p-4 pb-20" data-testid="user-recipe-page">
-      <div className="max-w-md mx-auto">
-        {/* Header */}
-        <h1
-          className="mb-2"
-          data-testid="recipe-title"
-          style={{
-            fontSize: 'var(--font-size-heading)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text-primary)',
-            lineHeight: 'var(--line-height-tight)',
-          }}
-        >
-          {recipe.title}
-        </h1>
-
+    <div className="min-h-screen bg-background" data-testid="user-recipe-page">
+      <PageHeader title={recipe.title} backHref="/recipes" titleTestId="recipe-title" />
+      <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
         <p
-          className="mb-4"
           data-testid="recipe-source"
           style={{
             fontSize: 'var(--font-size-caption)',
@@ -191,9 +178,7 @@ export default function UserRecipeDetail() {
         >
           Delete Recipe
         </Button>
-      </div>
-
-      <BottomNav backHref="/recipes" />
-    </main>
+      </main>
+    </div>
   );
 }

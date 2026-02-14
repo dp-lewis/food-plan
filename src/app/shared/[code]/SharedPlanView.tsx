@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import type { SharedPlanData, MealType } from '@/types';
 import { getRecipeById } from '@/data/recipes';
 import { generateShoppingList, groupByCategory, mergeShoppingLists, CATEGORY_LABELS } from '@/lib/shoppingList';
-import { BottomNav, Card } from '@/components/ui';
+import { Card, PageHeader } from '@/components/ui';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -43,20 +43,9 @@ export default function SharedPlanView({ data }: { data: SharedPlanData }) {
   const groupedItems = useMemo(() => groupByCategory(shoppingList), [shoppingList]);
 
   return (
-    <main id="main-content" className="min-h-screen p-4 pb-24" data-testid="shared-plan">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <h1
-          className="mb-6"
-          style={{
-            fontSize: 'var(--font-size-heading)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text-primary)',
-          }}
-        >
-          Shared Meal Plan
-        </h1>
-
+    <div className="min-h-screen bg-background" data-testid="shared-plan">
+      <PageHeader title="Shared Meal Plan" backHref="/" />
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-6 space-y-6">
         {/* Meal Calendar - read only */}
         <div className="space-y-4">
           {slotsByDay.map(({ dayName, dayIndex, slots }) => (
@@ -187,9 +176,7 @@ export default function SharedPlanView({ data }: { data: SharedPlanData }) {
             </div>
           </div>
         )}
-      </div>
-
-      <BottomNav backHref="/" maxWidth="2xl" />
-    </main>
+      </main>
+    </div>
   );
 }

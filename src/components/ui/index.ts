@@ -39,3 +39,6 @@ export type { DrawerProps } from './Drawer';
 
 export { default as BottomNav } from './BottomNav';
 export type { BottomNavProps } from './BottomNav';
+
+export { default as PageHeader } from './PageHeader';
+export type { PageHeaderProps } from './PageHeader';

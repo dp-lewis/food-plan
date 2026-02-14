@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useStore, defaultPreferences } from '@/store/store';
 import { createEmptyPlan } from '@/lib/planGenerator';
 import { MealPlanPreferences } from '@/types';
-import { BottomNav, ToggleGroup, Button } from '@/components/ui';
+import { ToggleGroup, Button, PageHeader } from '@/components/ui';
 
 const DAY_OPTIONS = [
   { value: '0', label: 'Mon' },
@@ -31,23 +31,10 @@ export default function CreatePlan() {
   };
 
   return (
-    <main id="main-content" className="min-h-screen p-4 pb-20">
-      <div className="max-w-md mx-auto">
-
-        <h1
-          className="mb-2"
-          style={{
-            fontSize: 'var(--font-size-heading)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text-primary)',
-            lineHeight: 'var(--line-height-tight)',
-          }}
-        >
-          Start a New Plan
-        </h1>
-
+    <div className="min-h-screen bg-background">
+      <PageHeader title="New Plan" backHref="/" />
+      <main id="main-content" className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
         <p
-          className="mb-6"
           style={{
             fontSize: 'var(--font-size-body)',
             color: 'var(--color-text-muted)',
@@ -72,9 +59,7 @@ export default function CreatePlan() {
             Start Planning
           </Button>
         </form>
-      </div>
-
-      <BottomNav backHref="/" />
-    </main>
+      </main>
+    </div>
   );
 }

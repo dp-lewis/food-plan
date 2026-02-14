@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
-import { BottomNav, Button, Card, EmptyState, Drawer } from '@/components/ui';
+import { BottomNav, Button, Card, EmptyState, Drawer, PageHeader } from '@/components/ui';
 
 export default function MyRecipes() {
   const router = useRouter();
@@ -63,20 +63,9 @@ export default function MyRecipes() {
   };
 
   return (
-    <main id="main-content" className="min-h-screen p-4 pb-20" data-testid="my-recipes-page">
-      <div className="max-w-md mx-auto">
-        {/* Header */}
-        <h1
-          className="mb-6"
-          style={{
-            fontSize: 'var(--font-size-heading)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text-primary)',
-          }}
-        >
-          My Recipes
-        </h1>
-
+    <div className="min-h-screen bg-background" data-testid="my-recipes-page">
+      <PageHeader title="My Recipes" backHref="/" />
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
         {/* Empty state */}
         {userRecipes.length === 0 && (
           <div data-testid="empty-recipes">
@@ -134,9 +123,15 @@ export default function MyRecipes() {
                 </Card>
               </Link>
             ))}
+
+            <Link href="/recipes/new" data-testid="create-recipe-btn">
+              <Button variant="secondary" className="w-full">
+                + Create Your Own Recipe
+              </Button>
+            </Link>
           </div>
         )}
-      </div>
+      </main>
 
       <Drawer
         isOpen={isImportDrawerOpen}
@@ -205,11 +200,7 @@ export default function MyRecipes() {
         </div>
       </Drawer>
 
-      <BottomNav
-        backHref="/"
-        secondaryAction={{ href: '/recipes/new', label: '+ Create', testId: 'create-recipe-btn' }}
-        primaryAction={{ onClick: openImportDrawer, label: 'Import URL', testId: 'import-recipe-btn' }}
-      />
-    </main>
+      <BottomNav onImportClick={openImportDrawer} />
+    </div>
   );
 }

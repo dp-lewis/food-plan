@@ -7,9 +7,10 @@ import { useStore } from '@/store/store';
 import { getRecipeById, getRecipesByMealType } from '@/data/recipes';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
-import { BottomNav, Button, Card } from '@/components/ui';
+import { BottomNav, Button, Card, PageHeader } from '@/components/ui';
 import { useAuth } from '@/components/AuthProvider';
 import { generateShareLink } from '@/app/actions/share';
+import { Share2 } from 'lucide-react';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -196,18 +197,27 @@ export default function CurrentPlan() {
     : [];
 
   return (
-    <main id="main-content" className="min-h-screen p-4 pb-24" data-testid="meal-plan">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            Your Meal Plan
-          </h1>
+    <div className="min-h-screen bg-background" data-testid="meal-plan">
+      <PageHeader
+        title="Meal Plan"
+        backHref="/"
+        sticky
+        actions={
+          user ? (
+            <button
+              type="button"
+              onClick={handleShare}
+              data-testid="share-plan-btn"
+              className="p-1 rounded-md hover:bg-white/10 transition-colors"
+              aria-label={shareStatus === 'copied' ? 'Link copied' : 'Share plan'}
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+          ) : undefined
+        }
+      />
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
+        <div className="flex items-center justify-end">
           <Link
             href="/plan"
             style={{
@@ -347,18 +357,9 @@ export default function CurrentPlan() {
           ))}
         </div>
 
-      </div>
+      </main>
 
-      <BottomNav
-        backHref="/"
-        secondaryAction={user ? {
-          onClick: handleShare,
-          label: shareStatus === 'copied' ? 'Link Copied!' : shareStatus === 'loading' ? 'Sharing...' : 'Share',
-          testId: 'share-plan-btn',
-        } : undefined}
-        primaryAction={{ href: '/shopping-list', label: 'Shopping List', testId: 'shopping-list-btn' }}
-        maxWidth="2xl"
-      />
+      <BottomNav />
 
       {/* Recipe selection drawer */}
       <RecipeDrawer
@@ -371,6 +372,6 @@ export default function CurrentPlan() {
         onSurpriseMe={handleSurpriseMe}
         mode={drawerState.mode}
       />
-    </main>
+    </div>
   );
 }

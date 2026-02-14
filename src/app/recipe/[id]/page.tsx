@@ -1,54 +1,42 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getRecipeById } from '@/data/recipes';
-import { BottomNav, MetaChip } from '@/components/ui';
+import { MetaChip, PageHeader } from '@/components/ui';
 
 export default function RecipeDetail() {
   const params = useParams();
+  const router = useRouter();
   const recipe = getRecipeById(params.id as string);
 
   if (!recipe) {
     return (
-      <main className="min-h-screen p-4 pb-20">
-        <div className="max-w-md mx-auto text-center py-12">
-          <p style={{ color: 'var(--color-text-muted)' }}>Recipe not found</p>
-          <Link
-            href="/"
-            className="mt-4 inline-block"
-            style={{ color: 'var(--color-accent)' }}
-          >
-            Go back home
-          </Link>
-        </div>
-
-        <BottomNav />
-      </main>
+      <div className="min-h-screen bg-background">
+        <PageHeader title="Recipe" onBack={() => router.back()} />
+        <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+          <div className="text-center py-12">
+            <p style={{ color: 'var(--color-text-muted)' }}>Recipe not found</p>
+            <Link
+              href="/"
+              className="mt-4 inline-block"
+              style={{ color: 'var(--color-accent)' }}
+            >
+              Go back home
+            </Link>
+          </div>
+        </main>
+      </div>
     );
   }
 
   const totalTime = recipe.prepTime + recipe.cookTime;
 
   return (
-    <main className="min-h-screen p-4 pb-20" data-testid="recipe-page">
-      <div className="max-w-md mx-auto">
-        {/* Header */}
-        <h1
-          className="mb-2"
-          data-testid="recipe-title"
-          style={{
-            fontSize: 'var(--font-size-heading)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text-primary)',
-            lineHeight: 'var(--line-height-tight)',
-          }}
-        >
-          {recipe.title}
-        </h1>
-
+    <div className="min-h-screen bg-background" data-testid="recipe-page">
+      <PageHeader title={recipe.title} onBack={() => router.back()} titleTestId="recipe-title" />
+      <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
         <p
-          className="mb-4"
           style={{
             fontSize: 'var(--font-size-body)',
             color: 'var(--color-text-secondary)',
@@ -150,9 +138,7 @@ export default function RecipeDetail() {
             ))}
           </ol>
         </section>
-      </div>
-
-      <BottomNav />
-    </main>
+      </main>
+    </div>
   );
 }

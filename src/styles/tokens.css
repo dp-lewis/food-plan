@@ -126,6 +126,36 @@
   --z-sticky: 20;
   --z-modal: 30;
   --z-toast: 40;
+
+  /* ==========================================
+     SHADCN-CONVENTION ALIASES
+     Maps existing tokens to shadcn/Tailwind naming
+     ========================================== */
+
+  --primary: #16a34a;
+  --primary-foreground: #ffffff;
+  --background: #ffffff;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --secondary: #f9fafb;
+  --secondary-foreground: #111827;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #f3f4f6;
+  --accent-foreground: #111827;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: transparent;
+  --input-background: #f9fafb;
+  --ring: #16a34a;
+  --radius: 0.5rem;
+
+  /* Text size aliases for base layer */
+  --text-2xl: 1.5rem;
+  --text-xl: 1.25rem;
+  --text-lg: 1.125rem;
 }
 
 @keyframes spin {

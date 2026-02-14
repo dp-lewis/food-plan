@@ -1,176 +1,123 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-
-interface ActionConfig {
-  href?: string;
-  onClick?: () => void;
-  label: string;
-  testId?: string;
-}
+import { usePathname, useRouter } from 'next/navigation';
+import { Home, Calendar, ShoppingCart, BookOpen, Plus, MapPin, LinkIcon } from 'lucide-react';
+import { clsx } from 'clsx';
 
 export interface BottomNavProps {
-  backHref?: string;
-  backLabel?: string;
-  showBack?: boolean;
-  secondaryAction?: ActionConfig;
-  tertiaryAction?: ActionConfig;
-  primaryAction?: ActionConfig;
-  maxWidth?: 'md' | '2xl';
+  onTodayClick?: () => void;
+  onAddItemClick?: () => void;
+  onImportClick?: () => void;
+}
+
+const TABS = [
+  { href: '/', label: 'Home', icon: Home },
+  { href: '/plan/current', label: 'Plan', icon: Calendar },
+  { href: '/shopping-list', label: 'Shopping', icon: ShoppingCart },
+  { href: '/recipes', label: 'Recipes', icon: BookOpen },
+] as const;
+
+function isActive(pathname: string, href: string): boolean {
+  if (href === '/') return pathname === '/';
+  return pathname.startsWith(href);
 }
 
 export default function BottomNav({
-  backHref,
-  backLabel = 'Back',
-  showBack = true,
-  secondaryAction,
-  tertiaryAction,
-  primaryAction,
-  maxWidth = 'md',
+  onTodayClick,
+  onAddItemClick,
+  onImportClick,
 }: BottomNavProps) {
+  const pathname = usePathname();
   const router = useRouter();
 
-  if (!showBack && !primaryAction && !secondaryAction && !tertiaryAction) {
-    return null;
+  // Determine route-aware primary action
+  let primaryAction: {
+    icon: typeof Plus;
+    label: string;
+    testId: string;
+    onClick: () => void;
+  } | null = null;
+
+  if (pathname === '/') {
+    primaryAction = {
+      icon: Plus,
+      label: 'New Plan',
+      testId: 'new-plan-link',
+      onClick: () => router.push('/plan'),
+    };
+  } else if (pathname === '/plan/current') {
+    if (onTodayClick) {
+      primaryAction = {
+        icon: MapPin,
+        label: 'Today',
+        testId: 'bottom-nav-primary',
+        onClick: onTodayClick,
+      };
+    }
+  } else if (pathname === '/shopping-list') {
+    if (onAddItemClick) {
+      primaryAction = {
+        icon: Plus,
+        label: 'Add Item',
+        testId: 'open-add-drawer-btn',
+        onClick: onAddItemClick,
+      };
+    }
+  } else if (pathname === '/recipes') {
+    if (onImportClick) {
+      primaryAction = {
+        icon: LinkIcon,
+        label: 'Import',
+        testId: 'import-recipe-btn',
+        onClick: onImportClick,
+      };
+    }
   }
-
-  const containerMaxWidth = maxWidth === '2xl' ? 'max-w-2xl' : 'max-w-md';
-
-  const backButtonStyles: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 'var(--space-2)',
-    minHeight: 'var(--touch-target-min)',
-    padding: 'var(--space-2) var(--space-3)',
-    fontSize: 'var(--font-size-body)',
-    fontWeight: 'var(--font-weight-bold)' as React.CSSProperties['fontWeight'],
-    color: 'var(--color-text-secondary)',
-    background: 'none',
-    border: 'none',
-    borderRadius: 'var(--border-radius-sm)',
-    cursor: 'pointer',
-  };
-
-  const BackElement = showBack ? (
-    backHref ? (
-      <Link href={backHref} style={backButtonStyles} data-testid="bottom-nav-back">
-        <span aria-hidden="true">←</span>
-        {backLabel}
-      </Link>
-    ) : (
-      <button
-        type="button"
-        onClick={() => router.back()}
-        style={backButtonStyles}
-        data-testid="bottom-nav-back"
-      >
-        <span aria-hidden="true">←</span>
-        {backLabel}
-      </button>
-    )
-  ) : null;
-
-  const secondaryButtonStyles: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 'var(--space-3) var(--space-6)',
-    fontSize: 'var(--font-size-body)',
-    fontWeight: 'var(--font-weight-bold)' as React.CSSProperties['fontWeight'],
-    minHeight: 'var(--touch-target-min)',
-    borderRadius: 'var(--border-radius-sm)',
-    border: 'var(--border-width) solid var(--color-border)',
-    backgroundColor: 'var(--color-bg-primary)',
-    color: 'var(--color-text-primary)',
-    cursor: 'pointer',
-  };
-
-  const SecondaryElement = secondaryAction ? (
-    secondaryAction.href ? (
-      <Link
-        href={secondaryAction.href}
-        style={secondaryButtonStyles}
-        data-testid={secondaryAction.testId || 'bottom-nav-secondary'}
-      >
-        {secondaryAction.label}
-      </Link>
-    ) : (
-      <button
-        type="button"
-        onClick={secondaryAction.onClick}
-        style={secondaryButtonStyles}
-        data-testid={secondaryAction.testId || 'bottom-nav-secondary'}
-      >
-        {secondaryAction.label}
-      </button>
-    )
-  ) : null;
-
-  const TertiaryElement = tertiaryAction ? (
-    tertiaryAction.href ? (
-      <Link
-        href={tertiaryAction.href}
-        style={secondaryButtonStyles}
-        data-testid={tertiaryAction.testId || 'bottom-nav-tertiary'}
-      >
-        {tertiaryAction.label}
-      </Link>
-    ) : (
-      <button
-        type="button"
-        onClick={tertiaryAction.onClick}
-        style={secondaryButtonStyles}
-        data-testid={tertiaryAction.testId || 'bottom-nav-tertiary'}
-      >
-        {tertiaryAction.label}
-      </button>
-    )
-  ) : null;
-
-  const PrimaryElement = primaryAction ? (
-    primaryAction.href ? (
-      <Link
-        href={primaryAction.href}
-        className="primary-button"
-        data-testid={primaryAction.testId || 'bottom-nav-primary'}
-      >
-        {primaryAction.label}
-      </Link>
-    ) : (
-      <button
-        type="button"
-        onClick={primaryAction.onClick}
-        className="primary-button"
-        data-testid={primaryAction.testId || 'bottom-nav-primary'}
-      >
-        {primaryAction.label}
-      </button>
-    )
-  ) : null;
-
-  const hasActions = primaryAction || secondaryAction || tertiaryAction;
 
   return (
     <nav
-      aria-label="Page navigation"
-      className="fixed bottom-0 left-0 right-0"
+      aria-label="Main navigation"
+      data-testid="bottom-nav"
+      className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-20"
       style={{
-        padding: 'var(--space-4)',
-        paddingBottom: 'calc(var(--space-4) + env(safe-area-inset-bottom, 0px))',
-        backgroundColor: 'var(--color-bg-primary)',
-        borderTop: 'var(--border-width) solid var(--color-border)',
-        zIndex: 'var(--z-sticky)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
-      <div className={`${containerMaxWidth} mx-auto flex items-center ${hasActions ? 'justify-between' : 'justify-start'} gap-3`}>
-        {BackElement}
-        {hasActions && (
-          <div className="flex gap-2">
-            {SecondaryElement}
-            {TertiaryElement}
-            {PrimaryElement}
-          </div>
+      <div className="max-w-2xl mx-auto flex items-center">
+        {/* Tab buttons */}
+        {TABS.map((tab) => {
+          const active = isActive(pathname, tab.href);
+          const Icon = tab.icon;
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              data-testid={`tab-${tab.label.toLowerCase()}`}
+              className={clsx(
+                'flex-1 flex flex-col items-center gap-1 py-2 text-xs transition-colors',
+                active
+                  ? 'text-primary font-semibold'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <Icon className="w-5 h-5" />
+              <span>{tab.label}</span>
+            </Link>
+          );
+        })}
+
+        {/* Primary action button */}
+        {primaryAction && (
+          <button
+            type="button"
+            onClick={primaryAction.onClick}
+            data-testid={primaryAction.testId}
+            className="flex flex-col items-center gap-1 py-2 px-4 text-xs text-primary font-semibold transition-colors hover:text-primary/80"
+          >
+            <primaryAction.icon className="w-5 h-5" />
+            <span>{primaryAction.label}</span>
+          </button>
         )}
       </div>
     </nav>

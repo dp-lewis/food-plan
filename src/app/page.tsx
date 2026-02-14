@@ -8,9 +8,10 @@ import { getRecipeById, getRecipesByMealType } from '@/data/recipes';
 import { generateShoppingList, mergeShoppingLists } from '@/lib/shoppingList';
 import { MealType, Meal } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
-import { Card, Button, BottomNav, ProgressBar } from '@/components/ui';
+import { Card, Button, BottomNav, ProgressBar, PageHeader } from '@/components/ui';
 import Drawer from '@/components/ui/Drawer';
 import { useAuth } from '@/components/AuthProvider';
+import { ChefHat } from 'lucide-react';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -193,44 +194,37 @@ export default function Dashboard() {
     const tomorrowDayName = getDayName(currentPlan.preferences.startDay, tomorrowIndex);
 
     return (
-      <main id="main-content" className="min-h-screen p-4 pb-20" data-testid="dashboard">
-        <div className="max-w-md mx-auto">
-
-          {/* ── Auth header ── */}
-          <div className="flex justify-end mb-4" style={{ minHeight: '1.5rem' }}>
-            {!authLoading && (
-              user ? (
-                <button
-                  type="button"
-                  data-testid="user-menu-btn"
-                  onClick={() => setSignOutDrawerOpen(true)}
-                  disabled={signOutLoading}
-                  style={{
-                    fontSize: 'var(--font-size-caption)',
-                    color: 'var(--color-text-muted)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: signOutLoading ? 'default' : 'pointer',
-                    padding: 0,
-                    opacity: signOutLoading ? 0.5 : 1,
-                  }}
-                >
-                  {signOutLoading ? 'Signing out…' : user.email}
-                </button>
-              ) : (
-                <Link
-                  href="/auth/signin"
-                  data-testid="sign-in-link"
-                  style={{
-                    fontSize: 'var(--font-size-caption)',
-                    color: 'var(--color-text-muted)',
-                  }}
-                >
-                  Sign in
-                </Link>
-              )
-            )}
-          </div>
+      <div className="min-h-screen bg-background" data-testid="dashboard">
+        <PageHeader
+          title="delibereat"
+          actions={
+            <div className="flex items-center gap-3">
+              {!authLoading && (
+                user ? (
+                  <button
+                    type="button"
+                    data-testid="user-menu-btn"
+                    onClick={() => setSignOutDrawerOpen(true)}
+                    disabled={signOutLoading}
+                    className="text-xs text-primary-foreground/70 hover:text-primary-foreground"
+                  >
+                    {signOutLoading ? 'Signing out…' : user.email}
+                  </button>
+                ) : (
+                  <Link
+                    href="/auth/signin"
+                    data-testid="sign-in-link"
+                    className="text-xs text-primary-foreground/70 hover:text-primary-foreground"
+                  >
+                    Sign in
+                  </Link>
+                )
+              )}
+              <ChefHat className="w-5 h-5" />
+            </div>
+          }
+        />
+        <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
 
           {/* ── Section 1: Up Next ── */}
           {hasUpNext && upNextSlot && (
@@ -387,13 +381,6 @@ export default function Dashboard() {
               <Button variant="secondary" className="w-full">Full Plan</Button>
             </Link>
           </div>
-        </div>
-
-        <BottomNav
-          showBack={false}
-          secondaryAction={{ href: '/recipes', label: 'Recipes', testId: 'my-recipes-link' }}
-          primaryAction={{ href: '/plan', label: 'New Plan', testId: 'new-plan-link' }}
-        />
 
         {/* Recipe swap drawer */}
         <RecipeDrawer
@@ -441,79 +428,72 @@ export default function Dashboard() {
             </Button>
           </div>
         </Drawer>
-      </main>
+        </main>
+        <BottomNav />
+      </div>
     );
   }
 
   // ─── Empty state: no plan yet ───
   return (
-    <main id="main-content" className="min-h-screen flex flex-col items-center justify-center px-4 pb-20" data-testid="empty-state">
-      <div className="max-w-md w-full">
-        {/* ── Auth header ── */}
-        <div className="flex justify-end mb-4" style={{ minHeight: '1.5rem' }}>
-          {!authLoading && (
-            user ? (
-              <button
-                type="button"
-                data-testid="user-menu-btn"
-                onClick={() => setSignOutDrawerOpen(true)}
-                disabled={signOutLoading}
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  color: 'var(--color-text-muted)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: signOutLoading ? 'default' : 'pointer',
-                  padding: 0,
-                  opacity: signOutLoading ? 0.5 : 1,
-                }}
-              >
-                {signOutLoading ? 'Signing out…' : user.email}
-              </button>
-            ) : (
-              <Link
-                href="/auth/signin"
-                data-testid="sign-in-link"
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  color: 'var(--color-text-muted)',
-                }}
-              >
-                Sign in
-              </Link>
-            )
-          )}
-        </div>
-      </div>
-      <div className="max-w-md w-full text-center">
-        <h1
-          className="mb-2"
-          style={{
-            fontSize: 'var(--font-size-heading)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text-primary)',
-          }}
-        >
-          What&apos;s for dinner this week?
-        </h1>
-        <p
-          className="mb-8"
-          style={{
-            fontSize: 'var(--font-size-body)',
-            color: 'var(--color-text-muted)',
-          }}
-        >
-          Create a plan and we&apos;ll sort out your shopping list.
-        </p>
-        <Link href="/plan" data-testid="create-first-plan-btn">
-          <Button className="w-full">Create Your Plan</Button>
-        </Link>
-      </div>
-
-      <BottomNav
-        showBack={false}
-        primaryAction={{ href: '/recipes', label: 'Recipes', testId: 'my-recipes-link' }}
+    <div className="min-h-screen bg-background" data-testid="empty-state">
+      <PageHeader
+        title="delibereat"
+        actions={
+          <div className="flex items-center gap-3">
+            {!authLoading && (
+              user ? (
+                <button
+                  type="button"
+                  data-testid="user-menu-btn"
+                  onClick={() => setSignOutDrawerOpen(true)}
+                  disabled={signOutLoading}
+                  className="text-xs text-primary-foreground/70 hover:text-primary-foreground"
+                >
+                  {signOutLoading ? 'Signing out…' : user.email}
+                </button>
+              ) : (
+                <Link
+                  href="/auth/signin"
+                  data-testid="sign-in-link"
+                  className="text-xs text-primary-foreground/70 hover:text-primary-foreground"
+                >
+                  Sign in
+                </Link>
+              )
+            )}
+            <ChefHat className="w-5 h-5" />
+          </div>
+        }
       />
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
+        <div className="text-center py-12">
+          <h2
+            className="mb-2"
+            style={{
+              fontSize: 'var(--font-size-heading)',
+              fontWeight: 'var(--font-weight-bold)',
+              color: 'var(--color-text-primary)',
+            }}
+          >
+            What&apos;s for dinner this week?
+          </h2>
+          <p
+            className="mb-8"
+            style={{
+              fontSize: 'var(--font-size-body)',
+              color: 'var(--color-text-muted)',
+            }}
+          >
+            Create a plan and we&apos;ll sort out your shopping list.
+          </p>
+          <Link href="/plan" data-testid="create-first-plan-btn">
+            <Button className="w-full">Create Your Plan</Button>
+          </Link>
+        </div>
+      </main>
+
+      <BottomNav />
 
       {/* Sign out confirmation drawer */}
       <Drawer
@@ -550,6 +530,6 @@ export default function Dashboard() {
           </Button>
         </div>
       </Drawer>
-    </main>
+    </div>
   );
 }

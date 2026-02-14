@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { generateShoppingList, groupByCategory, mergeShoppingLists, CATEGORY_LABELS } from '@/lib/shoppingList';
 import { parseIngredient } from '@/lib/ingredientParser';
-import { BottomNav, ProgressBar, Checkbox, Button, Drawer } from '@/components/ui';
+import { BottomNav, ProgressBar, Checkbox, Button, Drawer, PageHeader } from '@/components/ui';
 
 export default function ShoppingList() {
   const currentPlan = useStore((state) => state.currentPlan);
@@ -63,19 +63,9 @@ export default function ShoppingList() {
   // Empty state - no plan and no custom items
   if (!currentPlan && customShoppingItems.length === 0) {
     return (
-      <main className="min-h-screen p-4 pb-20">
-        <div className="max-w-md mx-auto">
-          <h1
-            className="mb-6"
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            Shopping List
-          </h1>
-
+      <div className="min-h-screen bg-background">
+        <PageHeader title="Shopping List" backHref="/" sticky />
+        <main className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
           <div className="text-center py-8">
             <p style={{ color: 'var(--color-text-muted)', marginBottom: 'var(--space-4)' }}>
               No meal plan found. Create one to generate a shopping list, or add items manually.
@@ -87,7 +77,7 @@ export default function ShoppingList() {
               Create Meal Plan
             </Link>
           </div>
-        </div>
+        </main>
 
         <Drawer
           isOpen={isDrawerOpen}
@@ -144,45 +134,30 @@ export default function ShoppingList() {
           </div>
         </Drawer>
 
-        <BottomNav
-          primaryAction={{ onClick: openDrawer, label: '+ Add', testId: 'open-add-drawer-btn' }}
-        />
-      </main>
+        <BottomNav onAddItemClick={openDrawer} />
+      </div>
     );
   }
 
   return (
-    <main id="main-content" className="min-h-screen p-4 pb-20" data-testid="shopping-list">
-      <div className="max-w-md mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h1
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            Shopping List
-          </h1>
-          <span
-            data-testid="progress-counter"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            {checkedCount} / {totalItems}
-          </span>
-        </div>
-
-        {/* Progress bar */}
+    <div className="min-h-screen bg-background" data-testid="shopping-list">
+      <PageHeader
+        title="Shopping List"
+        backHref="/"
+        sticky
+      >
         {totalItems > 0 && (
-          <div className="mb-6">
+          <div className="mt-3">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-primary-foreground/70" data-testid="progress-counter">
+                {checkedCount} / {totalItems} items
+              </span>
+            </div>
             <ProgressBar value={checkedCount} max={totalItems} />
           </div>
         )}
-
+      </PageHeader>
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
         {/* Grouped list */}
         <div className="space-y-6">
           {Array.from(groupedItems.entries()).map(([category, items]) => (
@@ -245,7 +220,7 @@ export default function ShoppingList() {
             </section>
           ))}
         </div>
-      </div>
+      </main>
 
       <Drawer
         isOpen={isDrawerOpen}
@@ -302,9 +277,7 @@ export default function ShoppingList() {
         </div>
       </Drawer>
 
-      <BottomNav
-        primaryAction={{ onClick: openDrawer, label: '+ Add', testId: 'open-add-drawer-btn' }}
-      />
-    </main>
+      <BottomNav onAddItemClick={openDrawer} />
+    </div>
   );
 }
