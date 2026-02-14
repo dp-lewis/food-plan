@@ -27,9 +27,9 @@ export default function AddRecipe() {
   // Editable fields for preview
   const [title, setTitle] = useState('');
   const [mealType, setMealType] = useState<MealType>('dinner');
-  const [prepTime, setPrepTime] = useState(15);
-  const [cookTime, setCookTime] = useState(30);
-  const [servings, setServings] = useState(4);
+  const [prepTime, setPrepTime] = useState('15');
+  const [cookTime, setCookTime] = useState('30');
+  const [servings, setServings] = useState('4');
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
   // Check for pending imported recipe on mount
@@ -38,9 +38,9 @@ export default function AddRecipe() {
       // Load the pending recipe into the form
       setParsedRecipe(pendingImportedRecipe);
       setTitle(pendingImportedRecipe.title);
-      setPrepTime(pendingImportedRecipe.prepTime || 15);
-      setCookTime(pendingImportedRecipe.cookTime || 30);
-      setServings(pendingImportedRecipe.servings || 4);
+      setPrepTime(String(pendingImportedRecipe.prepTime || 15));
+      setCookTime(String(pendingImportedRecipe.cookTime || 30));
+      setServings(String(pendingImportedRecipe.servings || 4));
 
       // Parse ingredients with auto-categorization
       const parsedIngredients = (pendingImportedRecipe.ingredients || []).map((raw: string) =>
@@ -75,9 +75,9 @@ export default function AddRecipe() {
 
       setParsedRecipe(data);
       setTitle(data.title);
-      setPrepTime(data.prepTime || 15);
-      setCookTime(data.cookTime || 30);
-      setServings(data.servings || 4);
+      setPrepTime(String(data.prepTime || 15));
+      setCookTime(String(data.cookTime || 30));
+      setServings(String(data.servings || 4));
 
       // Parse ingredients with auto-categorization
       const parsedIngredients = (data.ingredients || []).map((raw: string) =>
@@ -103,9 +103,9 @@ export default function AddRecipe() {
       title,
       description: '',
       mealType,
-      prepTime,
-      cookTime,
-      servings,
+      prepTime: parseInt(prepTime) || 0,
+      cookTime: parseInt(cookTime) || 0,
+      servings: parseInt(servings) || 1,
       difficulty: 'medium' as Difficulty,
       tags: [],
       estimatedCost: 'medium' as BudgetLevel,
@@ -203,20 +203,23 @@ export default function AddRecipe() {
               <Input
                 label="Prep (min)"
                 type="number"
-                value={String(prepTime)}
-                onChange={(v) => setPrepTime(parseInt(v) || 0)}
+                value={prepTime}
+                onChange={setPrepTime}
+                min="0"
               />
               <Input
                 label="Cook (min)"
                 type="number"
-                value={String(cookTime)}
-                onChange={(v) => setCookTime(parseInt(v) || 0)}
+                value={cookTime}
+                onChange={setCookTime}
+                min="0"
               />
               <Input
                 label="Servings"
                 type="number"
-                value={String(servings)}
-                onChange={(v) => setServings(parseInt(v) || 1)}
+                value={servings}
+                onChange={setServings}
+                min="1"
               />
             </div>
 
