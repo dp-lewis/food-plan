@@ -20,9 +20,9 @@ export default function NewRecipe() {
 
   const [title, setTitle] = useState('');
   const [mealType, setMealType] = useState<MealType>('dinner');
-  const [prepTime, setPrepTime] = useState(0);
-  const [cookTime, setCookTime] = useState(0);
-  const [servings, setServings] = useState(4);
+  const [prepTime, setPrepTime] = useState('0');
+  const [cookTime, setCookTime] = useState('0');
+  const [servings, setServings] = useState('4');
   const [notes, setNotes] = useState('');
   const [ingredients, setIngredients] = useState<IngredientInput[]>([]);
   const [newIngredient, setNewIngredient] = useState('');
@@ -68,9 +68,9 @@ export default function NewRecipe() {
       title: title.trim(),
       description: '',
       mealType,
-      prepTime,
-      cookTime,
-      servings,
+      prepTime: parseInt(prepTime) || 0,
+      cookTime: parseInt(cookTime) || 0,
+      servings: parseInt(servings) || 1,
       difficulty: 'easy' as Difficulty,
       tags: [],
       estimatedCost: 'medium' as BudgetLevel,
@@ -120,24 +120,27 @@ export default function NewRecipe() {
             <Input
               label="Prep (min)"
               type="number"
-              value={String(prepTime)}
-              onChange={(v) => setPrepTime(parseInt(v) || 0)}
+              value={prepTime}
+              onChange={setPrepTime}
+              min="0"
               id="prep-time-input"
               data-testid="prep-time-input"
             />
             <Input
               label="Cook (min)"
               type="number"
-              value={String(cookTime)}
-              onChange={(v) => setCookTime(parseInt(v) || 0)}
+              value={cookTime}
+              onChange={setCookTime}
+              min="0"
               id="cook-time-input"
               data-testid="cook-time-input"
             />
             <Input
               label="Servings"
               type="number"
-              value={String(servings)}
-              onChange={(v) => setServings(parseInt(v) || 1)}
+              value={servings}
+              onChange={setServings}
+              min="1"
               id="servings-input"
               data-testid="servings-input"
             />
