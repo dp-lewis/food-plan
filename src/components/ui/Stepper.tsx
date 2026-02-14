@@ -1,5 +1,7 @@
 'use client';
 
+import { cn } from '@/lib/utils';
+
 export interface StepperProps {
   value: number;
   onChange: (value: number) => void;
@@ -10,33 +12,6 @@ export interface StepperProps {
 }
 
 export default function Stepper({ value, onChange, min = 1, max = 99, label, testId }: StepperProps) {
-  const buttonStyles = {
-    width: 'var(--touch-target-min)',
-    height: 'var(--touch-target-min)',
-    borderRadius: 'var(--border-radius-sm)',
-    border: 'var(--border-width) solid var(--color-border)',
-    background: 'var(--color-bg-primary)',
-    fontSize: 'var(--font-size-heading)',
-    color: 'var(--color-text-primary)',
-    cursor: 'pointer',
-    transition: 'all var(--transition-fast)',
-  };
-
-  const valueStyles = {
-    width: '3rem',
-    textAlign: 'center' as const,
-    fontSize: 'var(--font-size-heading)',
-    fontWeight: 'var(--font-weight-bold)' as const,
-  };
-
-  const labelStyles = {
-    display: 'block',
-    marginBottom: 'var(--space-2)',
-    fontSize: 'var(--font-size-body)',
-    fontWeight: 'var(--font-weight-bold)' as const,
-    color: 'var(--color-text-primary)',
-  };
-
   const decrement = () => {
     if (value > min) {
       onChange(value - 1);
@@ -51,20 +26,23 @@ export default function Stepper({ value, onChange, min = 1, max = 99, label, tes
 
   return (
     <div>
-      {label && <label style={labelStyles}>{label}</label>}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+      {label && <label className="block mb-2 text-base font-semibold text-foreground">{label}</label>}
+      <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={decrement}
           disabled={value <= min}
-          style={{ ...buttonStyles, opacity: value <= min ? 0.5 : 1 }}
+          className={cn(
+            'w-11 h-11 rounded-sm border border-border bg-background text-2xl text-foreground cursor-pointer transition-all',
+            value <= min && 'opacity-50'
+          )}
           aria-label={`Decrease ${label || 'value'}`}
           data-testid={testId ? `${testId}-decrement` : undefined}
         >
           −
         </button>
         <span
-          style={valueStyles}
+          className="w-12 text-center text-2xl font-semibold"
           data-testid={testId ? `${testId}-count` : 'stepper-value'}
           role="status"
           aria-live="polite"
@@ -76,7 +54,10 @@ export default function Stepper({ value, onChange, min = 1, max = 99, label, tes
           type="button"
           onClick={increment}
           disabled={value >= max}
-          style={{ ...buttonStyles, opacity: value >= max ? 0.5 : 1 }}
+          className={cn(
+            'w-11 h-11 rounded-sm border border-border bg-background text-2xl text-foreground cursor-pointer transition-all',
+            value >= max && 'opacity-50'
+          )}
           aria-label={`Increase ${label || 'value'}`}
           data-testid={testId ? `${testId}-increment` : undefined}
         >

@@ -83,10 +83,10 @@ export default function Drawer({ isOpen, onClose, title, children }: DrawerProps
   if (!isOpen) return null;
 
   return (
-    <div className="drawer-container">
+    <div className="fixed inset-0 z-50">
       {/* Backdrop */}
       <div
-        className="drawer-backdrop"
+        className="absolute inset-0 bg-black/40 animate-[fade-in_150ms_ease-out]"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -97,27 +97,23 @@ export default function Drawer({ isOpen, onClose, title, children }: DrawerProps
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
-        className="drawer-panel"
+        className="absolute bottom-0 left-0 right-0 max-h-[75vh] bg-background rounded-t-lg flex flex-col animate-[slide-up_200ms_ease-out]"
       >
         {/* Drag handle */}
-        <div className="drawer-handle" />
+        <div className="w-9 h-1 bg-border rounded-full mx-auto mt-3 mb-2" />
 
         {/* Header */}
-        <div className="drawer-header">
+        <div className="flex justify-between items-center px-4 pb-3 border-b">
           <h2
             id="drawer-title"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
+            className="text-base font-semibold text-foreground"
           >
             {title}
           </h2>
           <button
             ref={closeButtonRef}
             onClick={onClose}
-            className="drawer-close-btn"
+            className="w-11 h-11 flex items-center justify-center text-2xl text-muted-foreground rounded-sm hover:bg-muted"
             aria-label="Close drawer"
           >
             ×
@@ -125,7 +121,7 @@ export default function Drawer({ isOpen, onClose, title, children }: DrawerProps
         </div>
 
         {/* Content */}
-        <div className="drawer-content">
+        <div className="p-4 overflow-y-auto flex-1">
           {children}
         </div>
       </div>

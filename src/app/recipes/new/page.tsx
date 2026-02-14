@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
 import { parseIngredient } from '@/lib/ingredientParser';
 import { MealType, Difficulty, BudgetLevel, Ingredient, IngredientCategory } from '@/types';
-import { BottomNav, Input, Select, Button } from '@/components/ui';
+import { Input, Select, Button, PageHeader } from '@/components/ui';
 
 const CATEGORIES: IngredientCategory[] = ['produce', 'dairy', 'meat', 'pantry', 'frozen', 'uncategorized'];
 
@@ -85,26 +85,10 @@ export default function NewRecipe() {
   };
 
   return (
-    <main className="min-h-screen p-4 pb-20" data-testid="new-recipe-page">
-      <div className="max-w-md mx-auto">
-        <h1
-          className="mb-2"
-          style={{
-            fontSize: 'var(--font-size-heading)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text-primary)',
-          }}
-        >
-          Create Recipe
-        </h1>
-
-        <p
-          className="mb-6"
-          style={{
-            fontSize: 'var(--font-size-body)',
-            color: 'var(--color-text-secondary)',
-          }}
-        >
+    <div className="min-h-screen bg-background" data-testid="new-recipe-page">
+      <PageHeader title="Create Recipe" backHref="/recipes" />
+      <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+        <p className="text-base text-muted-foreground">
           Add a simple recipe for your family meals.
         </p>
 
@@ -161,55 +145,31 @@ export default function NewRecipe() {
 
           {/* Ingredients */}
           <div>
-            <label
-              className="block mb-1"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
+            <label className="block mb-1 text-sm font-semibold text-foreground">
               Ingredients *
             </label>
 
             {/* Ingredient list */}
             {ingredients.length > 0 && (
               <div
-                className="rounded-lg overflow-hidden mb-2"
+                className="rounded-lg overflow-hidden mb-2 border border-border"
                 data-testid="ingredients-list"
-                style={{
-                  border: 'var(--border-width) solid var(--color-border)',
-                }}
               >
                 {ingredients.map((ing, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-2 px-3 py-2"
+                    className={`flex items-center gap-2 px-3 py-2 ${index % 2 === 0 ? 'bg-background' : 'bg-muted'}`}
                     data-testid={`ingredient-${index}`}
-                    style={{
-                      backgroundColor: index % 2 === 0 ? 'var(--color-bg-primary)' : 'var(--color-bg-tertiary)',
-                    }}
                   >
-                    <span
-                      className="flex-1 truncate"
-                      style={{
-                        fontSize: 'var(--font-size-caption)',
-                        color: 'var(--color-text-secondary)',
-                      }}
-                    >
+                    <span className="flex-1 truncate text-sm text-muted-foreground">
                       {ing.parsed.quantity} {ing.parsed.unit} {ing.parsed.name}
                     </span>
                     <select
                       value={ing.parsed.category}
                       onChange={(e) => updateIngredientCategory(index, e.target.value as IngredientCategory)}
-                      className="px-2 py-1 rounded text-xs"
+                      className="px-2 py-1 rounded text-xs bg-background border border-border text-foreground"
                       data-testid={`category-${index}`}
                       aria-label={`Category for ${ing.parsed.name}`}
-                      style={{
-                        backgroundColor: 'var(--color-bg-primary)',
-                        border: 'var(--border-width) solid var(--color-border)',
-                        color: 'var(--color-text-primary)',
-                      }}
                     >
                       {CATEGORIES.map((cat) => (
                         <option key={cat} value={cat}>
@@ -219,13 +179,9 @@ export default function NewRecipe() {
                     </select>
                     <button
                       onClick={() => removeIngredient(index)}
-                      className="p-1 rounded"
+                      className="p-1 rounded text-destructive text-sm"
                       data-testid={`remove-ingredient-${index}`}
                       aria-label={`Remove ${ing.parsed.name}`}
-                      style={{
-                        color: 'var(--color-error, #c00)',
-                        fontSize: 'var(--font-size-caption)',
-                      }}
                     >
                       ×
                     </button>
@@ -246,15 +202,9 @@ export default function NewRecipe() {
                 onChange={(e) => setNewIngredient(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="e.g., 2 chicken schnitzels"
-                className="flex-1 px-3 py-2 rounded-lg"
+                className="flex-1 px-3 py-2 rounded-lg bg-background border border-border text-base text-foreground"
                 data-testid="new-ingredient-input"
                 aria-describedby="ingredient-hint"
-                style={{
-                  backgroundColor: 'var(--color-bg-primary)',
-                  border: 'var(--border-width) solid var(--color-border)',
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-primary)',
-                }}
               />
               <Button
                 variant="secondary"
@@ -267,11 +217,7 @@ export default function NewRecipe() {
             </div>
             <p
               id="ingredient-hint"
-              className="mt-1"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
+              className="mt-1 text-sm text-muted-foreground"
             >
               Press Enter or click Add after each ingredient
             </p>
@@ -281,12 +227,7 @@ export default function NewRecipe() {
           <div>
             <label
               htmlFor="notes-input"
-              className="block mb-1"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-text-primary)',
-              }}
+              className="block mb-1 text-sm font-semibold text-foreground"
             >
               Notes (optional)
             </label>
@@ -296,14 +237,8 @@ export default function NewRecipe() {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any brief reminders for this recipe..."
               rows={2}
-              className="w-full px-3 py-2 rounded-lg resize-none"
+              className="w-full px-3 py-2 rounded-lg resize-none bg-background border border-border text-base text-foreground"
               data-testid="notes-input"
-              style={{
-                backgroundColor: 'var(--color-bg-primary)',
-                border: 'var(--border-width) solid var(--color-border)',
-                fontSize: 'var(--font-size-body)',
-                color: 'var(--color-text-primary)',
-              }}
             />
           </div>
 
@@ -320,19 +255,13 @@ export default function NewRecipe() {
             <p
               role="status"
               aria-live="polite"
-              className="text-center"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-text-muted)',
-              }}
+              className="text-center text-sm text-muted-foreground"
             >
               Add a title and at least one ingredient to save
             </p>
           )}
         </div>
-      </div>
-
-      <BottomNav backHref="/recipes" />
-    </main>
+      </main>
+    </div>
   );
 }

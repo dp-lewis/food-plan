@@ -3,7 +3,7 @@
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { Alert, Button, Card, Input, BottomNav } from '@/components/ui';
+import { Alert, Button, Card, Input, PageHeader } from '@/components/ui';
 
 function SignInForm() {
   const searchParams = useSearchParams();
@@ -71,33 +71,14 @@ function SignInForm() {
     return (
       <>
         <Card data-testid="signin-success">
-          <h1
-            className="mb-2"
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
+          <h1 className="mb-2 text-2xl font-semibold text-foreground">
             Check your email
           </h1>
-          <p
-            className="mb-4"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
+          <p className="mb-4 text-base text-muted-foreground">
             We sent a code to <strong>{email}</strong>. Enter the 6-digit code
             from the email to sign in.
           </p>
-          <p
-            className="mb-4"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
+          <p className="mb-4 text-sm text-muted-foreground">
             Or tap the magic link in the email if you&apos;re using a browser.
           </p>
 
@@ -135,33 +116,27 @@ function SignInForm() {
           </form>
         </Card>
 
-        <BottomNav
-          backHref="/"
-          backLabel="Back"
-          secondaryAction={{
-            label: 'Resend code',
-            onClick: () => {
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={() => {
               setSubmitted(false);
               setOtp('');
               setVerifyError(null);
-            },
-            testId: 'resend-btn',
-          }}
-        />
+            }}
+            data-testid="resend-btn"
+            className="text-sm text-primary bg-transparent border-none cursor-pointer"
+          >
+            Resend code
+          </button>
+        </div>
       </>
     );
   }
 
   return (
     <>
-      <h1
-        className="mb-6"
-        style={{
-          fontSize: 'var(--font-size-heading)',
-          fontWeight: 'var(--font-weight-bold)',
-          color: 'var(--color-text-primary)',
-        }}
-      >
+      <h1 className="mb-6 text-2xl font-semibold text-foreground">
         Sign in
       </h1>
 
@@ -203,23 +178,22 @@ function SignInForm() {
         </form>
       </Card>
 
-      <BottomNav backHref="/" backLabel="Back" />
     </>
   );
 }
 
 export default function SignInPage() {
   return (
-    <main
-      id="main-content"
-      className="min-h-screen flex flex-col items-center justify-center px-4 pb-20"
-      data-testid="signin-page"
-    >
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-background" data-testid="signin-page">
+      <PageHeader title="Sign In" backHref="/" />
+      <main
+        id="main-content"
+        className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6"
+      >
         <Suspense>
           <SignInForm />
         </Suspense>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

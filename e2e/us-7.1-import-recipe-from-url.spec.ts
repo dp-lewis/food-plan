@@ -54,7 +54,7 @@ test.describe('US-7.1: Import recipe from URL', () => {
 
   test('Can navigate to "My Recipes" from the dashboard', async ({ page }) => {
     await page.goto('/');
-    await page.getByTestId('my-recipes-link').click();
+    await page.getByTestId('tab-recipes').click();
     await expect(page).toHaveURL('/recipes');
     await expect(page.getByTestId('my-recipes-page')).toBeVisible();
   });

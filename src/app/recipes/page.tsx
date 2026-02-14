@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
-import { BottomNav, Button, Card, EmptyState, Drawer } from '@/components/ui';
+import { BottomNav, Button, Card, EmptyState, Drawer, PageHeader } from '@/components/ui';
+import { LinkIcon } from 'lucide-react';
 
 export default function MyRecipes() {
   const router = useRouter();
@@ -63,20 +64,9 @@ export default function MyRecipes() {
   };
 
   return (
-    <main id="main-content" className="min-h-screen p-4 pb-20" data-testid="my-recipes-page">
-      <div className="max-w-md mx-auto">
-        {/* Header */}
-        <h1
-          className="mb-6"
-          style={{
-            fontSize: 'var(--font-size-heading)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text-primary)',
-          }}
-        >
-          My Recipes
-        </h1>
-
+    <div className="min-h-screen bg-background" data-testid="my-recipes-page">
+      <PageHeader title="My Recipes" backHref="/" />
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
         {/* Empty state */}
         {userRecipes.length === 0 && (
           <div data-testid="empty-recipes">
@@ -111,32 +101,33 @@ export default function MyRecipes() {
                 className="block"
               >
                 <Card>
-                  <h2
-                    style={{
-                      fontSize: 'var(--font-size-body)',
-                      fontWeight: 'var(--font-weight-bold)',
-                      color: 'var(--color-text-primary)',
-                    }}
-                  >
-                    {recipe.title}
-                  </h2>
-                  <div
-                    className="flex items-center gap-2 mt-1"
-                    style={{
-                      fontSize: 'var(--font-size-caption)',
-                      color: 'var(--color-text-muted)',
-                    }}
-                  >
-                    <span className="capitalize">{recipe.mealType}</span>
-                    <span>·</span>
-                    <span>{recipe.sourceName ? `from ${recipe.sourceName}` : 'Your recipe'}</span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <h2 className="text-base font-semibold text-foreground">
+                        {recipe.title}
+                      </h2>
+                      <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                        <span className="capitalize">{recipe.mealType}</span>
+                        <span>·</span>
+                        <span>{recipe.sourceName ? `from ${recipe.sourceName}` : 'Your recipe'}</span>
+                      </div>
+                    </div>
+                    {recipe.sourceUrl && (
+                      <LinkIcon className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
+                    )}
                   </div>
                 </Card>
               </Link>
             ))}
+
+            <Link href="/recipes/new" data-testid="create-recipe-btn">
+              <Button variant="secondary" className="w-full">
+                + Create Your Own Recipe
+              </Button>
+            </Link>
           </div>
         )}
-      </div>
+      </main>
 
       <Drawer
         isOpen={isImportDrawerOpen}
@@ -161,37 +152,19 @@ export default function MyRecipes() {
                 }
               }}
               placeholder="https://www.recipetineats.com/..."
-              className="flex-1"
+              className="flex-1 bg-background border border-border text-base text-foreground px-3 py-2 rounded-sm"
               data-testid="import-url-input"
-              style={{
-                backgroundColor: 'var(--color-bg-primary)',
-                border: 'var(--border-width) solid var(--color-border)',
-                fontSize: 'var(--font-size-body)',
-                color: 'var(--color-text-primary)',
-                padding: 'var(--space-2) var(--space-3)',
-                borderRadius: 'var(--border-radius-sm)',
-              }}
             />
           </div>
           {error && (
             <p
-              className="mt-2"
-              style={{
-                fontSize: 'var(--font-size-caption)',
-                color: 'var(--color-error)',
-              }}
+              className="mt-2 text-sm text-destructive"
               data-testid="import-error"
             >
               {error}
             </p>
           )}
-          <p
-            className="mt-2 mb-4"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
+          <p className="mt-2 mb-4 text-sm text-muted-foreground">
             Paste a recipe URL from sites like RecipeTin Eats, BBC Good Food, or any site with structured recipe data.
           </p>
           <Button
@@ -205,11 +178,7 @@ export default function MyRecipes() {
         </div>
       </Drawer>
 
-      <BottomNav
-        backHref="/"
-        secondaryAction={{ href: '/recipes/new', label: '+ Create', testId: 'create-recipe-btn' }}
-        primaryAction={{ onClick: openImportDrawer, label: 'Import URL', testId: 'import-recipe-btn' }}
-      />
-    </main>
+      <BottomNav onImportClick={openImportDrawer} />
+    </div>
   );
 }

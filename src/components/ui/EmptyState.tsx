@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface EmptyStateProps {
   icon?: ReactNode;
@@ -8,45 +9,21 @@ export interface EmptyStateProps {
 }
 
 export default function EmptyState({ icon, title, description, action }: EmptyStateProps) {
-  const containerStyles = {
-    textAlign: 'center' as const,
-    padding: 'var(--space-8)',
-  };
-
-  const iconContainerStyles = {
-    width: '4rem',
-    height: '4rem',
-    margin: '0 auto var(--space-4)',
-    borderRadius: '50%',
-    backgroundColor: 'var(--color-accent-light)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '2rem',
-  };
-
-  const titleStyles = {
-    fontSize: 'var(--font-size-body)',
-    fontWeight: 'var(--font-weight-bold)' as const,
-    color: 'var(--color-text-primary)',
-    marginBottom: description ? 'var(--space-2)' : 'var(--space-4)',
-  };
-
-  const descriptionStyles = {
-    fontSize: 'var(--font-size-caption)',
-    color: 'var(--color-text-muted)',
-    marginBottom: 'var(--space-4)',
-  };
-
   return (
-    <div style={containerStyles}>
+    <div className="text-center p-8">
       {icon && (
-        <div style={iconContainerStyles} role="presentation" aria-hidden="true">
+        <div
+          className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-light flex items-center justify-center text-[2rem]"
+          role="presentation"
+          aria-hidden="true"
+        >
           {icon}
         </div>
       )}
-      <h2 style={titleStyles}>{title}</h2>
-      {description && <p style={descriptionStyles}>{description}</p>}
+      <h2 className={cn('text-base font-semibold text-foreground', description ? 'mb-2' : 'mb-4')}>
+        {title}
+      </h2>
+      {description && <p className="text-sm text-muted-foreground mb-4">{description}</p>}
       {action && <div>{action}</div>}
     </div>
   );

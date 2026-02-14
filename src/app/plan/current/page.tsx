@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { getRecipeById, getRecipesByMealType } from '@/data/recipes';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
-import { BottomNav, Button, Card } from '@/components/ui';
+import { BottomNav, Button, Card, PageHeader } from '@/components/ui';
 import { useAuth } from '@/components/AuthProvider';
 import { generateShareLink } from '@/app/actions/share';
+import { Share2 } from 'lucide-react';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -20,6 +21,32 @@ const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
  */
 function getOrderedDays(startDay: number): string[] {
   return Array.from({ length: 7 }, (_, i) => DAYS[(startDay + i) % 7]);
+}
+
+/**
+ * Get today's dayIndex within the plan based on the plan's startDay.
+ * startDay uses 0=Monday ... 6=Sunday.
+ * Returns 0-6, where 0 is the plan's first day.
+ */
+function getTodayPlanIndex(startDay: number): number {
+  const now = new Date();
+  const jsDay = now.getDay();
+  const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
+  return (todayIndex - startDay + 7) % 7;
+}
+
+/**
+ * Get the formatted date string (e.g. "Feb 15") for a given dayIndex in the plan.
+ */
+function getDateForDayIndex(startDay: number, dayIndex: number): string {
+  const now = new Date();
+  const jsDay = now.getDay();
+  const todayWeekday = jsDay === 0 ? 6 : jsDay - 1; // 0=Mon...6=Sun
+  const todayPlanIndex = (todayWeekday - startDay + 7) % 7;
+  const diff = dayIndex - todayPlanIndex;
+  const date = new Date(now);
+  date.setDate(date.getDate() + diff);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 type DrawerMode = 'swap' | 'add';
@@ -186,6 +213,21 @@ export default function CurrentPlan() {
     }
   }, [hasHydrated, currentPlan, router]);
 
+  const todayIndex = useMemo(
+    () => currentPlan ? getTodayPlanIndex(currentPlan.preferences.startDay) : 0,
+    [currentPlan]
+  );
+
+  const todayRef = useRef<HTMLDivElement>(null);
+  const hasScrolledToToday = useRef(false);
+
+  useEffect(() => {
+    if (hasHydrated && currentPlan && todayRef.current && !hasScrolledToToday.current) {
+      todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      hasScrolledToToday.current = true;
+    }
+  }, [hasHydrated, currentPlan]);
+
   if (!hasHydrated || !currentPlan) {
     return null;
   }
@@ -196,80 +238,81 @@ export default function CurrentPlan() {
     : [];
 
   return (
-    <main id="main-content" className="min-h-screen p-4 pb-24" data-testid="meal-plan">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            Your Meal Plan
-          </h1>
+    <div className="min-h-screen bg-background" data-testid="meal-plan">
+      <PageHeader
+        title="Meal Plan"
+        backHref="/"
+        sticky
+        actions={
+          user ? (
+            <button
+              type="button"
+              onClick={handleShare}
+              data-testid="share-plan-btn"
+              className="p-1 rounded-md hover:bg-white/10 transition-colors"
+              aria-label={shareStatus === 'copied' ? 'Link copied' : 'Share plan'}
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+          ) : undefined
+        }
+      />
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
+        <div className="flex items-center justify-end">
           <Link
             href="/plan"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-accent)',
-            }}
+            className="text-sm text-primary"
           >
             Change start day
           </Link>
         </div>
 
         <div className="space-y-4">
-          {slotsByDay.map(({ dayName, dayIndex, slots }) => (
-            <Card key={dayName} padding="none" data-testid={`day-${dayIndex}`}>
-              <div
-                className="px-4 py-2"
-                style={{
-                  backgroundColor: 'var(--color-bg-tertiary)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  fontSize: 'var(--font-size-body)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                {dayName}
+          {slotsByDay.map(({ dayName, dayIndex, slots }) => {
+            const isToday = dayIndex === todayIndex;
+            return (
+            <Card
+              key={dayName}
+              padding="none"
+              data-testid={`day-${dayIndex}`}
+              className={`scroll-mt-20 ${isToday ? 'border-2 border-primary' : ''}`}
+              ref={isToday ? todayRef : undefined}
+            >
+              <div className="px-4 py-2 bg-muted font-semibold text-base text-foreground">
+                <div className="flex items-center gap-2">
+                  {dayName}
+                  {isToday && (
+                    <span className="text-xs font-medium bg-primary-foreground text-primary px-2 py-0.5 rounded">Today</span>
+                  )}
+                </div>
+                <div className="text-xs font-normal text-muted-foreground">
+                  {getDateForDayIndex(currentPlan.preferences.startDay, dayIndex)}
+                </div>
               </div>
-              <div className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
+              <div className="divide-y divide-border">
                 {slots.map(({ mealType, meals }) => {
                   const slotRecipeIds = meals.map(m => m.recipeId);
 
                   return (
                     <div key={mealType} data-testid={`slot-${dayIndex}-${mealType}`}>
                       {/* Meal type header */}
-                      <div
-                        className="px-4 pt-3 pb-1"
-                        style={{
-                          fontSize: 'var(--font-size-caption)',
-                          color: 'var(--color-text-muted)',
-                        }}
-                      >
+                      <div className="px-4 pt-3 pb-1 text-sm text-muted-foreground">
                         <span className="uppercase tracking-wide">{mealType}</span>
                       </div>
 
                       {/* Meals in this slot */}
                       {meals.length === 0 ? (
-                        <div
-                          className="px-4 pb-3 flex items-center justify-between"
-                          style={{ color: 'var(--color-text-muted)' }}
-                        >
-                          <span
-                            style={{
-                              fontSize: 'var(--font-size-body)',
-                              fontStyle: 'italic',
-                            }}
-                          >
+                        <div className="px-4 pb-3 space-y-2">
+                          <div className="p-3 border border-dashed border-border rounded-lg text-center text-sm text-muted-foreground">
                             No meals planned
-                          </span>
+                          </div>
                           <Button
                             variant="secondary"
                             size="small"
                             onClick={() => openAddDrawer(dayIndex, mealType, slotRecipeIds)}
                             data-testid={`add-meal-${dayIndex}-${mealType}`}
                             aria-label={`Add ${mealType}`}
+                            className="w-full"
                           >
                             + Add
                           </Button>
@@ -294,21 +337,10 @@ export default function CurrentPlan() {
                                   href={recipeUrl}
                                   className="flex-1 transition-colors"
                                 >
-                                  <p
-                                    style={{
-                                      fontSize: 'var(--font-size-body)',
-                                      color: 'var(--color-text-primary)',
-                                      fontWeight: 'var(--font-weight-bold)',
-                                    }}
-                                  >
+                                  <p className="text-base text-foreground font-semibold">
                                     {recipe.title}
                                   </p>
-                                  <p
-                                    style={{
-                                      fontSize: 'var(--font-size-caption)',
-                                      color: 'var(--color-text-muted)',
-                                    }}
-                                  >
+                                  <p className="text-sm text-muted-foreground">
                                     {recipe.prepTime + recipe.cookTime} mins
                                   </p>
                                 </Link>
@@ -332,7 +364,7 @@ export default function CurrentPlan() {
                               onClick={() => openAddDrawer(dayIndex, mealType, slotRecipeIds)}
                               data-testid={`add-meal-${dayIndex}-${mealType}`}
                               aria-label={`Add ${mealType}`}
-                              style={{ color: 'var(--color-accent)' }}
+                              className="text-primary"
                             >
                               + Add {mealType}
                             </Button>
@@ -344,21 +376,13 @@ export default function CurrentPlan() {
                 })}
               </div>
             </Card>
-          ))}
+            );
+          })}
         </div>
 
-      </div>
+      </main>
 
-      <BottomNav
-        backHref="/"
-        secondaryAction={user ? {
-          onClick: handleShare,
-          label: shareStatus === 'copied' ? 'Link Copied!' : shareStatus === 'loading' ? 'Sharing...' : 'Share',
-          testId: 'share-plan-btn',
-        } : undefined}
-        primaryAction={{ href: '/shopping-list', label: 'Shopping List', testId: 'shopping-list-btn' }}
-        maxWidth="2xl"
-      />
+      <BottomNav onShareClick={() => console.log('sharing')} />
 
       {/* Recipe selection drawer */}
       <RecipeDrawer
@@ -371,6 +395,6 @@ export default function CurrentPlan() {
         onSurpriseMe={handleSurpriseMe}
         mode={drawerState.mode}
       />
-    </main>
+    </div>
   );
 }

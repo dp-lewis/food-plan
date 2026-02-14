@@ -1,133 +1,56 @@
 /**
  * Food Plan - Design Tokens
  *
- * Philosophy: Minimal & focused (see docs/design-principles.md)
- * - Single accent color (green)
- * - Light mode only
- * - Simple 3-size typography
- * - 8px spacing grid
+ * All tokens follow shadcn conventions and map to Tailwind
+ * utility classes via @theme inline in globals.css.
  */
 
 :root {
   /* ==========================================
-     COLORS
-     ========================================== */
-
-  /* Accent - Green (fresh, healthy, natural) */
-  --color-accent: #16a34a;           /* Primary actions, links */
-  --color-accent-hover: #15803d;     /* Hover state */
-  --color-accent-active: #166534;    /* Active/pressed state */
-  --color-accent-light: #dcfce7;     /* Backgrounds, highlights */
-  --color-accent-subtle: #f0fdf4;    /* Very light backgrounds */
-
-  /* Neutrals - Gray scale */
-  --color-text-primary: #111827;     /* Headings, important text */
-  --color-text-secondary: #4b5563;   /* Body text, descriptions */
-  --color-text-muted: #6b7280;       /* Captions, placeholders - WCAG AA compliant */
-  --color-text-inverse: #ffffff;     /* Text on dark backgrounds */
-
-  /* Backgrounds */
-  --color-bg-primary: #ffffff;       /* Main background */
-  --color-bg-secondary: #f9fafb;     /* Cards, sections */
-  --color-bg-tertiary: #f3f4f6;      /* Hover states, dividers */
-
-  /* Borders */
-  --color-border: #e5e7eb;           /* Default borders */
-  --color-border-strong: #d1d5db;    /* Emphasized borders */
-
-  /* Semantic - Used sparingly */
-  --color-success: #16a34a;          /* Same as accent */
-  --color-success-light: #dcfce7;    /* Success backgrounds */
-  --color-warning: #d97706;          /* Caution states */
-  --color-warning-light: #fef3c7;    /* Warning backgrounds */
-  --color-error: #dc2626;            /* Error states */
-  --color-error-light: #fee2e2;      /* Error backgrounds */
-  --color-info: #2563eb;             /* Info states */
-  --color-info-light: #dbeafe;       /* Info backgrounds */
-
-  /* ==========================================
      TYPOGRAPHY
      ========================================== */
 
-  /* Font Family */
   --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
                  Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-  /* Font Sizes - Simple 3-tier system */
-  --font-size-heading: 1.5rem;       /* 24px - Page titles, section headers */
-  --font-size-body: 1rem;            /* 16px - Main content */
-  --font-size-caption: 0.875rem;     /* 14px - Labels, helper text */
-
-  /* Font Weights - Two weights only */
-  --font-weight-normal: 400;
-  --font-weight-bold: 600;
-
-  /* Line Heights */
-  --line-height-tight: 1.25;         /* Headings */
-  --line-height-normal: 1.5;         /* Body text */
-
   /* ==========================================
-     SPACING
+     SHADCN-CONVENTION ALIASES
+     Maps to Tailwind utility classes via @theme inline
      ========================================== */
 
-  /* Base unit: 8px grid */
-  --space-1: 0.25rem;                /* 4px  - Tight spacing */
-  --space-2: 0.5rem;                 /* 8px  - Default small */
-  --space-3: 0.75rem;                /* 12px - Medium small */
-  --space-4: 1rem;                   /* 16px - Default */
-  --space-5: 1.25rem;                /* 20px - Medium */
-  --space-6: 1.5rem;                 /* 24px - Large */
-  --space-8: 2rem;                   /* 32px - Section spacing */
-  --space-10: 2.5rem;                /* 40px - Large sections */
-  --space-12: 3rem;                  /* 48px - Page margins */
+  --primary: #16a34a;
+  --primary-light: #dcfce7;
+  --primary-foreground: #ffffff;
+  --background: #ffffff;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --secondary: #f9fafb;
+  --secondary-foreground: #111827;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #f3f4f6;
+  --accent-foreground: #111827;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: transparent;
+  --input-background: #f9fafb;
+  --ring: #16a34a;
+  --radius: 0.5rem;
 
-  /* ==========================================
-     SIZING
-     ========================================== */
+  /* Semantic colors (Alert variants) */
+  --success: #16a34a;
+  --success-light: #dcfce7;
+  --warning: #d97706;
+  --warning-light: #fef3c7;
+  --error: #dc2626;
+  --error-light: #fee2e2;
+  --info: #2563eb;
+  --info-light: #dbeafe;
 
-  /* Touch Targets - Minimum 44px for accessibility */
-  --touch-target-min: 2.75rem;       /* 44px */
-
-  /* Container */
-  --container-max-width: 48rem;      /* 768px - Mobile-first max width */
-
-  /* ==========================================
-     BORDERS
-     ========================================== */
-
-  --border-width: 1px;
-  --border-radius-sm: 0.375rem;      /* 6px  - Buttons, inputs */
-  --border-radius-md: 0.5rem;        /* 8px  - Cards */
-  --border-radius-lg: 0.75rem;       /* 12px - Modals, large cards */
-  --border-radius-full: 9999px;      /* Pills, avatars */
-
-  /* ==========================================
-     SHADOWS
-     ========================================== */
-
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
-               0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-               0 4px 6px -4px rgb(0 0 0 / 0.1);
-
-  /* ==========================================
-     TRANSITIONS
-     ========================================== */
-
-  --transition-fast: 150ms ease;
-  --transition-normal: 200ms ease;
-
-  /* ==========================================
-     Z-INDEX
-     ========================================== */
-
-  --z-dropdown: 10;
-  --z-sticky: 20;
-  --z-modal: 30;
-  --z-toast: 40;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
+  /* Text size aliases for base layer */
+  --text-2xl: 1.5rem;
+  --text-xl: 1.25rem;
+  --text-lg: 1.125rem;
 }

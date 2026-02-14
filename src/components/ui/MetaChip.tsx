@@ -1,31 +1,19 @@
+import { type ReactNode } from 'react';
+
 export interface MetaChipProps {
   label: string;
   value: string | number;
+  icon?: ReactNode;
 }
 
-export default function MetaChip({ label, value }: MetaChipProps) {
-  const containerStyles = {
-    padding: '0.5rem 0.75rem',
-    borderRadius: 'var(--radius-md)',
-    backgroundColor: 'var(--color-bg-tertiary)',
-  };
-
-  const labelStyles = {
-    display: 'block',
-    fontSize: 'var(--font-size-caption)',
-    color: 'var(--color-text-muted)',
-  };
-
-  const valueStyles = {
-    fontSize: 'var(--font-size-body)',
-    fontWeight: 'var(--font-weight-bold)' as const,
-    color: 'var(--color-text-primary)',
-  };
-
+export default function MetaChip({ label, value, icon }: MetaChipProps) {
   return (
-    <div style={containerStyles} aria-label={`${label}: ${value}`}>
-      <span style={labelStyles}>{label}</span>
-      <span style={valueStyles}>{value}</span>
+    <div className="px-3 py-2 rounded-md bg-muted" aria-label={`${label}: ${value}`}>
+      <span className="block text-sm text-muted-foreground">{label}</span>
+      <span className="flex items-center gap-1.5 text-base font-semibold text-foreground">
+        {icon && <span className="w-4 h-4 text-muted-foreground">{icon}</span>}
+        {value}
+      </span>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { useStore } from '@/store/store';
 import { ParsedRecipe } from '@/lib/recipeParser';
 import { parseIngredient } from '@/lib/ingredientParser';
 import { MealType, Difficulty, BudgetLevel, Ingredient, IngredientCategory } from '@/types';
-import { BottomNav, Input, Select, Alert, Button, Card } from '@/components/ui';
+import { Input, Select, Alert, Button, Card, PageHeader } from '@/components/ui';
 
 type Step = 'url' | 'preview' | 'saving';
 
@@ -129,26 +129,10 @@ export default function AddRecipe() {
   // URL Input Step
   if (step === 'url') {
     return (
-      <main className="min-h-screen p-4 pb-20" data-testid="add-recipe-page">
-        <div className="max-w-md mx-auto">
-          <h1
-            className="mb-2"
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            Import Recipe from URL
-          </h1>
-
-          <p
-            className="mb-6"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              color: 'var(--color-text-secondary)',
-            }}
-          >
+      <div className="min-h-screen bg-background" data-testid="add-recipe-page">
+        <PageHeader title="Import Recipe" backHref="/recipes" />
+        <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+          <p className="text-base text-muted-foreground">
             Paste a recipe URL from sites like RecipeTin Eats, BBC Good Food, or any site with structured recipe data.
           </p>
 
@@ -179,47 +163,18 @@ export default function AddRecipe() {
               {loading ? 'Fetching...' : 'Fetch Recipe'}
             </Button>
           </div>
-        </div>
-
-        <BottomNav backHref="/recipes" />
-      </main>
+        </main>
+      </div>
     );
   }
 
   // Preview/Edit Step
   if (step === 'preview' || step === 'saving') {
     return (
-      <main className="min-h-screen p-4 pb-20" data-testid="preview-recipe-page">
-        <div className="max-w-md mx-auto">
-          <button
-            onClick={() => setStep('url')}
-            className="inline-flex items-center gap-1 mb-4"
-            style={{
-              fontSize: 'var(--font-size-caption)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            ← Back to URL
-          </button>
-
-          <h1
-            className="mb-2"
-            style={{
-              fontSize: 'var(--font-size-heading)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            Review & Save
-          </h1>
-
-          <p
-            className="mb-6"
-            style={{
-              fontSize: 'var(--font-size-body)',
-              color: 'var(--color-text-secondary)',
-            }}
-          >
+      <div className="min-h-screen bg-background" data-testid="preview-recipe-page">
+        <PageHeader title="Review & Save" onBack={() => setStep('url')} />
+        <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+          <p className="text-base text-muted-foreground">
             Review the imported data and make any corrections before saving.
           </p>
 
@@ -267,49 +222,23 @@ export default function AddRecipe() {
 
             {/* Ingredients */}
             <div>
-              <label
-                className="block mb-2"
-                style={{
-                  fontSize: 'var(--font-size-caption)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
+              <label className="block mb-2 text-sm font-semibold text-foreground">
                 Ingredients ({ingredients.length})
               </label>
-              <div
-                className="rounded-lg overflow-hidden"
-                style={{
-                  border: 'var(--border-width) solid var(--color-border)',
-                }}
-              >
+              <div className="rounded-lg overflow-hidden border border-border">
                 {ingredients.map((ing, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between px-3 py-2"
-                    style={{
-                      backgroundColor: index % 2 === 0 ? 'var(--color-bg-primary)' : 'var(--color-bg-tertiary)',
-                    }}
+                    className={`flex items-center justify-between px-3 py-2 ${index % 2 === 0 ? 'bg-background' : 'bg-muted'}`}
                   >
-                    <span
-                      className="flex-1 truncate mr-2"
-                      style={{
-                        fontSize: 'var(--font-size-caption)',
-                        color: 'var(--color-text-secondary)',
-                      }}
-                    >
+                    <span className="flex-1 truncate mr-2 text-sm text-muted-foreground">
                       {ing.quantity} {ing.unit} {ing.name}
                     </span>
                     <select
                       value={ing.category}
                       onChange={(e) => updateIngredientCategory(index, e.target.value as IngredientCategory)}
-                      className="px-2 py-1 rounded text-xs"
+                      className="px-2 py-1 rounded text-xs bg-background border border-border text-foreground"
                       aria-label={`Category for ${ing.name}`}
-                      style={{
-                        backgroundColor: 'var(--color-bg-primary)',
-                        border: 'var(--border-width) solid var(--color-border)',
-                        color: 'var(--color-text-primary)',
-                      }}
                     >
                       {CATEGORIES.map((cat) => (
                         <option key={cat} value={cat}>
@@ -325,28 +254,16 @@ export default function AddRecipe() {
             {/* Source notice */}
             {parsedRecipe?.sourceName && parsedRecipe?.sourceUrl && (
               <Card>
-                <p
-                  className="mb-2"
-                  style={{
-                    fontSize: 'var(--font-size-caption)',
-                    fontWeight: 'var(--font-weight-bold)',
-                    color: 'var(--color-text-primary)',
-                  }}
-                >
+                <p className="mb-2 text-sm font-semibold text-foreground">
                   Recipe method
                 </p>
-                <p
-                  style={{
-                    fontSize: 'var(--font-size-caption)',
-                    color: 'var(--color-text-secondary)',
-                  }}
-                >
+                <p className="text-sm text-muted-foreground">
                   The cooking instructions will remain on the original website. When you cook this recipe, you&apos;ll be linked to{' '}
                   <a
                     href={parsedRecipe.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: 'var(--color-accent)' }}
+                    className="text-primary"
                   >
                     {parsedRecipe.sourceName}
                   </a>
@@ -364,10 +281,8 @@ export default function AddRecipe() {
               {step === 'saving' ? 'Saving...' : 'Save Recipe'}
             </Button>
           </div>
-        </div>
-
-        <BottomNav backHref="/recipes" />
-      </main>
+        </main>
+      </div>
     );
   }
 
