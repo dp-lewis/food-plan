@@ -8,9 +8,10 @@ import { getRecipeById, getRecipesByMealType } from '@/data/recipes';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
 import { BottomNav, Button, Card, PageHeader } from '@/components/ui';
+import Drawer from '@/components/ui/Drawer';
 import { useAuth } from '@/components/AuthProvider';
 import { generateShareLink } from '@/app/actions/share';
-import { Share2 } from 'lucide-react';
+import { User } from 'lucide-react';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -69,8 +70,10 @@ export default function CurrentPlan() {
   const removeMeal = useStore((state) => state.removeMeal);
   const userRecipes = useStore((state) => state.userRecipes);
 
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [shareStatus, setShareStatus] = useState<'idle' | 'loading' | 'copied'>('idle');
+  const [signOutDrawerOpen, setSignOutDrawerOpen] = useState(false);
+  const [signOutLoading, setSignOutLoading] = useState(false);
 
   const [drawerState, setDrawerState] = useState<DrawerState>({
     isOpen: false,
@@ -167,6 +170,13 @@ export default function CurrentPlan() {
     }
   };
 
+  const handleSignOut = async () => {
+    setSignOutLoading(true);
+    await fetch('/auth/signout', { method: 'POST' });
+    router.push('/');
+    router.refresh();
+  };
+
   // Hooks must be called unconditionally before any early returns.
   const orderedDays = useMemo(
     () => getOrderedDays(currentPlan?.preferences.startDay ?? 0),
@@ -234,17 +244,30 @@ export default function CurrentPlan() {
         backHref="/"
         sticky
         actions={
-          user ? (
-            <button
-              type="button"
-              onClick={handleShare}
-              data-testid="share-plan-btn"
-              className="p-1 rounded-md hover:bg-white/10 transition-colors"
-              aria-label={shareStatus === 'copied' ? 'Link copied' : 'Share plan'}
-            >
-              <Share2 className="w-5 h-5" />
-            </button>
-          ) : undefined
+          <div className="flex items-center gap-3">
+            {!authLoading && (
+              user ? (
+                <button
+                  type="button"
+                  data-testid="user-menu-btn"
+                  onClick={() => setSignOutDrawerOpen(true)}
+                  disabled={signOutLoading}
+                  className="text-xs text-primary-foreground/70 hover:text-primary-foreground"
+                >
+                  {signOutLoading ? 'Signing out…' : user.email}
+                </button>
+              ) : (
+                <Link
+                  href="/auth/signin"
+                  data-testid="sign-in-link"
+                  className="flex items-center gap-1 text-xs text-primary-foreground/70 hover:text-primary-foreground"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Sign in</span>
+                </Link>
+              )
+            )}
+          </div>
         }
       />
       <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
@@ -371,7 +394,7 @@ export default function CurrentPlan() {
 
       </main>
 
-      <BottomNav onShareClick={() => console.log('sharing')} />
+      <BottomNav onShareClick={user ? handleShare : undefined} />
 
       {/* Recipe selection drawer */}
       <RecipeDrawer
@@ -384,6 +407,38 @@ export default function CurrentPlan() {
         onSurpriseMe={handleSurpriseMe}
         mode={drawerState.mode}
       />
+
+      {/* Sign out drawer */}
+      <Drawer
+        isOpen={signOutDrawerOpen}
+        onClose={() => setSignOutDrawerOpen(false)}
+        title="Sign Out"
+      >
+        <div className="space-y-4">
+          <p className="text-base text-foreground">
+            Are you sure you want to sign out?
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => setSignOutDrawerOpen(false)}
+              disabled={signOutLoading}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleSignOut}
+              disabled={signOutLoading}
+              className="flex-1"
+              data-testid="confirm-sign-out-btn"
+            >
+              {signOutLoading ? 'Signing out…' : 'Sign Out'}
+            </Button>
+          </div>
+        </div>
+      </Drawer>
     </div>
   );
 }
