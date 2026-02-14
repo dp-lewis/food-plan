@@ -73,7 +73,9 @@ test.describe('US-5.1: View current plan summary', () => {
     const fullPlanLink = page.getByTestId('view-full-plan-link');
     await expect(fullPlanLink).toBeVisible();
 
-    await fullPlanLink.click();
+    await fullPlanLink.scrollIntoViewIfNeeded();
+    // Click at top-left of the button to avoid FAB overlap
+    await fullPlanLink.click({ position: { x: 10, y: 10 } });
     await expect(page).toHaveURL('/plan/current');
   });
 
