@@ -1,8 +1,9 @@
 import { MealPlan, MealPlanPreferences, Recipe } from '@/types';
 import { getRecipesByMealType } from '@/data/recipes';
+import { generateUUID } from './uuid';
 
 function generateId(): string {
-  return crypto.randomUUID();
+  return generateUUID();
 }
 
 export function createEmptyPlan(preferences: MealPlanPreferences): MealPlan {

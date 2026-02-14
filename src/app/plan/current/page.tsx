@@ -218,16 +218,6 @@ export default function CurrentPlan() {
     [currentPlan]
   );
 
-  const todayRef = useRef<HTMLDivElement>(null);
-  const hasScrolledToToday = useRef(false);
-
-  useEffect(() => {
-    if (hasHydrated && currentPlan && todayRef.current && !hasScrolledToToday.current) {
-      todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      hasScrolledToToday.current = true;
-    }
-  }, [hasHydrated, currentPlan]);
-
   if (!hasHydrated || !currentPlan) {
     return null;
   }
@@ -276,7 +266,6 @@ export default function CurrentPlan() {
               padding="none"
               data-testid={`day-${dayIndex}`}
               className={`scroll-mt-20 ${isToday ? 'border-2 border-primary' : ''}`}
-              ref={isToday ? todayRef : undefined}
             >
               <div className="px-4 py-2 bg-muted font-semibold text-base text-foreground">
                 <div className="flex items-center gap-2">

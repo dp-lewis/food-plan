@@ -44,7 +44,7 @@ export default function SharedPlanView({ data }: { data: SharedPlanData }) {
 
   return (
     <div className="min-h-screen bg-background" data-testid="shared-plan">
-      <PageHeader title="Shared Meal Plan" backHref="/" />
+      <PageHeader title="Shared Meal Plan" backHref="/" sticky />
       <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-6 space-y-6">
         {/* Meal Calendar - read only */}
         <div className="space-y-4">

@@ -11,7 +11,7 @@ import RecipeDrawer from '@/components/RecipeDrawer';
 import { Card, Button, BottomNav, ProgressBar, PageHeader } from '@/components/ui';
 import Drawer from '@/components/ui/Drawer';
 import { useAuth } from '@/components/AuthProvider';
-import { ChefHat, ShoppingCart, Calendar } from 'lucide-react';
+import { ChefHat, ShoppingCart, Calendar, Utensils, User } from 'lucide-react';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -197,7 +197,12 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-background" data-testid="dashboard">
         <PageHeader
-          title="delibereat"
+          title={
+            <div className="flex items-center gap-2">
+              <Utensils className="w-5 h-5" />
+              <span>delibereat</span>
+            </div>
+          }
           actions={
             <div className="flex items-center gap-3">
               {!authLoading && (
@@ -215,15 +220,16 @@ export default function Dashboard() {
                   <Link
                     href="/auth/signin"
                     data-testid="sign-in-link"
-                    className="text-xs text-primary-foreground/70 hover:text-primary-foreground"
+                    className="flex items-center gap-1 text-xs text-primary-foreground/70 hover:text-primary-foreground"
                   >
-                    Sign in
+                    <User className="w-4 h-4" />
+                    <span>Sign in</span>
                   </Link>
                 )
               )}
-              <ChefHat className="w-5 h-5" />
             </div>
           }
+          sticky
         />
         <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
 
@@ -390,7 +396,12 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background" data-testid="empty-state">
       <PageHeader
-        title="delibereat"
+        title={
+          <div className="flex items-center gap-2">
+            <Utensils className="w-5 h-5" />
+            <span>delibereat</span>
+          </div>
+        }
         actions={
           <div className="flex items-center gap-3">
             {!authLoading && (
@@ -414,9 +425,9 @@ export default function Dashboard() {
                 </Link>
               )
             )}
-            <ChefHat className="w-5 h-5" />
           </div>
         }
+        sticky
       />
       <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
         <div className="text-center py-12">

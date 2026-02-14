@@ -24,7 +24,7 @@ export default function UserRecipeDetail() {
   if (!recipe) {
     return (
       <div className="min-h-screen bg-background">
-        <PageHeader title="Recipe" backHref="/recipes" />
+        <PageHeader title="Recipe" backHref="/recipes" sticky />
         <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
           <div className="text-center py-12">
             <p className="text-muted-foreground">Recipe not found</p>
@@ -44,7 +44,7 @@ export default function UserRecipeDetail() {
 
   return (
     <div className="min-h-screen bg-background" data-testid="user-recipe-page">
-      <PageHeader title={recipe.title} backHref="/recipes" titleTestId="recipe-title" />
+      <PageHeader title={recipe.title} backHref="/recipes" titleTestId="recipe-title" sticky />
       <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
         <p
           data-testid="recipe-source"

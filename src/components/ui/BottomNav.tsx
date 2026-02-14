@@ -78,47 +78,55 @@ export default function BottomNav({
   }
 
   return (
-    <nav
-      aria-label="Main navigation"
-      data-testid="bottom-nav"
-      className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-20 p-2 gap-2"
-    >
-      <div className="max-w-2xl mx-auto flex items-center">
-        {/* Tab buttons */}
-        {TABS.map((tab) => {
-          const active = isActive(pathname, tab.href);
-          const Icon = tab.icon;
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              data-testid={`tab-${tab.label.toLowerCase()}`}
-              className={clsx(
-                'flex-1 flex flex-col items-center gap-1 py-2 text-xs transition-colors',
-                active
-                  ? 'text-primary font-semibold bg-primary/10 rounded-lg'
-                  : 'text-muted-foreground hover:text-foreground'
-              )}
-            >
-              <Icon className="w-5 h-5" />
-              <span>{tab.label}</span>
-            </Link>
-          );
-        })}
+    <>
+      {/* Floating Action Button (FAB) - positioned above the nav */}
+      {primaryAction && (
+        <button
+          type="button"
+          onClick={primaryAction.onClick}
+          data-testid={primaryAction.testId}
+          aria-label={primaryAction.label}
+          className="fixed bottom-[calc(5rem+28px+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 min-h-[44px] px-4 py-2.5 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all hover:shadow-xl flex items-center justify-center gap-2 z-30 pointer-events-auto"
+        >
+          <primaryAction.icon className="w-5 h-5" />
+          <span className="font-semibold text-sm whitespace-nowrap">{primaryAction.label}</span>
+        </button>
+      )}
 
-        {/* Primary action button */}
-        {primaryAction && (
-          <button
-            type="button"
-            onClick={primaryAction.onClick}
-            data-testid={primaryAction.testId}
-            className="flex flex-col items-center gap-1 py-2 px-4 w-24 text-xs bg-primary text-primary-foreground rounded-lg font-semibold transition-colors hover:bg-primary/90"
-          >
-            <primaryAction.icon className="w-5 h-5" />
-            <span>{primaryAction.label}</span>
-          </button>
-        )}
-      </div>
-    </nav>
+      <nav
+        aria-label="Main navigation"
+        data-testid="bottom-nav"
+        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-20 px-2 pt-2 pb-3 pointer-events-none"
+        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }}
+      >
+        <div className="max-w-2xl mx-auto relative">
+          {/* Tab buttons - fixed max-width container to stay centered on wider screens */}
+          <div className="flex items-center justify-center px-4">
+            <div className="max-w-xs w-full flex items-center justify-center gap-2">
+            {TABS.map((tab) => {
+              const active = isActive(pathname, tab.href);
+              const Icon = tab.icon;
+              return (
+                <Link
+                  key={tab.href}
+                  href={tab.href}
+                  data-testid={`tab-${tab.label.toLowerCase()}`}
+                  className={clsx(
+                    'flex-1 flex flex-col items-center gap-1 py-2 text-xs transition-colors pointer-events-auto',
+                    active
+                      ? 'text-primary font-semibold bg-primary/10 rounded-lg'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{tab.label}</span>
+                </Link>
+              );
+            })}
+            </div>
+          </div>
+        </div>
+      </nav>
+    </>
   );
 }

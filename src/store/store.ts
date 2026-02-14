@@ -10,6 +10,7 @@ import { ParsedRecipe } from '@/lib/recipeParser';
 import { syncMealPlan, addMealAction, removeMealAction, swapMealAction } from '@/app/actions/mealPlan';
 import { saveUserRecipe, deleteUserRecipeAction } from '@/app/actions/recipes';
 import { toggleCheckedItemAction, clearCheckedItemsAction, addCustomItemAction, removeCustomItemAction } from '@/app/actions/shoppingList';
+import { generateUUID } from '@/lib/uuid';
 
 interface AppState {
   currentPlan: MealPlan | null;
@@ -164,7 +165,7 @@ export const useStore = create<AppState>()(
           customShoppingItems: [
             ...state.customShoppingItems,
             {
-              id: `custom-${crypto.randomUUID()}`,
+              id: `custom-${generateUUID()}`,
               ingredient,
               quantity,
               unit,

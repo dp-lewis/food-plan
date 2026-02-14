@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export interface PageHeaderProps {
-  title: string;
+  title: React.ReactNode;
   backHref?: string;
   onBack?: () => void;
   sticky?: boolean;
