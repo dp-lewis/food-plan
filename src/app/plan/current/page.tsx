@@ -319,7 +319,7 @@ export default function CurrentPlan() {
               data-testid={`day-${dayIndex}`}
               className={`scroll-mt-20 ${isToday ? 'border-2 border-primary' : ''}`}
             >
-              <div className="sticky top-[56px] z-30 px-4 py-2 bg-muted font-semibold text-base text-foreground rounded-t-lg border-b border-border">
+              <div className="sticky top-[56px] z-10 px-4 py-2 bg-muted font-semibold text-base text-foreground rounded-t-lg border-b border-border">
                 <div className="flex items-center gap-2">
                   {dayName}
                   {isToday && (
