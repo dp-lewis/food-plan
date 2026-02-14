@@ -229,7 +229,36 @@ export default function CurrentPlan() {
   );
 
   if (!hasHydrated || !currentPlan) {
-    return null;
+    return (
+      <div className="min-h-screen bg-background" data-testid="meal-plan">
+        <PageHeader title="Meal Plan" backHref="/" sticky />
+        <main className="max-w-2xl mx-auto px-4 py-6 pb-32 space-y-6">
+          <div className="flex items-center justify-end">
+            <div className="h-4 w-28 bg-muted animate-pulse rounded" />
+          </div>
+          <div className="space-y-4">
+            {[0, 1, 2].map((i) => (
+              <Card key={i} padding="none">
+                <div className="px-4 py-2 bg-muted">
+                  <div className="h-5 w-24 bg-muted-foreground/10 animate-pulse rounded" />
+                  <div className="h-3 w-16 bg-muted-foreground/10 animate-pulse rounded mt-1" />
+                </div>
+                <div className="divide-y divide-border">
+                  {[0, 1, 2].map((j) => (
+                    <div key={j} className="px-4 py-4">
+                      <div className="h-3 w-16 bg-muted animate-pulse rounded mb-2" />
+                      <div className="h-5 w-48 bg-muted animate-pulse rounded mb-1" />
+                      <div className="h-3 w-20 bg-muted animate-pulse rounded" />
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </main>
+        <BottomNav />
+      </div>
+    );
   }
 
   const drawerRecipes = drawerState.mealType
