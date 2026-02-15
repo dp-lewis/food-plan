@@ -72,7 +72,7 @@ export const WithIcon: Story = {
     title: (
       <div className="flex items-center gap-2">
         <Utensils className="w-5 h-5" />
-        <span>delibereat</span>
+        <span>Did We Get</span>
       </div>
     ),
     actions: (
