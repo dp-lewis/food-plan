@@ -110,3 +110,18 @@ Both render branches (active plan + empty state) share the same `signOutDrawerOp
 - `src/lib/planGenerator.ts` - Meal plan ID generation
 - `src/store/store.ts` - Custom shopping list item IDs
 - `src/app/actions/share.ts` - Share code generation
+
+## Sticky Positioning with Fixed Headers
+
+**Pattern**: When making section headings sticky below a fixed/sticky header:
+- Calculate the `top` offset based on the fixed header height
+- PageHeader uses `py-4` padding ≈ 56-60px total height, so use `top-[56px]` for sticky elements below it
+- Z-index layering: PageHeader `z-40`, sticky sections `z-30`, content `z-10`
+- Add visual separation: `border-b border-border` or shadow to indicate floating state
+- Match container borders: Use `rounded-t-lg` if parent has rounded corners
+- Stack properly: Each sticky heading replaces the previous one as you scroll
+
+**Example** (Plan page day headings):
+```tsx
+<div className="sticky top-[56px] z-30 px-4 py-2 bg-muted ... rounded-t-lg border-b border-border">
+```
