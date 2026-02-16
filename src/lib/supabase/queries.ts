@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import type { Tables } from '@/types/supabase';
-import type { Recipe, Meal, MealPlan, CustomShoppingListItem, SharedPlanData } from '@/types';
+import type { Recipe, Meal, MealPlan, CustomShoppingListItem, SharedPlanData, PlanRole } from '@/types';
 import {
   dbRecipeToApp,
   dbMealToApp,
@@ -285,6 +285,19 @@ export async function clearShareCode(planId: string): Promise<void> {
   if (error) throw error;
 }
 
+export async function getPlanIdByShareCode(
+  shareCode: string,
+): Promise<string | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('meal_plans')
+    .select('id')
+    .eq('share_code', shareCode)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.id ?? null;
+}
+
 export async function getMealPlanByShareCode(
   shareCode: string,
 ): Promise<SharedPlanData | null> {
@@ -330,4 +343,101 @@ export async function getMealPlanByShareCode(
     recipes,
     customItems: (customRows ?? []).map(dbCustomItemToApp),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Plan Members
+// ---------------------------------------------------------------------------
+
+export async function joinPlan(
+  planId: string,
+  userId: string,
+): Promise<void> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('plan_members')
+    .upsert(
+      { meal_plan_id: planId, user_id: userId, role: 'member' },
+      { onConflict: 'meal_plan_id,user_id' },
+    );
+  if (error) throw error;
+}
+
+export async function leavePlan(
+  planId: string,
+  userId: string,
+): Promise<void> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('plan_members')
+    .delete()
+    .eq('meal_plan_id', planId)
+    .eq('user_id', userId);
+  if (error) throw error;
+}
+
+export async function removeAllMemberships(userId: string): Promise<void> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('plan_members')
+    .delete()
+    .eq('user_id', userId);
+  if (error) throw error;
+}
+
+export async function getPlanOwner(planId: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('meal_plans')
+    .select('user_id')
+    .eq('id', planId)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.user_id ?? null;
+}
+
+export async function getUserActivePlan(
+  userId: string,
+): Promise<{ plan: MealPlan; role: PlanRole } | null> {
+  const supabase = await createClient();
+
+  // Check for membership first (most recent join)
+  const { data: membership, error: memberError } = await supabase
+    .from('plan_members')
+    .select('meal_plan_id, role')
+    .eq('user_id', userId)
+    .order('joined_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (memberError) throw memberError;
+
+  if (membership) {
+    // Load the joined plan
+    const { data: planRow, error: planError } = await supabase
+      .from('meal_plans')
+      .select('*')
+      .eq('id', membership.meal_plan_id)
+      .maybeSingle();
+    if (planError) throw planError;
+    if (!planRow) return null; // Plan was deleted
+
+    const { data: mealRows, error: mealsError } = await supabase
+      .from('meals')
+      .select('*')
+      .eq('meal_plan_id', planRow.id);
+    if (mealsError) throw mealsError;
+
+    return {
+      plan: dbMealPlanToApp(planRow, mealRows ?? []),
+      role: membership.role as PlanRole,
+    };
+  }
+
+  // Fall back to owned plan
+  const ownedPlan = await getUserMealPlan(userId);
+  if (ownedPlan) {
+    return { plan: ownedPlan, role: 'owner' };
+  }
+
+  return null;
 }

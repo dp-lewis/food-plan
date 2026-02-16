@@ -10,6 +10,7 @@ export interface BottomNavProps {
   onAddItemClick?: () => void;
   onImportClick?: () => void;
   onShareClick?: () => void;
+  hideFab?: boolean;
 }
 
 const TABS = [
@@ -29,6 +30,7 @@ export default function BottomNav({
   onAddItemClick,
   onImportClick,
   onShareClick,
+  hideFab,
 }: BottomNavProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -80,7 +82,7 @@ export default function BottomNav({
   return (
     <>
       {/* Floating Action Button (FAB) - positioned above the nav */}
-      {primaryAction && (
+      {primaryAction && !hideFab && (
         <button
           type="button"
           onClick={primaryAction.onClick}

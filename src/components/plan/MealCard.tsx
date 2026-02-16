@@ -7,7 +7,7 @@ import { Meal, Recipe } from '@/types';
 interface MealCardProps {
   meal: Meal;
   recipe: Recipe;
-  onRemove: (mealId: string) => void;
+  onRemove?: (mealId: string) => void;
 }
 
 export default function MealCard({ meal, recipe, onRemove }: MealCardProps) {
@@ -28,15 +28,17 @@ export default function MealCard({ meal, recipe, onRemove }: MealCardProps) {
           {recipe.prepTime + recipe.cookTime} mins
         </p>
       </Link>
-      <Button
-        variant="ghost"
-        size="small"
-        onClick={() => onRemove(meal.id)}
-        data-testid={`remove-meal-${meal.id}`}
-        aria-label={`Remove ${recipe.title}`}
-      >
-        Remove
-      </Button>
+      {onRemove && (
+        <Button
+          variant="ghost"
+          size="small"
+          onClick={() => onRemove(meal.id)}
+          data-testid={`remove-meal-${meal.id}`}
+          aria-label={`Remove ${recipe.title}`}
+        >
+          Remove
+        </Button>
+      )}
     </div>
   );
 }

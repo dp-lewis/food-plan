@@ -28,5 +28,5 @@ export default async function SharedPlanPage({
     );
   }
 
-  return <SharedPlanView data={sharedData} />;
+  return <SharedPlanView data={sharedData} shareCode={code} />;
 }

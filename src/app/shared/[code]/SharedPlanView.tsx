@@ -1,10 +1,15 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import type { SharedPlanData, MealType } from '@/types';
 import { getRecipeById } from '@/data/recipes';
 import { generateShoppingList, groupByCategory, mergeShoppingLists, CATEGORY_LABELS } from '@/lib/shoppingList';
-import { Card, PageHeader } from '@/components/ui';
+import { Card, PageHeader, Button } from '@/components/ui';
+import { useAuth } from '@/components/AuthProvider';
+import { useStore } from '@/store/store';
+import { joinSharedPlan } from '@/app/actions/share';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -13,8 +18,40 @@ function getOrderedDays(startDay: number): string[] {
   return Array.from({ length: 7 }, (_, i) => DAYS[(startDay + i) % 7]);
 }
 
-export default function SharedPlanView({ data }: { data: SharedPlanData }) {
+export default function SharedPlanView({ data, shareCode }: { data: SharedPlanData; shareCode: string }) {
   const { plan, recipes: userRecipes, customItems } = data;
+  const { user } = useAuth();
+  const router = useRouter();
+  const currentPlan = useStore((state) => state.currentPlan);
+  const [joinStatus, setJoinStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [joinError, setJoinError] = useState<string | null>(null);
+
+  // Check if the user is already on this plan (owner or member)
+  const isAlreadyOnPlan = currentPlan?.id === plan.id;
+
+  const handleJoin = async () => {
+    if (joinStatus === 'loading') return;
+    setJoinStatus('loading');
+    setJoinError(null);
+
+    const result = await joinSharedPlan(shareCode);
+    if (result.error) {
+      setJoinStatus('error');
+      setJoinError(result.error);
+      return;
+    }
+
+    const { plan: joinedPlan, recipes, customItems: items } = result.data!;
+    useStore.setState({
+      currentPlan: joinedPlan,
+      userRecipes: recipes,
+      customShoppingItems: items,
+      checkedItems: [],
+      _planRole: 'member',
+    });
+
+    router.push('/plan/current');
+  };
 
   const orderedDays = useMemo(
     () => getOrderedDays(plan.preferences.startDay),
@@ -46,6 +83,47 @@ export default function SharedPlanView({ data }: { data: SharedPlanData }) {
     <div className="min-h-screen bg-background" data-testid="shared-plan">
       <PageHeader title="Shared Meal Plan" backHref="/" sticky />
       <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-6 space-y-6">
+        {/* Join banner for authenticated users */}
+        {user && (
+          <Card>
+            {isAlreadyOnPlan ? (
+              <div className="text-center space-y-2">
+                <p className="text-base text-foreground font-semibold">
+                  You&apos;re already on this plan
+                </p>
+                <Link
+                  href="/plan/current"
+                  className="text-primary text-sm font-medium"
+                  data-testid="go-to-plan-link"
+                >
+                  Go to your plan
+                </Link>
+              </div>
+            ) : (
+              <div className="text-center space-y-3">
+                <p className="text-base text-foreground font-semibold">
+                  Want to use this meal plan?
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Join this plan to see it on your dashboard and shopping list.
+                </p>
+                <Button
+                  variant="primary"
+                  onClick={handleJoin}
+                  disabled={joinStatus === 'loading'}
+                  data-testid="join-plan-btn"
+                  className="w-full"
+                >
+                  {joinStatus === 'loading' ? 'Joining...' : 'Use This Plan'}
+                </Button>
+                {joinError && (
+                  <p className="text-sm text-destructive">{joinError}</p>
+                )}
+              </div>
+            )}
+          </Card>
+        )}
+
         {/* Meal Calendar - read only */}
         <div className="space-y-4">
           {slotsByDay.map(({ dayName, dayIndex, slots }) => (

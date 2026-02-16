@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { MealPlan, MealPlanPreferences, Recipe, CustomShoppingListItem, Meal, MealType } from '@/types';
+import { MealPlan, MealPlanPreferences, Recipe, CustomShoppingListItem, Meal, MealType, PlanRole } from '@/types';
 import { swapMeal as swapMealInPlan } from '@/lib/planGenerator';
 import { categorizeIngredient } from '@/lib/ingredientParser';
 import { getRecipeById } from '@/data/recipes';
@@ -43,6 +43,8 @@ interface AppState {
   pendingImportedRecipe: ParsedRecipe | null;
   setPendingImportedRecipe: (recipe: ParsedRecipe | null) => void;
   // Sync fields — NOT persisted (excluded by partialize)
+  _planRole: PlanRole | null;
+  _setPlanRole: (role: PlanRole | null) => void;
   _userId: string | null;
   _setUserId: (userId: string | null) => void;
   _isSyncing: boolean;
@@ -181,6 +183,8 @@ export const useStore = create<AppState>()(
       pendingImportedRecipe: null,
       setPendingImportedRecipe: (recipe) => set({ pendingImportedRecipe: recipe }),
       // Sync state
+      _planRole: null,
+      _setPlanRole: (role) => set({ _planRole: role }),
       _userId: null,
       _setUserId: (userId) => set({ _userId: userId }),
       _isSyncing: false,
