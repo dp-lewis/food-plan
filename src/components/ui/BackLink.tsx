@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 
 export interface BackLinkProps {
   href?: string;
@@ -16,7 +17,8 @@ export default function BackLink({ href, children = 'Back' }: BackLinkProps) {
   if (href) {
     return (
       <Link href={href} className={classes}>
-        ← {children}
+        <ArrowLeft size={16} aria-hidden="true" />
+        {children}
       </Link>
     );
   }
@@ -27,7 +29,8 @@ export default function BackLink({ href, children = 'Back' }: BackLinkProps) {
       onClick={() => router.back()}
       className={`${classes} bg-transparent border-none p-0 cursor-pointer`}
     >
-      ← {children}
+      <ArrowLeft size={16} aria-hidden="true" />
+      {children}
     </button>
   );
 }

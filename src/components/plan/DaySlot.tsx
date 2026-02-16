@@ -1,0 +1,115 @@
+'use client';
+
+import { Card, Button } from '@/components/ui';
+import { getRecipeById } from '@/data/recipes';
+import { getDateForDayIndex } from '@/lib/dates';
+import { MealType, Meal, Recipe } from '@/types';
+import MealCard from './MealCard';
+
+interface MealSlot {
+  mealType: MealType;
+  meals: Meal[];
+}
+
+interface DaySlotProps {
+  dayName: string;
+  dayIndex: number;
+  isToday: boolean;
+  startDay: number;
+  slots: MealSlot[];
+  userRecipes: Recipe[];
+  onAddMeal: (dayIndex: number, mealType: MealType, excludeRecipeIds: string[]) => void;
+  onRemoveMeal: (mealId: string) => void;
+}
+
+export default function DaySlot({
+  dayName,
+  dayIndex,
+  isToday,
+  startDay,
+  slots,
+  userRecipes,
+  onAddMeal,
+  onRemoveMeal,
+}: DaySlotProps) {
+  return (
+    <Card
+      padding="none"
+      data-testid={`day-${dayIndex}`}
+      className={`scroll-mt-20 ${isToday ? 'border-2 border-primary' : ''}`}
+    >
+      <div className="sticky top-[56px] z-10 px-4 py-2 bg-muted font-semibold text-base text-foreground rounded-t-lg border-b border-border">
+        <div className="flex items-center gap-2">
+          {dayName}
+          {isToday && (
+            <span className="text-xs font-medium bg-primary-foreground text-primary px-2 py-0.5 rounded">Today</span>
+          )}
+        </div>
+        <div className="text-xs font-normal text-muted-foreground">
+          {getDateForDayIndex(startDay, dayIndex)}
+        </div>
+      </div>
+      <div className="divide-y divide-border">
+        {slots.map(({ mealType, meals }) => {
+          const slotRecipeIds = meals.map(m => m.recipeId);
+
+          return (
+            <div key={mealType} data-testid={`slot-${dayIndex}-${mealType}`}>
+              {/* Meal type header */}
+              <div className="px-4 pt-3 pb-1 text-sm text-muted-foreground">
+                <span className="uppercase tracking-wide">{mealType}</span>
+              </div>
+
+              {/* Meals in this slot */}
+              {meals.length === 0 ? (
+                <div className="px-4 pb-3 space-y-2">
+                  <div className="p-3 border border-dashed border-border rounded-lg text-center text-sm text-muted-foreground">
+                    No meals planned
+                  </div>
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    onClick={() => onAddMeal(dayIndex, mealType, slotRecipeIds)}
+                    data-testid={`add-meal-${dayIndex}-${mealType}`}
+                    aria-label={`Add ${mealType}`}
+                    className="w-full"
+                  >
+                    + Add
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  {meals.map((meal) => {
+                    const recipe = getRecipeById(meal.recipeId, userRecipes);
+                    if (!recipe) return null;
+                    return (
+                      <MealCard
+                        key={meal.id}
+                        meal={meal}
+                        recipe={recipe}
+                        onRemove={onRemoveMeal}
+                      />
+                    );
+                  })}
+                  {/* Add button after existing meals */}
+                  <div className="px-4 pb-3">
+                    <Button
+                      variant="ghost"
+                      size="small"
+                      onClick={() => onAddMeal(dayIndex, mealType, slotRecipeIds)}
+                      data-testid={`add-meal-${dayIndex}-${mealType}`}
+                      aria-label={`Add ${mealType}`}
+                      className="text-primary"
+                    >
+                      + Add {mealType}
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}

@@ -36,6 +36,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(buttonVariants({ variant, size }), className)}
         {...props}
         disabled={isDisabled}
+        aria-busy={loading || undefined}
       >
         {loading ? (
           <span className="inline-flex items-center justify-center gap-2">

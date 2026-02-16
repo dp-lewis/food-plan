@@ -26,7 +26,7 @@ export default function Stepper({ value, onChange, min = 1, max = 99, label, tes
 
   return (
     <div>
-      {label && <label className="block mb-2 text-base font-semibold text-foreground">{label}</label>}
+      {label && <p className="block mb-2 text-base font-semibold text-foreground">{label}</p>}
       <div className="flex items-center gap-3">
         <button
           type="button"

@@ -232,11 +232,11 @@ test.describe('US-7.1: Import recipe from URL', () => {
     // Navigate to the recipe detail
     await page.getByText('Honey Garlic Chicken').click();
 
-    // Handle the confirmation dialog
-    page.on('dialog', (dialog) => dialog.accept());
-
-    // Delete the recipe
+    // Delete the recipe — opens confirmation drawer
     await page.getByTestId('delete-recipe-btn').click();
+
+    // Confirm deletion in the drawer
+    await page.getByTestId('confirm-delete-btn').click();
 
     // Should redirect to recipes list
     await expect(page).toHaveURL('/recipes');

@@ -87,7 +87,7 @@ export default function NewRecipe() {
   return (
     <div className="min-h-screen bg-background" data-testid="new-recipe-page">
       <PageHeader title="Create Recipe" backHref="/recipes" sticky />
-      <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+      <main id="main-content" className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
         <p className="text-base text-muted-foreground">
           Add a simple recipe for your family meals.
         </p>
