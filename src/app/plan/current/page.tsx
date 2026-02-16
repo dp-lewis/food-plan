@@ -9,7 +9,7 @@ import { getTodayPlanIndex, getOrderedDays } from '@/lib/dates';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
 import SignOutDialog from '@/components/SignOutDialog';
-import { BottomNav, Card, PageHeader } from '@/components/ui';
+import { BottomNav, Card, PageHeader, Toast } from '@/components/ui';
 import { useAuth } from '@/components/AuthProvider';
 import { generateShareLink } from '@/app/actions/share';
 import DaySlot from '@/components/plan/DaySlot';
@@ -41,6 +41,8 @@ export default function CurrentPlan() {
 
   const { user, loading: authLoading } = useAuth();
   const [shareStatus, setShareStatus] = useState<'idle' | 'loading' | 'copied'>('idle');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastVariant, setToastVariant] = useState<'success' | 'error'>('success');
 
   const [drawerState, setDrawerState] = useState<DrawerState>({
     isOpen: false,
@@ -116,6 +118,8 @@ export default function CurrentPlan() {
       const result = await generateShareLink(currentPlan.id);
       if (result.error) {
         setShareStatus('idle');
+        setToastVariant('error');
+        setToastMessage(result.error ?? 'Failed to generate share link');
         return;
       }
       const url = result.data!;
@@ -127,11 +131,15 @@ export default function CurrentPlan() {
         }
       } else {
         await navigator.clipboard.writeText(url);
+        setToastVariant('success');
+        setToastMessage('Link copied to clipboard');
       }
       setShareStatus('copied');
       setTimeout(() => setShareStatus('idle'), 2000);
-    } catch {
+    } catch (err) {
       setShareStatus('idle');
+      setToastVariant('error');
+      setToastMessage(err instanceof Error ? err.message : 'Failed to generate share link');
     }
   };
 
@@ -277,6 +285,12 @@ export default function CurrentPlan() {
         onSelectRecipe={handleSelectRecipe}
         onSurpriseMe={handleSurpriseMe}
         mode={drawerState.mode}
+      />
+
+      <Toast
+        message={toastMessage}
+        variant={toastVariant}
+        onDismiss={() => setToastMessage(null)}
       />
     </div>
   );

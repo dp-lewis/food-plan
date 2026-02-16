@@ -75,7 +75,8 @@ export async function loadMealPlan(): Promise<ActionResult<MealPlan | null>> {
 export async function syncMealPlan(plan: MealPlan): Promise<ActionResult<MealPlan>> {
   try {
     const user = await getAuthUser();
-    await requirePlanOwner(plan.id, user.id);
+    // No requirePlanOwner here — this handles initial upload (plan may not
+    // exist in DB yet) and RLS on meal_plans already enforces user_id = auth.uid().
     const result = await upsertMealPlan(plan, user.id);
     return { data: result, error: null };
   } catch (e) {

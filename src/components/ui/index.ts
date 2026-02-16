@@ -42,3 +42,6 @@ export type { BottomNavProps } from './BottomNav';
 
 export { default as PageHeader } from './PageHeader';
 export type { PageHeaderProps } from './PageHeader';
+
+export { default as Toast } from './Toast';
+export type { ToastProps } from './Toast';

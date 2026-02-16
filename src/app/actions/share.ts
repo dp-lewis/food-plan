@@ -37,6 +37,7 @@ export async function generateShareLink(planId: string): Promise<ActionResult<st
     const baseUrl = origin.startsWith('http') ? origin : `https://${origin}`;
     return { data: `${baseUrl}/shared/${shareCode}`, error: null };
   } catch (e) {
+    console.error('[generateShareLink]', e);
     return { data: null, error: e instanceof Error ? e.message : 'Failed to generate share link' };
   }
 }
