@@ -29,11 +29,14 @@ interface DrawerState {
 
 export default function Dashboard() {
   const currentPlan = useStore((state) => state.currentPlan);
+  const planRole = useStore((state) => state._planRole);
   const userRecipes = useStore((state) => state.userRecipes);
   const checkedItems = useStore((state) => state.checkedItems);
   const customShoppingItems = useStore((state) => state.customShoppingItems);
   const swapMeal = useStore((state) => state.swapMeal);
   const { user, loading: authLoading } = useAuth();
+
+  const isReadOnly = planRole === 'member';
 
   const [drawerState, setDrawerState] = useState<DrawerState>({
     isOpen: false,
@@ -173,7 +176,7 @@ export default function Dashboard() {
           onSurpriseMe={handleSurpriseMe}
         />
 
-        <BottomNav />
+        <BottomNav hideFab={isReadOnly} />
       </div>
     );
   }

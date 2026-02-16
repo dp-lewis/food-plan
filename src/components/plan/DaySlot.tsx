@@ -18,8 +18,8 @@ interface DaySlotProps {
   startDay: number;
   slots: MealSlot[];
   userRecipes: Recipe[];
-  onAddMeal: (dayIndex: number, mealType: MealType, excludeRecipeIds: string[]) => void;
-  onRemoveMeal: (mealId: string) => void;
+  onAddMeal?: (dayIndex: number, mealType: MealType, excludeRecipeIds: string[]) => void;
+  onRemoveMeal?: (mealId: string) => void;
 }
 
 export default function DaySlot({
@@ -66,16 +66,18 @@ export default function DaySlot({
                   <div className="p-3 border border-dashed border-border rounded-lg text-center text-sm text-muted-foreground">
                     No meals planned
                   </div>
-                  <Button
-                    variant="secondary"
-                    size="small"
-                    onClick={() => onAddMeal(dayIndex, mealType, slotRecipeIds)}
-                    data-testid={`add-meal-${dayIndex}-${mealType}`}
-                    aria-label={`Add ${mealType}`}
-                    className="w-full"
-                  >
-                    + Add
-                  </Button>
+                  {onAddMeal && (
+                    <Button
+                      variant="secondary"
+                      size="small"
+                      onClick={() => onAddMeal(dayIndex, mealType, slotRecipeIds)}
+                      data-testid={`add-meal-${dayIndex}-${mealType}`}
+                      aria-label={`Add ${mealType}`}
+                      className="w-full"
+                    >
+                      + Add
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <>
@@ -92,18 +94,20 @@ export default function DaySlot({
                     );
                   })}
                   {/* Add button after existing meals */}
-                  <div className="px-4 pb-3">
-                    <Button
-                      variant="ghost"
-                      size="small"
-                      onClick={() => onAddMeal(dayIndex, mealType, slotRecipeIds)}
-                      data-testid={`add-meal-${dayIndex}-${mealType}`}
-                      aria-label={`Add ${mealType}`}
-                      className="text-primary"
-                    >
-                      + Add {mealType}
-                    </Button>
-                  </div>
+                  {onAddMeal && (
+                    <div className="px-4 pb-3">
+                      <Button
+                        variant="ghost"
+                        size="small"
+                        onClick={() => onAddMeal(dayIndex, mealType, slotRecipeIds)}
+                        data-testid={`add-meal-${dayIndex}-${mealType}`}
+                        aria-label={`Add ${mealType}`}
+                        className="text-primary"
+                      >
+                        + Add {mealType}
+                      </Button>
+                    </div>
+                  )}
                 </>
               )}
             </div>

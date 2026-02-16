@@ -3,9 +3,9 @@
 import { useEffect, useRef } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { useStore } from '@/store/store';
-import { loadMealPlan, syncMealPlan } from '@/app/actions/mealPlan';
-import { loadUserRecipes, saveUserRecipe } from '@/app/actions/recipes';
-import { loadCheckedItems, loadCustomItems, addCustomItemAction } from '@/app/actions/shoppingList';
+import { loadActivePlan, syncMealPlan } from '@/app/actions/mealPlan';
+import { saveUserRecipe } from '@/app/actions/recipes';
+import { addCustomItemAction } from '@/app/actions/shoppingList';
 import { setupSyncSubscriber } from '@/store/syncSubscriber';
 
 /**
@@ -51,32 +51,21 @@ export function StoreSync() {
         const localRecipes = useStore.getState().userRecipes;
         const localCustomItems = useStore.getState().customShoppingItems;
 
-        const [planResult, recipesResult] = await Promise.all([
-          loadMealPlan(),
-          loadUserRecipes(),
-        ]);
+        const result = await loadActivePlan();
+        const activeData = result.data ?? null;
 
-        const serverPlan = planResult.data ?? null;
-        const serverRecipes = recipesResult.data ?? [];
-
-        if (serverPlan !== null) {
-          // Server has data — replace local store with server data
+        if (activeData !== null) {
+          // Server has data (owned or joined plan) — replace local store
           useStore.setState({
-            currentPlan: serverPlan,
-            userRecipes: serverRecipes,
-          });
-
-          const [checkedResult, customResult] = await Promise.all([
-            loadCheckedItems(serverPlan.id),
-            loadCustomItems(serverPlan.id),
-          ]);
-
-          useStore.setState({
-            checkedItems: checkedResult.data ?? [],
-            customShoppingItems: customResult.data ?? [],
+            currentPlan: activeData.plan,
+            userRecipes: activeData.recipes,
+            checkedItems: activeData.checkedItems,
+            customShoppingItems: activeData.customItems,
+            _planRole: activeData.role,
           });
         } else if (localPlan !== null) {
-          // Server is empty but local data exists — upload local data to server
+          // Server is empty and no membership — upload local data
+          useStore.setState({ _planRole: 'owner' });
           await syncMealPlan(localPlan);
           await Promise.all(localRecipes.map((recipe) => saveUserRecipe(recipe)));
           await Promise.all(
@@ -100,6 +89,7 @@ export function StoreSync() {
         checkedItems: [],
         userRecipes: [],
         customShoppingItems: [],
+        _planRole: null,
       });
     }
 

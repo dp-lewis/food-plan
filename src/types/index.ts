@@ -1,3 +1,4 @@
+export type PlanRole = 'owner' | 'member';
 export type MealType = 'breakfast' | 'lunch' | 'dinner';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type BudgetLevel = 'low' | 'medium' | 'high';

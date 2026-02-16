@@ -9,7 +9,7 @@ import { getTodayPlanIndex, getOrderedDays } from '@/lib/dates';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
 import SignOutDialog from '@/components/SignOutDialog';
-import { BottomNav, Card, PageHeader } from '@/components/ui';
+import { BottomNav, Card, PageHeader, Toast } from '@/components/ui';
 import { useAuth } from '@/components/AuthProvider';
 import { generateShareLink } from '@/app/actions/share';
 import DaySlot from '@/components/plan/DaySlot';
@@ -31,13 +31,18 @@ interface DrawerState {
 export default function CurrentPlan() {
   const router = useRouter();
   const currentPlan = useStore((state) => state.currentPlan);
+  const planRole = useStore((state) => state._planRole);
   const swapMeal = useStore((state) => state.swapMeal);
   const addMeal = useStore((state) => state.addMeal);
   const removeMeal = useStore((state) => state.removeMeal);
   const userRecipes = useStore((state) => state.userRecipes);
 
+  const isReadOnly = planRole === 'member';
+
   const { user, loading: authLoading } = useAuth();
   const [shareStatus, setShareStatus] = useState<'idle' | 'loading' | 'copied'>('idle');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastVariant, setToastVariant] = useState<'success' | 'error'>('success');
 
   const [drawerState, setDrawerState] = useState<DrawerState>({
     isOpen: false,
@@ -113,6 +118,8 @@ export default function CurrentPlan() {
       const result = await generateShareLink(currentPlan.id);
       if (result.error) {
         setShareStatus('idle');
+        setToastVariant('error');
+        setToastMessage(result.error ?? 'Failed to generate share link');
         return;
       }
       const url = result.data!;
@@ -124,11 +131,15 @@ export default function CurrentPlan() {
         }
       } else {
         await navigator.clipboard.writeText(url);
+        setToastVariant('success');
+        setToastMessage('Link copied to clipboard');
       }
       setShareStatus('copied');
       setTimeout(() => setShareStatus('idle'), 2000);
-    } catch {
+    } catch (err) {
       setShareStatus('idle');
+      setToastVariant('error');
+      setToastMessage(err instanceof Error ? err.message : 'Failed to generate share link');
     }
   };
 
@@ -232,11 +243,19 @@ export default function CurrentPlan() {
         }
       />
       <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
-        <div className="flex items-center justify-end">
-          <Link href="/plan" className="text-sm text-primary">
-            Reset plan
-          </Link>
-        </div>
+        {isReadOnly ? (
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full" data-testid="shared-plan-badge">
+              Shared with you
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center justify-end">
+            <Link href="/plan" className="text-sm text-primary">
+              Reset plan
+            </Link>
+          </div>
+        )}
 
         <div className="space-y-4">
           {slotsByDay.map(({ dayName, dayIndex, slots }) => (
@@ -248,14 +267,14 @@ export default function CurrentPlan() {
               startDay={currentPlan.preferences.startDay}
               slots={slots}
               userRecipes={userRecipes}
-              onAddMeal={openAddDrawer}
-              onRemoveMeal={removeMeal}
+              onAddMeal={isReadOnly ? undefined : openAddDrawer}
+              onRemoveMeal={isReadOnly ? undefined : removeMeal}
             />
           ))}
         </div>
       </main>
 
-      <BottomNav onShareClick={user ? handleShare : undefined} />
+      <BottomNav onShareClick={!isReadOnly && user ? handleShare : undefined} />
 
       <RecipeDrawer
         isOpen={drawerState.isOpen}
@@ -266,6 +285,12 @@ export default function CurrentPlan() {
         onSelectRecipe={handleSelectRecipe}
         onSurpriseMe={handleSurpriseMe}
         mode={drawerState.mode}
+      />
+
+      <Toast
+        message={toastMessage}
+        variant={toastVariant}
+        onDismiss={() => setToastMessage(null)}
       />
     </div>
   );
