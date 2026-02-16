@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback, ReactNode } from 'react';
+import { useEffect, useRef, useCallback, useId, ReactNode } from 'react';
 
 export interface DrawerProps {
   isOpen: boolean;
@@ -10,6 +10,7 @@ export interface DrawerProps {
 }
 
 export default function Drawer({ isOpen, onClose, title, children }: DrawerProps) {
+  const titleId = useId();
   const drawerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -96,7 +97,7 @@ export default function Drawer({ isOpen, onClose, title, children }: DrawerProps
         ref={drawerRef}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="drawer-title"
+        aria-labelledby={titleId}
         className="absolute bottom-0 left-0 right-0 max-h-[75vh] bg-background rounded-t-lg flex flex-col animate-[slide-up_200ms_ease-out]"
       >
         {/* Drag handle */}
@@ -105,7 +106,7 @@ export default function Drawer({ isOpen, onClose, title, children }: DrawerProps
         {/* Header */}
         <div className="flex justify-between items-center px-4 pb-3 border-b">
           <h2
-            id="drawer-title"
+            id={titleId}
             className="text-base font-semibold text-foreground"
           >
             {title}

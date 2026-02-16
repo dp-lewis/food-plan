@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
 import { BottomNav, Button, Card, EmptyState, Drawer, PageHeader } from '@/components/ui';
+import { buttonVariants } from '@/components/ui/Button';
 import { LinkIcon } from 'lucide-react';
 
 export default function MyRecipes() {
@@ -79,10 +80,12 @@ export default function MyRecipes() {
                   <Button onClick={openImportDrawer} className="w-full" data-testid="empty-import-btn">
                     Import from URL
                   </Button>
-                  <Link href="/recipes/new" data-testid="empty-create-btn">
-                    <Button variant="secondary" className="w-full">
-                      Create Your Own Recipe
-                    </Button>
+                  <Link
+                    href="/recipes/new"
+                    data-testid="empty-create-btn"
+                    className={buttonVariants({ variant: 'secondary' }) + ' w-full'}
+                  >
+                    Create Your Own Recipe
                   </Link>
                 </div>
               }
@@ -120,10 +123,12 @@ export default function MyRecipes() {
               </Link>
             ))}
 
-            <Link href="/recipes/new" data-testid="create-recipe-btn">
-              <Button variant="secondary" className="w-full">
-                + Create Your Own Recipe
-              </Button>
+            <Link
+              href="/recipes/new"
+              data-testid="create-recipe-btn"
+              className={buttonVariants({ variant: 'secondary' }) + ' w-full'}
+            >
+              + Create Your Own Recipe
             </Link>
           </div>
         )}
@@ -154,10 +159,13 @@ export default function MyRecipes() {
               placeholder="https://www.recipetineats.com/..."
               className="flex-1 bg-background border border-border text-base text-foreground px-3 py-2 rounded-sm"
               data-testid="import-url-input"
+              aria-describedby={error ? 'import-error' : undefined}
             />
           </div>
           {error && (
             <p
+              id="import-error"
+              role="alert"
               className="mt-2 text-sm text-destructive"
               data-testid="import-error"
             >

@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { MetaChip, Button, PageHeader } from '@/components/ui';
+import Drawer from '@/components/ui/Drawer';
 import { Clock, Users, ChefHat } from 'lucide-react';
 
 export default function UserRecipeDetail() {
@@ -11,11 +13,12 @@ export default function UserRecipeDetail() {
   const router = useRouter();
   const userRecipes = useStore((state) => state.userRecipes);
   const removeUserRecipe = useStore((state) => state.removeUserRecipe);
+  const [isDeleteDrawerOpen, setIsDeleteDrawerOpen] = useState(false);
 
   const recipe = userRecipes.find((r) => r.id === params.id);
 
   const handleDelete = () => {
-    if (recipe && confirm('Are you sure you want to delete this recipe?')) {
+    if (recipe) {
       removeUserRecipe(recipe.id);
       router.push('/recipes');
     }
@@ -127,13 +130,43 @@ export default function UserRecipeDetail() {
         {/* Delete button */}
         <Button
           variant="secondary"
-          onClick={handleDelete}
+          onClick={() => setIsDeleteDrawerOpen(true)}
           data-testid="delete-recipe-btn"
           className="w-full border-destructive text-destructive"
         >
           Delete Recipe
         </Button>
       </main>
+
+      <Drawer
+        isOpen={isDeleteDrawerOpen}
+        onClose={() => setIsDeleteDrawerOpen(false)}
+        title="Delete Recipe?"
+      >
+        <div data-testid="delete-recipe-drawer">
+          <p className="mb-6 text-base text-muted-foreground">
+            Are you sure you want to delete &ldquo;{recipe.title}&rdquo;? This cannot be undone.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Button
+              variant="secondary"
+              onClick={handleDelete}
+              data-testid="confirm-delete-btn"
+              className="w-full border-destructive text-destructive"
+            >
+              Delete Recipe
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setIsDeleteDrawerOpen(false)}
+              data-testid="cancel-delete-btn"
+              className="w-full"
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </Drawer>
     </div>
   );
 }

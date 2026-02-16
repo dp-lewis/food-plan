@@ -111,6 +111,7 @@ export default function BottomNav({
                   key={tab.href}
                   href={tab.href}
                   data-testid={`tab-${tab.label.toLowerCase()}`}
+                  aria-current={active ? 'page' : undefined}
                   className={clsx(
                     'flex-1 flex flex-col items-center gap-1 py-2 text-xs transition-colors pointer-events-auto',
                     active

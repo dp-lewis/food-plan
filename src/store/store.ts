@@ -7,10 +7,23 @@ import { swapMeal as swapMealInPlan } from '@/lib/planGenerator';
 import { categorizeIngredient } from '@/lib/ingredientParser';
 import { getRecipeById } from '@/data/recipes';
 import { ParsedRecipe } from '@/lib/recipeParser';
-import { syncMealPlan, addMealAction, removeMealAction, swapMealAction } from '@/app/actions/mealPlan';
-import { saveUserRecipe, deleteUserRecipeAction } from '@/app/actions/recipes';
-import { toggleCheckedItemAction, clearCheckedItemsAction, addCustomItemAction, removeCustomItemAction } from '@/app/actions/shoppingList';
 import { generateUUID } from '@/lib/uuid';
+
+// ---------------------------------------------------------------------------
+// Sync intent types — each represents one server-side operation to perform
+// ---------------------------------------------------------------------------
+
+export type SyncIntent =
+  | { type: 'syncMealPlan'; plan: MealPlan }
+  | { type: 'clearCheckedItems'; planId: string }
+  | { type: 'swapMeal'; mealId: string; recipeId: string }
+  | { type: 'addMeal'; planId: string; meal: Meal }
+  | { type: 'removeMeal'; mealId: string }
+  | { type: 'toggleCheckedItem'; planId: string; itemId: string; checked: boolean }
+  | { type: 'saveUserRecipe'; recipe: Recipe }
+  | { type: 'deleteUserRecipe'; recipeId: string }
+  | { type: 'addCustomItem'; planId: string; item: CustomShoppingListItem }
+  | { type: 'removeCustomItem'; itemId: string };
 
 interface AppState {
   currentPlan: MealPlan | null;
@@ -34,6 +47,9 @@ interface AppState {
   _setUserId: (userId: string | null) => void;
   _isSyncing: boolean;
   _setIsSyncing: (syncing: boolean) => void;
+  _syncQueue: SyncIntent[];
+  _pushSync: (intent: SyncIntent) => void;
+  _drainSync: () => SyncIntent[];
 }
 
 export const useStore = create<AppState>()(
@@ -42,11 +58,9 @@ export const useStore = create<AppState>()(
       currentPlan: null,
       setCurrentPlan: (plan) => {
         set({ currentPlan: plan, checkedItems: [] });
-        if (get()._userId) {
-          if (plan) {
-            syncMealPlan(plan).catch(console.error);
-            clearCheckedItemsAction(plan.id).catch(console.error);
-          }
+        if (plan) {
+          get()._pushSync({ type: 'syncMealPlan', plan });
+          get()._pushSync({ type: 'clearCheckedItems', planId: plan.id });
         }
       },
       swapMeal: (mealId, recipeId) => {
@@ -57,15 +71,13 @@ export const useStore = create<AppState>()(
             : null,
           checkedItems: [], // Reset shopping list when plan changes
         });
-        if (get()._userId) {
-          const updatedPlan = get().currentPlan;
-          if (updatedPlan) {
-            const updatedMeal = updatedPlan.meals.find((m) => m.id === mealId);
-            if (updatedMeal?.recipeId) {
-              swapMealAction(mealId, updatedMeal.recipeId).catch(console.error);
-            }
-            clearCheckedItemsAction(updatedPlan.id).catch(console.error);
+        const updatedPlan = get().currentPlan;
+        if (updatedPlan) {
+          const updatedMeal = updatedPlan.meals.find((m) => m.id === mealId);
+          if (updatedMeal?.recipeId) {
+            get()._pushSync({ type: 'swapMeal', mealId, recipeId: updatedMeal.recipeId });
           }
+          get()._pushSync({ type: 'clearCheckedItems', planId: updatedPlan.id });
         }
       },
       addMeal: (dayIndex, mealType, recipeId) => {
@@ -84,6 +96,7 @@ export const useStore = create<AppState>()(
           servings,
         };
 
+        const planId = state.currentPlan.id;
         set({
           currentPlan: {
             ...state.currentPlan,
@@ -91,18 +104,14 @@ export const useStore = create<AppState>()(
           },
           checkedItems: [],
         });
-        if (get()._userId) {
-          const planId = get().currentPlan?.id;
-          if (planId) {
-            addMealAction(planId, newMeal).catch(console.error);
-            clearCheckedItemsAction(planId).catch(console.error);
-          }
-        }
+        get()._pushSync({ type: 'addMeal', planId, meal: newMeal });
+        get()._pushSync({ type: 'clearCheckedItems', planId });
       },
       removeMeal: (mealId) => {
         const state = get();
         if (!state.currentPlan) return;
 
+        const planId = state.currentPlan.id;
         set({
           currentPlan: {
             ...state.currentPlan,
@@ -110,13 +119,8 @@ export const useStore = create<AppState>()(
           },
           checkedItems: [],
         });
-        if (get()._userId) {
-          const planId = get().currentPlan?.id;
-          removeMealAction(mealId).catch(console.error);
-          if (planId) {
-            clearCheckedItemsAction(planId).catch(console.error);
-          }
-        }
+        get()._pushSync({ type: 'removeMeal', mealId });
+        get()._pushSync({ type: 'clearCheckedItems', planId });
       },
       checkedItems: [],
       toggleCheckedItem: (itemId) => {
@@ -125,21 +129,17 @@ export const useStore = create<AppState>()(
             ? state.checkedItems.filter((id) => id !== itemId)
             : [...state.checkedItems, itemId],
         }));
-        if (get()._userId) {
-          const planId = get().currentPlan?.id;
-          if (planId) {
-            const checked = get().checkedItems.includes(itemId);
-            toggleCheckedItemAction(planId, itemId, checked).catch(console.error);
-          }
+        const planId = get().currentPlan?.id;
+        if (planId) {
+          const checked = get().checkedItems.includes(itemId);
+          get()._pushSync({ type: 'toggleCheckedItem', planId, itemId, checked });
         }
       },
       clearCheckedItems: () => {
         set({ checkedItems: [] });
-        if (get()._userId) {
-          const planId = get().currentPlan?.id;
-          if (planId) {
-            clearCheckedItemsAction(planId).catch(console.error);
-          }
+        const planId = get().currentPlan?.id;
+        if (planId) {
+          get()._pushSync({ type: 'clearCheckedItems', planId });
         }
       },
       userRecipes: [],
@@ -147,50 +147,36 @@ export const useStore = create<AppState>()(
         set((state) => ({
           userRecipes: [...state.userRecipes, recipe],
         }));
-        if (get()._userId) {
-          saveUserRecipe(recipe).catch(console.error);
-        }
+        get()._pushSync({ type: 'saveUserRecipe', recipe });
       },
       removeUserRecipe: (id) => {
         set((state) => ({
           userRecipes: state.userRecipes.filter((r) => r.id !== id),
         }));
-        if (get()._userId) {
-          deleteUserRecipeAction(id).catch(console.error);
-        }
+        get()._pushSync({ type: 'deleteUserRecipe', recipeId: id });
       },
       customShoppingItems: [],
       addCustomItem: (ingredient, quantity = 1, unit = '') => {
+        const newItem: CustomShoppingListItem = {
+          id: `custom-${generateUUID()}`,
+          ingredient,
+          quantity,
+          unit,
+          category: categorizeIngredient(ingredient),
+        };
         set((state) => ({
-          customShoppingItems: [
-            ...state.customShoppingItems,
-            {
-              id: `custom-${generateUUID()}`,
-              ingredient,
-              quantity,
-              unit,
-              category: categorizeIngredient(ingredient),
-            },
-          ],
+          customShoppingItems: [...state.customShoppingItems, newItem],
         }));
-        if (get()._userId) {
-          const planId = get().currentPlan?.id;
-          if (planId) {
-            const items = get().customShoppingItems;
-            const newItem = items[items.length - 1];
-            if (newItem) {
-              addCustomItemAction(planId, newItem).catch(console.error);
-            }
-          }
+        const planId = get().currentPlan?.id;
+        if (planId) {
+          get()._pushSync({ type: 'addCustomItem', planId, item: newItem });
         }
       },
       removeCustomItem: (itemId) => {
         set((state) => ({
           customShoppingItems: state.customShoppingItems.filter((item) => item.id !== itemId),
         }));
-        if (get()._userId) {
-          removeCustomItemAction(itemId).catch(console.error);
-        }
+        get()._pushSync({ type: 'removeCustomItem', itemId });
       },
       pendingImportedRecipe: null,
       setPendingImportedRecipe: (recipe) => set({ pendingImportedRecipe: recipe }),
@@ -199,6 +185,15 @@ export const useStore = create<AppState>()(
       _setUserId: (userId) => set({ _userId: userId }),
       _isSyncing: false,
       _setIsSyncing: (syncing) => set({ _isSyncing: syncing }),
+      _syncQueue: [],
+      _pushSync: (intent) => set((state) => ({ _syncQueue: [...state._syncQueue, intent] })),
+      _drainSync: () => {
+        const queue = get()._syncQueue;
+        if (queue.length > 0) {
+          set({ _syncQueue: [] });
+        }
+        return queue;
+      },
     }),
     {
       name: 'food-plan-storage',
@@ -207,7 +202,7 @@ export const useStore = create<AppState>()(
         checkedItems: state.checkedItems,
         userRecipes: state.userRecipes,
         customShoppingItems: state.customShoppingItems,
-        // Note: pendingImportedRecipe, _userId, _isSyncing are intentionally NOT persisted
+        // Note: pendingImportedRecipe, _userId, _isSyncing, _syncQueue are intentionally NOT persisted
       }),
       skipHydration: true,
     }

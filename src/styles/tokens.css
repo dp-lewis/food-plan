@@ -18,7 +18,7 @@
      Maps to Tailwind utility classes via @theme inline
      ========================================== */
 
-  --primary: #16a34a;
+  --primary: #15803d;
   --primary-light: #dcfce7;
   --primary-foreground: #ffffff;
   --background: #ffffff;
@@ -28,7 +28,7 @@
   --secondary: #f9fafb;
   --secondary-foreground: #111827;
   --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
+  --muted-foreground: #4b5563;
   --accent: #f3f4f6;
   --accent-foreground: #111827;
   --destructive: #dc2626;
@@ -36,17 +36,17 @@
   --border: #e5e7eb;
   --input: transparent;
   --input-background: #f9fafb;
-  --ring: #16a34a;
+  --ring: #15803d;
   --radius: 0.5rem;
 
   /* Semantic colors (Alert variants) */
-  --success: #16a34a;
+  --success: #15803d;
   --success-light: #dcfce7;
-  --warning: #d97706;
+  --warning: #b45309;
   --warning-light: #fef3c7;
-  --error: #dc2626;
+  --error: #b91c1c;
   --error-light: #fee2e2;
-  --info: #2563eb;
+  --info: #1d4ed8;
   --info-light: #dbeafe;
 
   /* Text size aliases for base layer */

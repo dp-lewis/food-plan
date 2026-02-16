@@ -6,6 +6,12 @@ const meta: Meta<typeof BackLink> = {
   component: BackLink,
   parameters: {
     layout: 'centered',
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        pathname: '/test',
+      },
+    },
   },
   tags: ['autodocs'],
 };

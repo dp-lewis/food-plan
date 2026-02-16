@@ -6,6 +6,7 @@ import { useStore } from '@/store/store';
 import { loadMealPlan, syncMealPlan } from '@/app/actions/mealPlan';
 import { loadUserRecipes, saveUserRecipe } from '@/app/actions/recipes';
 import { loadCheckedItems, loadCustomItems, addCustomItemAction } from '@/app/actions/shoppingList';
+import { setupSyncSubscriber } from '@/store/syncSubscriber';
 
 /**
  * Watches auth state transitions and syncs store data with the server.
@@ -22,6 +23,13 @@ import { loadCheckedItems, loadCustomItems, addCustomItemAction } from '@/app/ac
 export function StoreSync() {
   const { user, loading } = useAuth();
   const prevUserIdRef = useRef<string | null>(null);
+
+  // Wire up the sync subscriber once on mount so store intents are dispatched
+  // to the server whenever _userId is set.
+  useEffect(() => {
+    const unsubscribe = setupSyncSubscriber(useStore);
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     if (loading) return;

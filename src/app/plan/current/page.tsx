@@ -1,54 +1,20 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
-import { getRecipeById, getRecipesByMealType } from '@/data/recipes';
+import { getRecipesByMealType } from '@/data/recipes';
+import { getTodayPlanIndex, getOrderedDays } from '@/lib/dates';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
-import { BottomNav, Button, Card, PageHeader } from '@/components/ui';
-import Drawer from '@/components/ui/Drawer';
+import SignOutDialog from '@/components/SignOutDialog';
+import { BottomNav, Card, PageHeader } from '@/components/ui';
 import { useAuth } from '@/components/AuthProvider';
 import { generateShareLink } from '@/app/actions/share';
-import { User } from 'lucide-react';
+import DaySlot from '@/components/plan/DaySlot';
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
-
-/**
- * Get ordered day names starting from the plan's startDay.
- * startDay: 0=Monday, 1=Tuesday, ... 6=Sunday
- */
-function getOrderedDays(startDay: number): string[] {
-  return Array.from({ length: 7 }, (_, i) => DAYS[(startDay + i) % 7]);
-}
-
-/**
- * Get today's dayIndex within the plan based on the plan's startDay.
- * startDay uses 0=Monday ... 6=Sunday.
- * Returns 0-6, where 0 is the plan's first day.
- */
-function getTodayPlanIndex(startDay: number): number {
-  const now = new Date();
-  const jsDay = now.getDay();
-  const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
-  return (todayIndex - startDay + 7) % 7;
-}
-
-/**
- * Get the formatted date string (e.g. "Feb 15") for a given dayIndex in the plan.
- */
-function getDateForDayIndex(startDay: number, dayIndex: number): string {
-  const now = new Date();
-  const jsDay = now.getDay();
-  const todayWeekday = jsDay === 0 ? 6 : jsDay - 1; // 0=Mon...6=Sun
-  const todayPlanIndex = (todayWeekday - startDay + 7) % 7;
-  const diff = dayIndex - todayPlanIndex;
-  const date = new Date(now);
-  date.setDate(date.getDate() + diff);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
 
 type DrawerMode = 'swap' | 'add';
 
@@ -72,8 +38,6 @@ export default function CurrentPlan() {
 
   const { user, loading: authLoading } = useAuth();
   const [shareStatus, setShareStatus] = useState<'idle' | 'loading' | 'copied'>('idle');
-  const [signOutDrawerOpen, setSignOutDrawerOpen] = useState(false);
-  const [signOutLoading, setSignOutLoading] = useState(false);
 
   const [drawerState, setDrawerState] = useState<DrawerState>({
     isOpen: false,
@@ -133,7 +97,6 @@ export default function CurrentPlan() {
     if (drawerState.mode === 'swap' && drawerState.mealId) {
       swapMeal(drawerState.mealId);
     } else if (drawerState.mode === 'add' && drawerState.dayIndex !== null && drawerState.mealType) {
-      // Pick a random recipe from available ones
       const availableRecipes = getRecipesByMealType(drawerState.mealType, userRecipes)
         .filter(r => !drawerState.excludeRecipeIds.includes(r.id));
       if (availableRecipes.length > 0) {
@@ -153,7 +116,6 @@ export default function CurrentPlan() {
         return;
       }
       const url = result.data!;
-      // Try Web Share API first (mobile), fallback to clipboard
       if (navigator.share) {
         try {
           await navigator.share({ title: 'Meal Plan', url });
@@ -168,13 +130,6 @@ export default function CurrentPlan() {
     } catch {
       setShareStatus('idle');
     }
-  };
-
-  const handleSignOut = async () => {
-    setSignOutLoading(true);
-    await fetch('/auth/signout', { method: 'POST' });
-    router.push('/');
-    router.refresh();
   };
 
   // Hooks must be called unconditionally before any early returns.
@@ -202,12 +157,10 @@ export default function CurrentPlan() {
   const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
-    // Wait for Zustand to rehydrate from localStorage before acting on state.
     const unsub = useStore.persist.onHydrate(() => {/* no-op */});
     const unsubFinish = useStore.persist.onFinishHydration(() => {
       setHasHydrated(true);
     });
-    // If hydration already completed before this effect runs, check directly.
     if (useStore.persist.hasHydrated()) {
       setHasHydrated(true);
     }
@@ -273,159 +226,37 @@ export default function CurrentPlan() {
         backHref="/"
         sticky
         actions={
-          <div className="flex items-center gap-3">
-            {!authLoading && (
-              user ? (
-                <button
-                  type="button"
-                  data-testid="user-menu-btn"
-                  onClick={() => setSignOutDrawerOpen(true)}
-                  disabled={signOutLoading}
-                  className="text-xs text-primary-foreground/70 hover:text-primary-foreground"
-                >
-                  {signOutLoading ? 'Signing out…' : user.email}
-                </button>
-              ) : (
-                <Link
-                  href="/auth/signin"
-                  data-testid="sign-in-link"
-                  className="flex items-center gap-1 text-xs text-primary-foreground/70 hover:text-primary-foreground"
-                >
-                  <User className="w-4 h-4" />
-                  <span>Sign in</span>
-                </Link>
-              )
-            )}
-          </div>
+          !authLoading && (
+            <SignOutDialog userEmail={user?.email} />
+          )
         }
       />
       <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
         <div className="flex items-center justify-end">
-          <Link
-            href="/plan"
-            className="text-sm text-primary"
-          >
+          <Link href="/plan" className="text-sm text-primary">
             Reset plan
           </Link>
         </div>
 
         <div className="space-y-4">
-          {slotsByDay.map(({ dayName, dayIndex, slots }) => {
-            const isToday = dayIndex === todayIndex;
-            return (
-            <Card
+          {slotsByDay.map(({ dayName, dayIndex, slots }) => (
+            <DaySlot
               key={dayName}
-              padding="none"
-              data-testid={`day-${dayIndex}`}
-              className={`scroll-mt-20 ${isToday ? 'border-2 border-primary' : ''}`}
-            >
-              <div className="sticky top-[56px] z-10 px-4 py-2 bg-muted font-semibold text-base text-foreground rounded-t-lg border-b border-border">
-                <div className="flex items-center gap-2">
-                  {dayName}
-                  {isToday && (
-                    <span className="text-xs font-medium bg-primary-foreground text-primary px-2 py-0.5 rounded">Today</span>
-                  )}
-                </div>
-                <div className="text-xs font-normal text-muted-foreground">
-                  {getDateForDayIndex(currentPlan.preferences.startDay, dayIndex)}
-                </div>
-              </div>
-              <div className="divide-y divide-border">
-                {slots.map(({ mealType, meals }) => {
-                  const slotRecipeIds = meals.map(m => m.recipeId);
-
-                  return (
-                    <div key={mealType} data-testid={`slot-${dayIndex}-${mealType}`}>
-                      {/* Meal type header */}
-                      <div className="px-4 pt-3 pb-1 text-sm text-muted-foreground">
-                        <span className="uppercase tracking-wide">{mealType}</span>
-                      </div>
-
-                      {/* Meals in this slot */}
-                      {meals.length === 0 ? (
-                        <div className="px-4 pb-3 space-y-2">
-                          <div className="p-3 border border-dashed border-border rounded-lg text-center text-sm text-muted-foreground">
-                            No meals planned
-                          </div>
-                          <Button
-                            variant="secondary"
-                            size="small"
-                            onClick={() => openAddDrawer(dayIndex, mealType, slotRecipeIds)}
-                            data-testid={`add-meal-${dayIndex}-${mealType}`}
-                            aria-label={`Add ${mealType}`}
-                            className="w-full"
-                          >
-                            + Add
-                          </Button>
-                        </div>
-                      ) : (
-                        <>
-                          {meals.map((meal) => {
-                            const recipe = getRecipeById(meal.recipeId, userRecipes);
-                            if (!recipe) return null;
-
-                            const recipeUrl = recipe.isUserRecipe
-                              ? `/recipes/${recipe.id}`
-                              : `/recipe/${recipe.id}`;
-
-                            return (
-                              <div
-                                key={meal.id}
-                                className="flex items-center justify-between px-4 py-2"
-                                data-testid={`meal-${meal.id}`}
-                              >
-                                <Link
-                                  href={recipeUrl}
-                                  className="flex-1 transition-colors"
-                                >
-                                  <p className="text-base text-foreground font-semibold">
-                                    {recipe.title}
-                                  </p>
-                                  <p className="text-sm text-muted-foreground">
-                                    {recipe.prepTime + recipe.cookTime} mins
-                                  </p>
-                                </Link>
-                                <Button
-                                  variant="ghost"
-                                  size="small"
-                                  onClick={() => removeMeal(meal.id)}
-                                  data-testid={`remove-meal-${meal.id}`}
-                                  aria-label={`Remove ${recipe.title}`}
-                                >
-                                  Remove
-                                </Button>
-                              </div>
-                            );
-                          })}
-                          {/* Add button after existing meals */}
-                          <div className="px-4 pb-3">
-                            <Button
-                              variant="ghost"
-                              size="small"
-                              onClick={() => openAddDrawer(dayIndex, mealType, slotRecipeIds)}
-                              data-testid={`add-meal-${dayIndex}-${mealType}`}
-                              aria-label={`Add ${mealType}`}
-                              className="text-primary"
-                            >
-                              + Add {mealType}
-                            </Button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
-            );
-          })}
+              dayName={dayName}
+              dayIndex={dayIndex}
+              isToday={dayIndex === todayIndex}
+              startDay={currentPlan.preferences.startDay}
+              slots={slots}
+              userRecipes={userRecipes}
+              onAddMeal={openAddDrawer}
+              onRemoveMeal={removeMeal}
+            />
+          ))}
         </div>
-
       </main>
 
       <BottomNav onShareClick={user ? handleShare : undefined} />
 
-      {/* Recipe selection drawer */}
       <RecipeDrawer
         isOpen={drawerState.isOpen}
         onClose={closeDrawer}
@@ -436,38 +267,6 @@ export default function CurrentPlan() {
         onSurpriseMe={handleSurpriseMe}
         mode={drawerState.mode}
       />
-
-      {/* Sign out drawer */}
-      <Drawer
-        isOpen={signOutDrawerOpen}
-        onClose={() => setSignOutDrawerOpen(false)}
-        title="Sign Out"
-      >
-        <div className="space-y-4">
-          <p className="text-base text-foreground">
-            Are you sure you want to sign out?
-          </p>
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              onClick={() => setSignOutDrawerOpen(false)}
-              disabled={signOutLoading}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSignOut}
-              disabled={signOutLoading}
-              className="flex-1"
-              data-testid="confirm-sign-out-btn"
-            >
-              {signOutLoading ? 'Signing out…' : 'Sign Out'}
-            </Button>
-          </div>
-        </div>
-      </Drawer>
     </div>
   );
 }
