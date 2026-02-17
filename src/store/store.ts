@@ -59,6 +59,8 @@ interface AppState {
   _removeCheckedItem: (itemId: string) => void;
   _addRemoteCustomItem: (item: CustomShoppingListItem) => void;
   _removeRemoteCustomItem: (itemId: string) => void;
+  _setCheckedItems: (items: Record<string, string>) => void;
+  _setCustomShoppingItems: (items: CustomShoppingListItem[]) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -234,6 +236,12 @@ export const useStore = create<AppState>()(
         set((state) => ({
           customShoppingItems: state.customShoppingItems.filter((item) => item.id !== itemId),
         }));
+      },
+      _setCheckedItems: (items) => {
+        set({ checkedItems: items });
+      },
+      _setCustomShoppingItems: (items) => {
+        set({ customShoppingItems: items });
       },
     }),
     {
