@@ -111,6 +111,20 @@ Both render branches (active plan + empty state) share the same `signOutDrawerOp
 - `src/store/store.ts` - Custom shopping list item IDs
 - `src/app/actions/share.ts` - Share code generation
 
+## iOS Safari WebSocket Suspension Fix
+
+**Problem**: iOS Safari kills the Supabase realtime WebSocket when the app is backgrounded or phone locked. Events fired while hidden are lost.
+
+**Solution**: Add a `visibilitychange` listener in the realtime hook that re-fetches the full state from Supabase when the page becomes visible after being hidden for more than `MIN_HIDDEN_MS` (3000ms). Use `Promise.all` to fetch both `checked_items` and `custom_shopping_items` concurrently, then bulk-set via store actions.
+
+**Key details**:
+- Use a `useRef<number | null>` to record when the page was hidden and compute elapsed time.
+- Put the visibility listener in a **second `useEffect`** with dep array `[planId]` only — `userId` is not needed for re-fetching.
+- The re-fetch must use the **browser Supabase client** (`src/lib/supabase/client.ts`), not `queries.ts` (which uses the server client).
+- Add `_setCheckedItems(items: Record<string, string>)` and `_setCustomShoppingItems(items: CustomShoppingListItem[])` bulk-set actions to the store (these replace state entirely, like the other `_`-prefixed realtime helpers).
+
+**Files changed**: `src/hooks/useRealtimeShoppingList.ts`, `src/store/store.ts`
+
 ## Sticky Positioning with Fixed Headers
 
 **Pattern**: When making section headings sticky below a fixed/sticky header:
