@@ -44,6 +44,7 @@ export function StoreSync() {
 
       // Enable write-through immediately so subsequent mutations sync
       _setUserId(currentUserId);
+      useStore.getState()._setUserEmail(user?.email ?? null);
       _setIsSyncing(true);
 
       const syncOnSignIn = async () => {
@@ -84,9 +85,10 @@ export function StoreSync() {
     // Sign-out transition: user just became null
     if (currentUserId === null && prevUserId !== null) {
       useStore.getState()._setUserId(null);
+      useStore.getState()._setUserEmail(null);
       useStore.setState({
         currentPlan: null,
-        checkedItems: [],
+        checkedItems: {},
         userRecipes: [],
         customShoppingItems: [],
         _planRole: null,

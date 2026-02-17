@@ -71,7 +71,7 @@ export default function Dashboard() {
     const generated = generateShoppingList(currentPlan, userRecipes);
     const allItems = mergeShoppingLists(generated, customShoppingItems);
     const total = allItems.length;
-    const checked = allItems.filter((item) => checkedItems.includes(item.id)).length;
+    const checked = allItems.filter((item) => item.id in checkedItems).length;
     return { total, checked };
   }, [currentPlan, userRecipes, customShoppingItems, checkedItems]);
 

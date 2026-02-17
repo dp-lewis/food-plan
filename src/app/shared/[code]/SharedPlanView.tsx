@@ -34,6 +34,12 @@ export default function SharedPlanView({ data, shareCode }: { data: SharedPlanDa
     setJoinStatus('loading');
     setJoinError(null);
 
+    // Wait for any ongoing initial sync to complete, so our store
+    // update isn't overwritten by a concurrent loadActivePlan response.
+    while (useStore.getState()._isSyncing) {
+      await new Promise(r => setTimeout(r, 50));
+    }
+
     const result = await joinSharedPlan(shareCode);
     if (result.error) {
       setJoinStatus('error');
@@ -46,7 +52,7 @@ export default function SharedPlanView({ data, shareCode }: { data: SharedPlanDa
       currentPlan: joinedPlan,
       userRecipes: recipes,
       customShoppingItems: items,
-      checkedItems: [],
+      checkedItems: {},
       _planRole: 'member',
     });
 

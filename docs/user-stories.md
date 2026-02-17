@@ -296,6 +296,74 @@
 
 ---
 
+### US-9.2: Join a shared plan
+
+**As a** family member who received a share link
+**I want to** join the shared plan as my active plan
+**So that** I can see the same meals and shopping list on my own device
+
+**Acceptance Criteria:**
+- [ ] Signed-in user sees a "Use This Plan" button on the shared plan page
+- [ ] Anonymous users do NOT see the "Use This Plan" button
+- [ ] Clicking "Use This Plan" sets the shared plan as my current plan
+- [ ] After joining, my dashboard shows the shared plan
+- [ ] After joining, I can view the meal calendar and shopping list
+- [ ] The plan owner's view is unaffected when someone joins
+- [ ] Members cannot add, remove, or swap meals (read-only for now)
+- [ ] Joining replaces any existing plan the member had
+
+---
+
+### US-9.3: Shared shopping list with real-time check-off
+
+**As a** family member on a shared plan
+**I want to** check off shopping items and see my partner's check-offs appear in real time
+**So that** we don't double-buy items when shopping separately
+
+**Acceptance Criteria:**
+- [ ] Both owner and members can check and uncheck shopping items
+- [ ] When one user checks an item, the other sees it update within a few seconds
+- [ ] Checked state persists across page refreshes
+- [ ] Shows who checked each item (initials or name)
+- [ ] "Clear checked" affects everyone on the plan
+- [ ] Custom shopping items are visible to all plan members
+
+---
+
+### US-9.4: Collaborative meal editing
+
+**As a** family member on a shared plan
+**I want to** add, remove, and swap meals on the shared plan
+**So that** both of us can contribute to planning what we eat
+
+**Acceptance Criteria:**
+- [ ] Members can add meals to any slot
+- [ ] Members can remove meals from any slot
+- [ ] Members can swap meals
+- [ ] Members can add custom shopping items
+- [ ] Changes sync to all plan members in real time
+- [ ] A brief indicator appears when another user makes a change
+- [ ] Optimistic updates feel responsive for the person making them
+- [ ] Concurrent edits from both users do not cause data conflicts
+
+---
+
+### US-9.5: Manage plan membership
+
+**As a** plan owner
+**I want to** see who is on my plan and manage the share link
+**So that** I stay in control of who can access and edit our meal plan
+
+**Acceptance Criteria:**
+- [ ] Plan view shows members (avatars or names)
+- [ ] Owner can revoke the share link (disables future joins)
+- [ ] Owner can regenerate a new share link
+- [ ] When owner deletes the plan, members see their dashboard update cleanly
+- [ ] A member can leave a shared plan and return to "no plan" state
+- [ ] Leaving does not affect the owner's plan or other members
+
+---
+
 ## Story Map Overview
 
 ```

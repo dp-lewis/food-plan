@@ -65,11 +65,11 @@ export async function createPlanWithMeals(page: Page, startDay = 5) {
     const state = {
       state: {
         currentPlan: plan,
-        checkedItems: [],
+        checkedItems: {},
         userRecipes: [],
         customShoppingItems: [],
       },
-      version: 0,
+      version: 2,
     };
 
     localStorage.setItem('food-plan-storage', JSON.stringify(state));
