@@ -11,6 +11,7 @@ import {
   updateMealRecipe,
   getUserActivePlan,
   getUserRecipes,
+  getRecipesByIds,
   getCheckedItems,
   getCustomItems,
   getPlanOwner,
@@ -34,7 +35,7 @@ export interface ActivePlanData {
   plan: MealPlan;
   role: PlanRole;
   recipes: Recipe[];
-  checkedItems: string[];
+  checkedItems: Record<string, string>;
   customItems: CustomShoppingListItem[];
 }
 
@@ -47,11 +48,22 @@ export async function loadActivePlan(): Promise<ActionResult<ActivePlanData | nu
     }
 
     const { plan, role } = result;
-    const [recipes, checkedItems, customItems] = await Promise.all([
+    const planRecipeIds = [...new Set(plan.meals.map(m => m.recipeId))];
+
+    const [ownRecipes, planRecipes, checkedItems, customItems] = await Promise.all([
       getUserRecipes(user.id),
+      role === 'member' ? getRecipesByIds(planRecipeIds) : Promise.resolve([]),
       getCheckedItems(plan.id),
       getCustomItems(plan.id),
     ]);
+
+    // Merge own recipes with plan recipes (for members who joined a shared plan)
+    const recipes = [...ownRecipes];
+    for (const r of planRecipes) {
+      if (!recipes.some(own => own.id === r.id)) {
+        recipes.push(r);
+      }
+    }
 
     return {
       data: { plan, role, recipes, checkedItems, customItems },

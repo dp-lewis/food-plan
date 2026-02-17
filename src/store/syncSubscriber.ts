@@ -54,7 +54,7 @@ function dispatchIntent(intent: SyncIntent): void {
       removeMealAction(intent.mealId).catch(console.error);
       break;
     case 'toggleCheckedItem':
-      toggleCheckedItemAction(intent.planId, intent.itemId, intent.checked).catch(console.error);
+      toggleCheckedItemAction(intent.planId, intent.itemId, intent.checked, intent.userEmail).catch(console.error);
       break;
     case 'saveUserRecipe':
       saveUserRecipe(intent.recipe).catch(console.error);

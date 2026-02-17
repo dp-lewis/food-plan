@@ -7,6 +7,12 @@ import { generateShoppingList, groupByCategory, mergeShoppingLists, CATEGORY_LAB
 import { parseIngredient } from '@/lib/ingredientParser';
 import { BottomNav, ProgressBar, Checkbox, Button, Drawer, PageHeader } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
+import { useRealtimeShoppingList } from '@/hooks/useRealtimeShoppingList';
+
+function getInitials(email: string): string {
+  const local = email.split('@')[0] || '';
+  return local.slice(0, 2).toUpperCase();
+}
 
 export default function ShoppingList() {
   const currentPlan = useStore((state) => state.currentPlan);
@@ -17,6 +23,10 @@ export default function ShoppingList() {
   const customShoppingItems = useStore((state) => state.customShoppingItems);
   const addCustomItem = useStore((state) => state.addCustomItem);
   const removeCustomItem = useStore((state) => state.removeCustomItem);
+
+  const planId = currentPlan?.id ?? null;
+  const userId = useStore((state) => state._userId);
+  useRealtimeShoppingList(planId, userId);
 
   const [newItemText, setNewItemText] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -58,7 +68,7 @@ export default function ShoppingList() {
   };
 
   const totalItems = shoppingList.length;
-  const checkedCount = checkedItems.length;
+  const checkedCount = Object.keys(checkedItems).length;
   const isEmpty = !currentPlan && customShoppingItems.length === 0;
 
   const openDrawer = () => setIsDrawerOpen(true);
@@ -115,7 +125,7 @@ export default function ShoppingList() {
                 </h2>
                 <ul className="space-y-1">
                   {items.map((item) => {
-                    const isChecked = checkedItems.includes(item.id);
+                    const isChecked = item.id in checkedItems;
                     const isCustom = item.id.startsWith('custom-');
                     return (
                       <li
@@ -135,6 +145,11 @@ export default function ShoppingList() {
                             </span>{' '}
                             {item.ingredient}
                           </Checkbox>
+                          {isChecked && checkedItems[item.id] && (
+                            <span className="ml-2 text-xs bg-muted text-muted-foreground rounded-full px-1.5 py-0.5">
+                              {getInitials(checkedItems[item.id])}
+                            </span>
+                          )}
                         </div>
                         {isCustom && (
                           <button

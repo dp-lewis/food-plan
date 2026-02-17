@@ -17,18 +17,21 @@ export type Database = {
       checked_items: {
         Row: {
           checked_by: string | null
+          checked_by_email: string | null
           id: string
           item_id: string
           meal_plan_id: string
         }
         Insert: {
           checked_by?: string | null
+          checked_by_email?: string | null
           id?: string
           item_id: string
           meal_plan_id: string
         }
         Update: {
           checked_by?: string | null
+          checked_by_email?: string | null
           id?: string
           item_id?: string
           meal_plan_id?: string

@@ -19,7 +19,7 @@ export type SyncIntent =
   | { type: 'swapMeal'; mealId: string; recipeId: string }
   | { type: 'addMeal'; planId: string; meal: Meal }
   | { type: 'removeMeal'; mealId: string }
-  | { type: 'toggleCheckedItem'; planId: string; itemId: string; checked: boolean }
+  | { type: 'toggleCheckedItem'; planId: string; itemId: string; checked: boolean; userEmail?: string }
   | { type: 'saveUserRecipe'; recipe: Recipe }
   | { type: 'deleteUserRecipe'; recipeId: string }
   | { type: 'addCustomItem'; planId: string; item: CustomShoppingListItem }
@@ -31,7 +31,7 @@ interface AppState {
   swapMeal: (mealId: string, recipeId?: string) => void;
   addMeal: (dayIndex: number, mealType: MealType, recipeId: string) => void;
   removeMeal: (mealId: string) => void;
-  checkedItems: string[];
+  checkedItems: Record<string, string>;
   toggleCheckedItem: (itemId: string) => void;
   clearCheckedItems: () => void;
   userRecipes: Recipe[];
@@ -47,11 +47,18 @@ interface AppState {
   _setPlanRole: (role: PlanRole | null) => void;
   _userId: string | null;
   _setUserId: (userId: string | null) => void;
+  _userEmail: string | null;
+  _setUserEmail: (email: string | null) => void;
   _isSyncing: boolean;
   _setIsSyncing: (syncing: boolean) => void;
   _syncQueue: SyncIntent[];
   _pushSync: (intent: SyncIntent) => void;
   _drainSync: () => SyncIntent[];
+  // Realtime helpers — no sync queue (these come FROM server)
+  _mergeCheckedItem: (itemId: string, email: string) => void;
+  _removeCheckedItem: (itemId: string) => void;
+  _addRemoteCustomItem: (item: CustomShoppingListItem) => void;
+  _removeRemoteCustomItem: (itemId: string) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -59,7 +66,7 @@ export const useStore = create<AppState>()(
     (set, get) => ({
       currentPlan: null,
       setCurrentPlan: (plan) => {
-        set({ currentPlan: plan, checkedItems: [] });
+        set({ currentPlan: plan, checkedItems: {} });
         if (plan) {
           get()._pushSync({ type: 'syncMealPlan', plan });
           get()._pushSync({ type: 'clearCheckedItems', planId: plan.id });
@@ -71,7 +78,7 @@ export const useStore = create<AppState>()(
           currentPlan: state.currentPlan
             ? swapMealInPlan(state.currentPlan, mealId, state.userRecipes, recipeId)
             : null,
-          checkedItems: [], // Reset shopping list when plan changes
+          checkedItems: {}, // Reset shopping list when plan changes
         });
         const updatedPlan = get().currentPlan;
         if (updatedPlan) {
@@ -104,7 +111,7 @@ export const useStore = create<AppState>()(
             ...state.currentPlan,
             meals: [...state.currentPlan.meals, newMeal],
           },
-          checkedItems: [],
+          checkedItems: {},
         });
         get()._pushSync({ type: 'addMeal', planId, meal: newMeal });
         get()._pushSync({ type: 'clearCheckedItems', planId });
@@ -119,26 +126,30 @@ export const useStore = create<AppState>()(
             ...state.currentPlan,
             meals: state.currentPlan.meals.filter(m => m.id !== mealId),
           },
-          checkedItems: [],
+          checkedItems: {},
         });
         get()._pushSync({ type: 'removeMeal', mealId });
         get()._pushSync({ type: 'clearCheckedItems', planId });
       },
-      checkedItems: [],
+      checkedItems: {},
       toggleCheckedItem: (itemId) => {
-        set((state) => ({
-          checkedItems: state.checkedItems.includes(itemId)
-            ? state.checkedItems.filter((id) => id !== itemId)
-            : [...state.checkedItems, itemId],
-        }));
+        const state = get();
+        const isChecked = itemId in state.checkedItems;
+        if (isChecked) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { [itemId]: _removed, ...rest } = state.checkedItems;
+          set({ checkedItems: rest });
+        } else {
+          set({ checkedItems: { ...state.checkedItems, [itemId]: state._userEmail ?? '' } });
+        }
         const planId = get().currentPlan?.id;
         if (planId) {
-          const checked = get().checkedItems.includes(itemId);
-          get()._pushSync({ type: 'toggleCheckedItem', planId, itemId, checked });
+          const checked = itemId in get().checkedItems;
+          get()._pushSync({ type: 'toggleCheckedItem', planId, itemId, checked, userEmail: get()._userEmail ?? undefined });
         }
       },
       clearCheckedItems: () => {
-        set({ checkedItems: [] });
+        set({ checkedItems: {} });
         const planId = get().currentPlan?.id;
         if (planId) {
           get()._pushSync({ type: 'clearCheckedItems', planId });
@@ -187,6 +198,8 @@ export const useStore = create<AppState>()(
       _setPlanRole: (role) => set({ _planRole: role }),
       _userId: null,
       _setUserId: (userId) => set({ _userId: userId }),
+      _userEmail: null,
+      _setUserEmail: (email) => set({ _userEmail: email }),
       _isSyncing: false,
       _setIsSyncing: (syncing) => set({ _isSyncing: syncing }),
       _syncQueue: [],
@@ -198,15 +211,50 @@ export const useStore = create<AppState>()(
         }
         return queue;
       },
+      // Realtime helpers
+      _mergeCheckedItem: (itemId, email) => {
+        set((state) => ({ checkedItems: { ...state.checkedItems, [itemId]: email } }));
+      },
+      _removeCheckedItem: (itemId) => {
+        set((state) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { [itemId]: _removed, ...rest } = state.checkedItems;
+          return { checkedItems: rest };
+        });
+      },
+      _addRemoteCustomItem: (item) => {
+        set((state) => {
+          if (state.customShoppingItems.some((i) => i.id === item.id)) {
+            return state;
+          }
+          return { customShoppingItems: [...state.customShoppingItems, item] };
+        });
+      },
+      _removeRemoteCustomItem: (itemId) => {
+        set((state) => ({
+          customShoppingItems: state.customShoppingItems.filter((item) => item.id !== itemId),
+        }));
+      },
     }),
     {
       name: 'food-plan-storage',
+      version: 2,
+      migrate: (persistedState: unknown, version: number) => {
+        const persisted = persistedState as Record<string, unknown>;
+        if (version < 2 && Array.isArray((persisted as { checkedItems?: unknown }).checkedItems)) {
+          const arr = (persisted as { checkedItems: string[] }).checkedItems;
+          const record: Record<string, string> = {};
+          for (const id of arr) record[id] = '';
+          (persisted as { checkedItems: Record<string, string> }).checkedItems = record;
+        }
+        return persisted;
+      },
       partialize: (state) => ({
         currentPlan: state.currentPlan,
         checkedItems: state.checkedItems,
         userRecipes: state.userRecipes,
         customShoppingItems: state.customShoppingItems,
-        // Note: pendingImportedRecipe, _userId, _isSyncing, _syncQueue are intentionally NOT persisted
+        // Note: pendingImportedRecipe, _userId, _userEmail, _isSyncing, _syncQueue are intentionally NOT persisted
       }),
       skipHydration: true,
     }

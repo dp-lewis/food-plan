@@ -22,7 +22,7 @@ async function getAuthUser() {
 
 export async function loadCheckedItems(
   planId: string,
-): Promise<ActionResult<string[]>> {
+): Promise<ActionResult<Record<string, string>>> {
   try {
     await getAuthUser();
     const items = await getCheckedItems(planId);
@@ -36,11 +36,12 @@ export async function toggleCheckedItemAction(
   planId: string,
   itemId: string,
   checked: boolean,
+  userEmail?: string,
 ): Promise<ActionResult<void>> {
   try {
     const user = await getAuthUser();
     if (checked) {
-      await upsertCheckedItem(planId, itemId, user.id);
+      await upsertCheckedItem(planId, itemId, user.id, userEmail);
     } else {
       await deleteCheckedItem(planId, itemId);
     }

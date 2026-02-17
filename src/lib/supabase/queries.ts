@@ -27,6 +27,17 @@ export async function getUserRecipes(userId: string): Promise<Recipe[]> {
   return (data ?? []).map(dbRecipeToApp);
 }
 
+export async function getRecipesByIds(ids: string[]): Promise<Recipe[]> {
+  if (ids.length === 0) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('recipes')
+    .select('*')
+    .in('id', ids);
+  if (error) throw error;
+  return (data ?? []).map(dbRecipeToApp);
+}
+
 export async function insertRecipe(
   recipe: Recipe,
   userId: string,
@@ -162,26 +173,31 @@ export async function updateMealRecipe(
 // Checked Items
 // ---------------------------------------------------------------------------
 
-export async function getCheckedItems(planId: string): Promise<string[]> {
+export async function getCheckedItems(planId: string): Promise<Record<string, string>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('checked_items')
-    .select('item_id')
+    .select('item_id, checked_by_email')
     .eq('meal_plan_id', planId);
   if (error) throw error;
-  return (data ?? []).map((row) => row.item_id);
+  const record: Record<string, string> = {};
+  for (const row of data ?? []) {
+    record[row.item_id] = row.checked_by_email ?? '';
+  }
+  return record;
 }
 
 export async function upsertCheckedItem(
   planId: string,
   itemId: string,
   userId: string,
+  userEmail?: string,
 ): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase
     .from('checked_items')
     .upsert(
-      { meal_plan_id: planId, item_id: itemId, checked_by: userId },
+      { meal_plan_id: planId, item_id: itemId, checked_by: userId, checked_by_email: userEmail ?? null },
       { onConflict: 'meal_plan_id,item_id' },
     );
   if (error) throw error;
