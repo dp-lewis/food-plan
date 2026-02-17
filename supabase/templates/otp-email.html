@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    <title>Your sign-in code for Did We Get</title>
+    <style>
+      /* Dark mode overrides for Apple Mail / supported clients */
+      @media (prefers-color-scheme: dark) {
+        .email-body   { background-color: #111827 !important; }
+        .email-card   { background-color: #1f2937 !important; border-color: #374151 !important; }
+        .text-heading { color: #f9fafb !important; }
+        .text-body    { color: #d1d5db !important; }
+        .text-muted   { color: #9ca3af !important; }
+        .otp-box      { background-color: #111827 !important; border-color: #374151 !important; }
+        .otp-code     { color: #4ade80 !important; }
+        .divider      { border-color: #374151 !important; }
+      }
+    </style>
+  </head>
+  <body
+    class="email-body"
+    style="
+      margin: 0;
+      padding: 0;
+      background-color: #f9fafb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    "
+  >
+    <!-- Outer wrapper table for full-width background -->
+    <table
+      role="presentation"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      width="100%"
+      style="background-color: #f9fafb; min-height: 100vh;"
+    >
+      <tr>
+        <td align="center" style="padding: 40px 16px;">
+
+          <!-- Card container -->
+          <table
+            role="presentation"
+            class="email-card"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            width="480"
+            style="
+              max-width: 480px;
+              width: 100%;
+              background-color: #ffffff;
+              border: 1px solid #e5e7eb;
+              border-radius: 12px;
+              overflow: hidden;
+            "
+          >
+
+            <!-- Header -->
+            <tr>
+              <td
+                align="center"
+                style="
+                  padding: 32px 32px 24px;
+                  border-bottom: 1px solid #e5e7eb;
+                "
+              >
+                <!-- Utensils icon (fork and knife) as SVG inline -->
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center" style="padding-bottom: 12px;">
+                      <div
+                        style="
+                          display: inline-block;
+                          width: 48px;
+                          height: 48px;
+                          background-color: #15803d;
+                          border-radius: 12px;
+                          text-align: center;
+                          line-height: 48px;
+                          font-size: 24px;
+                        "
+                      >&#x1F374;</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="center">
+                      <span
+                        class="text-heading"
+                        style="
+                          font-size: 22px;
+                          font-weight: 700;
+                          color: #111827;
+                          letter-spacing: -0.01em;
+                        "
+                      >Did We Get</span>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td style="padding: 32px 32px 0;">
+
+                <p
+                  class="text-heading"
+                  style="
+                    margin: 0 0 8px;
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #111827;
+                    line-height: 1.4;
+                  "
+                >Here's your sign-in code</p>
+
+                <p
+                  class="text-body"
+                  style="
+                    margin: 0 0 24px;
+                    font-size: 15px;
+                    color: #4b5563;
+                    line-height: 1.6;
+                  "
+                >
+                  Use the code below to sign in to
+                  <a
+                    href="{{ .SiteURL }}"
+                    style="color: #15803d; text-decoration: none; font-weight: 500;"
+                  >Did We Get</a>.
+                  Enter it on the sign-in page to continue.
+                </p>
+
+                <!-- OTP code box -->
+                <table
+                  role="presentation"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  width="100%"
+                  style="margin-bottom: 24px;"
+                >
+                  <tr>
+                    <td align="center">
+                      <div
+                        class="otp-box"
+                        style="
+                          display: inline-block;
+                          background-color: #f0fdf4;
+                          border: 2px solid #15803d;
+                          border-radius: 10px;
+                          padding: 20px 40px;
+                          text-align: center;
+                        "
+                      >
+                        <span
+                          class="otp-code"
+                          style="
+                            display: block;
+                            font-size: 40px;
+                            font-weight: 800;
+                            letter-spacing: 0.15em;
+                            color: #15803d;
+                            line-height: 1;
+                            font-variant-numeric: tabular-nums;
+                          "
+                        >{{ .Token }}</span>
+                        <span
+                          class="text-muted"
+                          style="
+                            display: block;
+                            margin-top: 8px;
+                            font-size: 13px;
+                            color: #4b5563;
+                            font-weight: 400;
+                            letter-spacing: 0;
+                          "
+                        >One-time sign-in code</span>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Expiry notice -->
+                <p
+                  class="text-body"
+                  style="
+                    margin: 0 0 24px;
+                    font-size: 14px;
+                    color: #4b5563;
+                    line-height: 1.6;
+                    text-align: center;
+                  "
+                >
+                  This code expires in <strong style="color: #111827;">10 minutes</strong>.
+                  Do not share it with anyone.
+                </p>
+
+              </td>
+            </tr>
+
+            <!-- Divider + Footer -->
+            <tr>
+              <td style="padding: 0 32px 32px;">
+
+                <table
+                  role="presentation"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  width="100%"
+                >
+                  <tr>
+                    <td
+                      class="divider"
+                      style="
+                        border-top: 1px solid #e5e7eb;
+                        padding-top: 24px;
+                      "
+                    >
+                      <p
+                        class="text-muted"
+                        style="
+                          margin: 0;
+                          font-size: 13px;
+                          color: #4b5563;
+                          line-height: 1.6;
+                        "
+                      >
+                        If you didn't request this code, you can safely ignore this email.
+                        Someone may have entered your email address by mistake.
+                        Your account is secure.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+              </td>
+            </tr>
+
+            <!-- Bottom bar -->
+            <tr>
+              <td
+                style="
+                  background-color: #f9fafb;
+                  border-top: 1px solid #e5e7eb;
+                  padding: 16px 32px;
+                  text-align: center;
+                "
+              >
+                <p
+                  class="text-muted"
+                  style="
+                    margin: 0;
+                    font-size: 12px;
+                    color: #4b5563;
+                    line-height: 1.5;
+                  "
+                >
+                  &copy; Did We Get &nbsp;&middot;&nbsp;
+                  <a
+                    href="{{ .SiteURL }}"
+                    style="color: #15803d; text-decoration: none;"
+                  >{{ .SiteURL }}</a>
+                </p>
+              </td>
+            </tr>
+
+          </table>
+          <!-- /Card container -->
+
+        </td>
+      </tr>
+    </table>
+
+  </body>
+</html>
