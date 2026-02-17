@@ -26,6 +26,7 @@ export default function ShoppingList() {
 
   const planId = currentPlan?.id ?? null;
   const userId = useStore((state) => state._userId);
+  const userEmail = useStore((state) => state._userEmail);
   useRealtimeShoppingList(planId, userId);
 
   const [newItemText, setNewItemText] = useState('');
@@ -133,21 +134,23 @@ export default function ShoppingList() {
                         data-testid={`item-${item.id}`}
                         className="flex items-center"
                       >
-                        <div className="flex-1">
-                          <Checkbox
-                            checked={isChecked}
-                            onChange={() => toggleCheckedItem(item.id)}
-                            label={`${item.quantity} ${item.unit} ${item.ingredient}`}
-                            id={item.id}
-                          >
-                            <span className="text-muted-foreground">
-                              {item.quantity} {item.unit}
-                            </span>{' '}
-                            {item.ingredient}
-                          </Checkbox>
+                        <div className="flex-1 flex items-center min-w-0">
+                          <div className="flex-1 min-w-0">
+                            <Checkbox
+                              checked={isChecked}
+                              onChange={() => toggleCheckedItem(item.id)}
+                              label={`${item.quantity} ${item.unit} ${item.ingredient}`}
+                              id={item.id}
+                            >
+                              <span className="text-muted-foreground">
+                                {item.quantity} {item.unit}
+                              </span>{' '}
+                              {item.ingredient}
+                            </Checkbox>
+                          </div>
                           {isChecked && checkedItems[item.id] && (
-                            <span className="ml-2 text-xs bg-muted text-muted-foreground rounded-full px-1.5 py-0.5">
-                              {getInitials(checkedItems[item.id])}
+                            <span className="ml-2 text-xs bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 flex-shrink-0">
+                              {checkedItems[item.id] === userEmail ? 'you' : getInitials(checkedItems[item.id])}
                             </span>
                           )}
                         </div>
