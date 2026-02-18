@@ -20,6 +20,12 @@ export function setupSyncSubscriber(store: AnyStore): () => void {
   const unsubscribe = store.subscribe(() => {
     const state = store.getState();
     const userId: string | null = state._userId;
+    const isOnline: boolean = state._isOnline;
+
+    // If offline, leave intents in the queue — they will be dispatched once
+    // the useOnlineSync hook detects reconnection and triggers a drain.
+    if (!isOnline) return;
+
     const intents: SyncIntent[] = state._drainSync();
 
     if (intents.length === 0) return;
