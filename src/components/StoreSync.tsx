@@ -7,6 +7,7 @@ import { loadActivePlan, syncMealPlan } from '@/app/actions/mealPlan';
 import { saveUserRecipe } from '@/app/actions/recipes';
 import { addCustomItemAction } from '@/app/actions/shoppingList';
 import { setupSyncSubscriber } from '@/store/syncSubscriber';
+import { useOnlineSync } from '@/hooks/useOnlineSync';
 
 /**
  * Watches auth state transitions and syncs store data with the server.
@@ -30,6 +31,9 @@ export function StoreSync() {
     const unsubscribe = setupSyncSubscriber(useStore);
     return unsubscribe;
   }, []);
+
+  // Track online/offline state and drain the sync queue on reconnect.
+  useOnlineSync();
 
   useEffect(() => {
     if (loading) return;

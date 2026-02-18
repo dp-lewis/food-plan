@@ -14,16 +14,20 @@ import { generateUUID } from '@/lib/uuid';
 // ---------------------------------------------------------------------------
 
 export type SyncIntent =
-  | { type: 'syncMealPlan'; plan: MealPlan }
-  | { type: 'clearCheckedItems'; planId: string }
-  | { type: 'swapMeal'; mealId: string; recipeId: string }
-  | { type: 'addMeal'; planId: string; meal: Meal }
-  | { type: 'removeMeal'; mealId: string }
-  | { type: 'toggleCheckedItem'; planId: string; itemId: string; checked: boolean; userEmail?: string }
-  | { type: 'saveUserRecipe'; recipe: Recipe }
-  | { type: 'deleteUserRecipe'; recipeId: string }
-  | { type: 'addCustomItem'; planId: string; item: CustomShoppingListItem }
-  | { type: 'removeCustomItem'; itemId: string };
+  | { type: 'syncMealPlan'; plan: MealPlan; timestamp: number }
+  | { type: 'clearCheckedItems'; planId: string; timestamp: number }
+  | { type: 'swapMeal'; mealId: string; recipeId: string; timestamp: number }
+  | { type: 'addMeal'; planId: string; meal: Meal; timestamp: number }
+  | { type: 'removeMeal'; mealId: string; timestamp: number }
+  | { type: 'toggleCheckedItem'; planId: string; itemId: string; checked: boolean; userEmail?: string; timestamp: number }
+  | { type: 'saveUserRecipe'; recipe: Recipe; timestamp: number }
+  | { type: 'deleteUserRecipe'; recipeId: string; timestamp: number }
+  | { type: 'addCustomItem'; planId: string; item: CustomShoppingListItem; timestamp: number }
+  | { type: 'removeCustomItem'; itemId: string; timestamp: number };
+
+// Distributive Omit so callers of _pushSync don't need to supply timestamp.
+type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : never;
+export type SyncIntentInput = DistributiveOmit<SyncIntent, 'timestamp'>;
 
 interface AppState {
   currentPlan: MealPlan | null;
@@ -51,8 +55,10 @@ interface AppState {
   _setUserEmail: (email: string | null) => void;
   _isSyncing: boolean;
   _setIsSyncing: (syncing: boolean) => void;
+  _isOnline: boolean;
+  _setIsOnline: (online: boolean) => void;
   _syncQueue: SyncIntent[];
-  _pushSync: (intent: SyncIntent) => void;
+  _pushSync: (intent: SyncIntentInput) => void;
   _drainSync: () => SyncIntent[];
   // Realtime helpers — no sync queue (these come FROM server)
   _mergeCheckedItem: (itemId: string, email: string) => void;
@@ -221,8 +227,10 @@ export const useStore = create<AppState>()(
       _setUserEmail: (email) => set({ _userEmail: email }),
       _isSyncing: false,
       _setIsSyncing: (syncing) => set({ _isSyncing: syncing }),
+      _isOnline: true,
+      _setIsOnline: (online) => set({ _isOnline: online }),
       _syncQueue: [],
-      _pushSync: (intent) => set((state) => ({ _syncQueue: [...state._syncQueue, intent] })),
+      _pushSync: (intent) => set((state) => ({ _syncQueue: [...state._syncQueue, { ...intent, timestamp: Date.now() } as SyncIntent] })),
       _drainSync: () => {
         const queue = get()._syncQueue;
         if (queue.length > 0) {
@@ -336,8 +344,19 @@ export const useStore = create<AppState>()(
         checkedItems: state.checkedItems,
         userRecipes: state.userRecipes,
         customShoppingItems: state.customShoppingItems,
-        // Note: pendingImportedRecipe, _userId, _userEmail, _isSyncing, _syncQueue are intentionally NOT persisted
+        _syncQueue: state._syncQueue,
+        // Note: pendingImportedRecipe, _userId, _userEmail, _isSyncing, _isOnline are intentionally NOT persisted
       }),
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        // Discard stale intents older than 24 hours so they don't replay
+        // after a long offline period.
+        const maxAge = 86400000; // 24 hours in ms
+        const cutoff = Date.now() - maxAge;
+        state._syncQueue = state._syncQueue.filter(
+          (intent) => intent.timestamp > cutoff
+        );
+      },
       skipHydration: true,
     }
   )

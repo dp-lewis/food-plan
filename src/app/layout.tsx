@@ -5,6 +5,7 @@ import { StoreHydration } from "@/components/StoreHydration";
 import { StoreSync } from "@/components/StoreSync";
 import { RealtimeSync } from "@/components/RealtimeSync";
 import { AuthProvider } from "@/components/AuthProvider";
+import { OfflineBanner } from "@/components/OfflineBanner";
 
 export const metadata: Metadata = {
   title: "Food Plan",
@@ -37,6 +38,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <AuthProvider>
+          <OfflineBanner />
           <StoreHydration />
           <StoreSync />
           <RealtimeSync />
