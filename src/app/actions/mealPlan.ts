@@ -140,3 +140,20 @@ export async function swapMealAction(
     return { data: null, error: e instanceof Error ? e.message : 'Failed to swap meal' };
   }
 }
+
+export async function deletePlanAction(planId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await getAuthUser();
+    await requirePlanOwner(planId, user.id);
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from('meal_plans')
+      .delete()
+      .eq('id', planId);
+    if (error) throw error;
+    return { success: true };
+  } catch (e) {
+    console.error('[deletePlanAction]', e);
+    return { success: false, error: e instanceof Error ? e.message : 'Failed to delete plan' };
+  }
+}

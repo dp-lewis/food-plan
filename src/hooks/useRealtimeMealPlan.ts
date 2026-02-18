@@ -19,6 +19,10 @@ type MealRow = {
   user_id?: string;
 };
 
+type MealPlanRow = {
+  id: string;
+};
+
 type CustomItemRow = {
   id: string;
   meal_plan_id: string;
@@ -67,6 +71,19 @@ export function useRealtimeMealPlan(
     const supabase = createClient();
     const channel = supabase
       .channel(`meal-plan-${planId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'meal_plans',
+          filter: `id=eq.${planId}`,
+        },
+        (_payload) => {
+          // The plan was deleted by the owner — clear local state for all clients.
+          useStore.getState()._clearCurrentPlan();
+        }
+      )
       .on(
         'postgres_changes',
         {

@@ -10,6 +10,7 @@ import {
   getPlanOwner,
   removeAllMemberships,
   joinPlan,
+  leavePlan,
   getMealPlanByShareCode,
 } from '@/lib/supabase/queries';
 import { headers } from 'next/headers';
@@ -64,7 +65,7 @@ export async function joinSharedPlan(
     await removeAllMemberships(user.id);
 
     // Insert membership
-    await joinPlan(planId, user.id);
+    await joinPlan(planId, user.id, user.email ?? undefined);
 
     // Load and return full plan data
     const data = await getMealPlanByShareCode(shareCode);
@@ -88,5 +89,28 @@ export async function revokeShareLink(planId: string): Promise<ActionResult<null
     return { data: null, error: null };
   } catch (e) {
     return { data: null, error: e instanceof Error ? e.message : 'Failed to revoke share link' };
+  }
+}
+
+export async function leavePlanAction(): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await getAuthUser();
+    // Find the plan the user is a member of (not owned — that's for owners only).
+    const supabase = await createClient();
+    const { data: membership, error: memberError } = await supabase
+      .from('plan_members')
+      .select('meal_plan_id')
+      .eq('user_id', user.id)
+      .limit(1)
+      .maybeSingle();
+    if (memberError) throw memberError;
+    if (!membership) {
+      return { success: false, error: 'You are not a member of any shared plan' };
+    }
+    await leavePlan(membership.meal_plan_id, user.id);
+    return { success: true };
+  } catch (e) {
+    console.error('[leavePlanAction]', e);
+    return { success: false, error: e instanceof Error ? e.message : 'Failed to leave plan' };
   }
 }
