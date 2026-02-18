@@ -1,0 +1,1 @@
+ALTER TABLE plan_members ADD COLUMN IF NOT EXISTS user_email TEXT;

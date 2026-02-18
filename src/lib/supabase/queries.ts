@@ -368,12 +368,13 @@ export async function getMealPlanByShareCode(
 export async function joinPlan(
   planId: string,
   userId: string,
+  userEmail?: string,
 ): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase
     .from('plan_members')
     .upsert(
-      { meal_plan_id: planId, user_id: userId, role: 'member' },
+      { meal_plan_id: planId, user_id: userId, role: 'member', user_email: userEmail ?? null },
       { onConflict: 'meal_plan_id,user_id' },
     );
   if (error) throw error;

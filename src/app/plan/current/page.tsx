@@ -9,9 +9,10 @@ import { getTodayPlanIndex, getOrderedDays } from '@/lib/dates';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
 import SignOutDialog from '@/components/SignOutDialog';
-import { BottomNav, Card, PageHeader, Toast } from '@/components/ui';
+import { BottomNav, Button, Card, Drawer, PageHeader, Toast } from '@/components/ui';
 import { useAuth } from '@/components/AuthProvider';
-import { generateShareLink } from '@/app/actions/share';
+import { generateShareLink, leavePlanAction } from '@/app/actions/share';
+import { deletePlanAction } from '@/app/actions/mealPlan';
 import DaySlot from '@/components/plan/DaySlot';
 
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -36,11 +37,16 @@ export default function CurrentPlan() {
   const addMeal = useStore((state) => state.addMeal);
   const removeMeal = useStore((state) => state.removeMeal);
   const userRecipes = useStore((state) => state.userRecipes);
+  const clearCurrentPlan = useStore((state) => state._clearCurrentPlan);
 
   const { user, loading: authLoading } = useAuth();
   const [shareStatus, setShareStatus] = useState<'idle' | 'loading' | 'copied'>('idle');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastVariant, setToastVariant] = useState<'success' | 'error'>('success');
+  const [leavePlanDrawerOpen, setLeavePlanDrawerOpen] = useState(false);
+  const [leaveLoading, setLeaveLoading] = useState(false);
+  const [deletePlanDrawerOpen, setDeletePlanDrawerOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [drawerState, setDrawerState] = useState<DrawerState>({
     isOpen: false,
@@ -106,6 +112,47 @@ export default function CurrentPlan() {
         const randomRecipe = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
         addMeal(drawerState.dayIndex, drawerState.mealType, randomRecipe.id);
       }
+    }
+  };
+
+  const handleLeavePlan = async () => {
+    setLeaveLoading(true);
+    try {
+      const result = await leavePlanAction();
+      if (!result.success) {
+        setToastVariant('error');
+        setToastMessage(result.error ?? 'Failed to leave plan');
+        return;
+      }
+      clearCurrentPlan();
+      router.push('/');
+    } catch {
+      setToastVariant('error');
+      setToastMessage('Failed to leave plan');
+    } finally {
+      setLeaveLoading(false);
+      setLeavePlanDrawerOpen(false);
+    }
+  };
+
+  const handleDeletePlan = async () => {
+    if (!currentPlan) return;
+    setDeleteLoading(true);
+    try {
+      const result = await deletePlanAction(currentPlan.id);
+      if (!result.success) {
+        setToastVariant('error');
+        setToastMessage(result.error ?? 'Failed to delete plan');
+        return;
+      }
+      clearCurrentPlan();
+      router.push('/');
+    } catch {
+      setToastVariant('error');
+      setToastMessage('Failed to delete plan');
+    } finally {
+      setDeleteLoading(false);
+      setDeletePlanDrawerOpen(false);
     }
   };
 
@@ -246,12 +293,30 @@ export default function CurrentPlan() {
             <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full" data-testid="shared-plan-badge">
               Shared with you
             </span>
+            <Button
+              variant="ghost"
+              size="small"
+              data-testid="leave-plan-button"
+              onClick={() => setLeavePlanDrawerOpen(true)}
+            >
+              Leave Plan
+            </Button>
           </div>
         ) : (
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-end gap-3">
             <Link href="/plan" className="text-sm text-primary">
               Reset plan
             </Link>
+            {planRole === 'owner' && (
+              <Button
+                variant="ghost"
+                size="small"
+                data-testid="delete-plan-button"
+                onClick={() => setDeletePlanDrawerOpen(true)}
+              >
+                Delete Plan
+              </Button>
+            )}
           </div>
         )}
 
@@ -290,6 +355,64 @@ export default function CurrentPlan() {
         variant={toastVariant}
         onDismiss={() => setToastMessage(null)}
       />
+
+      <Drawer
+        isOpen={leavePlanDrawerOpen}
+        onClose={() => setLeavePlanDrawerOpen(false)}
+        title="Leave Plan"
+      >
+        <p className="text-sm text-muted-foreground mb-6">
+          Leave this plan? You&apos;ll return to an empty plan.
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            className="flex-1"
+            onClick={() => setLeavePlanDrawerOpen(false)}
+            disabled={leaveLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            className="flex-1"
+            data-testid="confirm-leave-plan"
+            onClick={handleLeavePlan}
+            loading={leaveLoading}
+          >
+            Confirm
+          </Button>
+        </div>
+      </Drawer>
+
+      <Drawer
+        isOpen={deletePlanDrawerOpen}
+        onClose={() => setDeletePlanDrawerOpen(false)}
+        title="Delete Plan"
+      >
+        <p className="text-sm text-muted-foreground mb-6">
+          Delete this plan? This is permanent and will remove it for all members.
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            className="flex-1"
+            onClick={() => setDeletePlanDrawerOpen(false)}
+            disabled={deleteLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            className="flex-1 bg-destructive text-destructive-foreground"
+            data-testid="confirm-delete-plan"
+            onClick={handleDeletePlan}
+            loading={deleteLoading}
+          >
+            Delete
+          </Button>
+        </div>
+      </Drawer>
     </div>
   );
 }
