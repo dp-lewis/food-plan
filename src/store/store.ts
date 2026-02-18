@@ -61,6 +61,15 @@ interface AppState {
   _removeRemoteCustomItem: (itemId: string) => void;
   _setCheckedItems: (items: Record<string, string>) => void;
   _setCustomShoppingItems: (items: CustomShoppingListItem[]) => void;
+  _applyRemoteMealInsert: (meal: Meal) => void;
+  _applyRemoteMealDelete: (mealId: string) => void;
+  _applyRemoteMealUpdate: (meal: Meal) => void;
+  _applyRemoteCustomItemInsert: (item: CustomShoppingListItem) => void;
+  _applyRemoteCustomItemDelete: (itemId: string) => void;
+  // Broadcast helpers — allow the realtime hook to register a sender so the
+  // store can trigger client-to-client broadcasts (e.g. uncheck, bulk clear)
+  _shoppingBroadcast: ((event: string, payload: Record<string, unknown>) => void) | null;
+  _setShoppingBroadcast: (fn: ((event: string, payload: Record<string, unknown>) => void) | null) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -148,6 +157,11 @@ export const useStore = create<AppState>()(
         if (planId) {
           const checked = itemId in get().checkedItems;
           get()._pushSync({ type: 'toggleCheckedItem', planId, itemId, checked, userEmail: get()._userEmail ?? undefined });
+          // Broadcast uncheck so other devices update immediately, bypassing
+          // unreliable per-row postgres_changes DELETE events.
+          if (!checked) {
+            get()._shoppingBroadcast?.('item_unchecked', { itemId });
+          }
         }
       },
       clearCheckedItems: () => {
@@ -155,6 +169,7 @@ export const useStore = create<AppState>()(
         const planId = get().currentPlan?.id;
         if (planId) {
           get()._pushSync({ type: 'clearCheckedItems', planId });
+          get()._shoppingBroadcast?.('clear_checked', {});
         }
       },
       userRecipes: [],
@@ -242,6 +257,55 @@ export const useStore = create<AppState>()(
       },
       _setCustomShoppingItems: (items) => {
         set({ customShoppingItems: items });
+      },
+      _applyRemoteMealInsert: (meal) => {
+        set((state) => {
+          if (!state.currentPlan) return state;
+          if (state.currentPlan.meals.some((m) => m.id === meal.id)) return state;
+          return {
+            currentPlan: {
+              ...state.currentPlan,
+              meals: [...state.currentPlan.meals, meal],
+            },
+          };
+        });
+      },
+      _applyRemoteMealDelete: (mealId) => {
+        set((state) => {
+          if (!state.currentPlan) return state;
+          return {
+            currentPlan: {
+              ...state.currentPlan,
+              meals: state.currentPlan.meals.filter((m) => m.id !== mealId),
+            },
+          };
+        });
+      },
+      _applyRemoteMealUpdate: (meal) => {
+        set((state) => {
+          if (!state.currentPlan) return state;
+          return {
+            currentPlan: {
+              ...state.currentPlan,
+              meals: state.currentPlan.meals.map((m) => (m.id === meal.id ? meal : m)),
+            },
+          };
+        });
+      },
+      _applyRemoteCustomItemInsert: (item) => {
+        set((state) => {
+          if (state.customShoppingItems.some((i) => i.id === item.id)) return state;
+          return { customShoppingItems: [...state.customShoppingItems, item] };
+        });
+      },
+      _applyRemoteCustomItemDelete: (itemId) => {
+        set((state) => ({
+          customShoppingItems: state.customShoppingItems.filter((item) => item.id !== itemId),
+        }));
+      },
+      _shoppingBroadcast: null,
+      _setShoppingBroadcast: (fn) => {
+        set({ _shoppingBroadcast: fn });
       },
     }),
     {

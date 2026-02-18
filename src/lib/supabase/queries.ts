@@ -412,6 +412,27 @@ export async function getPlanOwner(planId: string): Promise<string | null> {
   return data?.user_id ?? null;
 }
 
+export async function getPlanAccess(planId: string, userId: string): Promise<boolean> {
+  const supabase = await createClient();
+
+  // Check if owner
+  const { data: plan } = await supabase
+    .from('meal_plans')
+    .select('user_id')
+    .eq('id', planId)
+    .maybeSingle();
+  if (plan?.user_id === userId) return true;
+
+  // Check if member
+  const { data: membership } = await supabase
+    .from('plan_members')
+    .select('user_id')
+    .eq('meal_plan_id', planId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  return membership !== null;
+}
+
 export async function getUserActivePlan(
   userId: string,
 ): Promise<{ plan: MealPlan; role: PlanRole } | null> {

@@ -37,8 +37,6 @@ export default function CurrentPlan() {
   const removeMeal = useStore((state) => state.removeMeal);
   const userRecipes = useStore((state) => state.userRecipes);
 
-  const isReadOnly = planRole === 'member';
-
   const { user, loading: authLoading } = useAuth();
   const [shareStatus, setShareStatus] = useState<'idle' | 'loading' | 'copied'>('idle');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -243,7 +241,7 @@ export default function CurrentPlan() {
         }
       />
       <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
-        {isReadOnly ? (
+        {planRole === 'member' ? (
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full" data-testid="shared-plan-badge">
               Shared with you
@@ -267,14 +265,14 @@ export default function CurrentPlan() {
               startDay={currentPlan.preferences.startDay}
               slots={slots}
               userRecipes={userRecipes}
-              onAddMeal={isReadOnly ? undefined : openAddDrawer}
-              onRemoveMeal={isReadOnly ? undefined : removeMeal}
+              onAddMeal={openAddDrawer}
+              onRemoveMeal={removeMeal}
             />
           ))}
         </div>
       </main>
 
-      <BottomNav onShareClick={!isReadOnly && user ? handleShare : undefined} />
+      <BottomNav onShareClick={planRole === 'owner' && user ? handleShare : undefined} />
 
       <RecipeDrawer
         isOpen={drawerState.isOpen}
