@@ -15,6 +15,7 @@ import {
   getCheckedItems,
   getCustomItems,
   getPlanOwner,
+  getPlanAccess,
 } from '@/lib/supabase/queries';
 
 async function getAuthUser() {
@@ -28,6 +29,13 @@ async function requirePlanOwner(planId: string, userId: string): Promise<void> {
   const ownerId = await getPlanOwner(planId);
   if (ownerId !== userId) {
     throw new Error('Only the plan owner can modify this plan');
+  }
+}
+
+async function requirePlanAccess(planId: string, userId: string): Promise<void> {
+  const hasAccess = await getPlanAccess(planId, userId);
+  if (!hasAccess) {
+    throw new Error('You do not have access to this plan');
   }
 }
 
@@ -102,7 +110,7 @@ export async function addMealAction(
 ): Promise<ActionResult<Meal>> {
   try {
     const user = await getAuthUser();
-    await requirePlanOwner(planId, user.id);
+    await requirePlanAccess(planId, user.id);
     const result = await insertMeal(meal, planId);
     return { data: result, error: null };
   } catch (e) {

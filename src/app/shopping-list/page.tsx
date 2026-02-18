@@ -7,7 +7,6 @@ import { generateShoppingList, groupByCategory, mergeShoppingLists, CATEGORY_LAB
 import { parseIngredient } from '@/lib/ingredientParser';
 import { BottomNav, ProgressBar, Checkbox, Button, Drawer, PageHeader } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
-import { useRealtimeShoppingList } from '@/hooks/useRealtimeShoppingList';
 
 function getInitials(email: string): string {
   const local = email.split('@')[0] || '';
@@ -24,10 +23,8 @@ export default function ShoppingList() {
   const addCustomItem = useStore((state) => state.addCustomItem);
   const removeCustomItem = useStore((state) => state.removeCustomItem);
 
-  const planId = currentPlan?.id ?? null;
   const userId = useStore((state) => state._userId);
   const userEmail = useStore((state) => state._userEmail);
-  useRealtimeShoppingList(planId, userId);
 
   const [newItemText, setNewItemText] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);

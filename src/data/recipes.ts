@@ -685,8 +685,12 @@ export const recipes: Recipe[] = [
 ];
 
 export function getRecipesByMealType(mealType: string, userRecipes: Recipe[] = []): Recipe[] {
-  const allRecipes = [...userRecipes, ...recipes];
-  return allRecipes.filter((r) => r.mealType === mealType);
+  const seen = new Set<string>();
+  return [...userRecipes, ...recipes].filter((r) => {
+    if (r.mealType !== mealType || seen.has(r.id)) return false;
+    seen.add(r.id);
+    return true;
+  });
 }
 
 export function getRecipeById(id: string, userRecipes: Recipe[] = []): Recipe | undefined {

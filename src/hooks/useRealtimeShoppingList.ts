@@ -18,6 +18,24 @@ export function useRealtimeShoppingList(planId: string | null, userId: string | 
     if (!planId || !userId) return;
 
     const supabase = createClient();
+
+    // Separate broadcast-only channel for client-to-client signals that bypass
+    // unreliable postgres_changes DELETE events (individual uncheck, clear all).
+    const broadcastChannel = supabase
+      .channel(`shopping-bc-${planId}`)
+      .on('broadcast', { event: 'item_unchecked' }, (payload) => {
+        const itemId = (payload.payload as { itemId?: string })?.itemId;
+        if (itemId) useStore.getState()._removeCheckedItem(itemId);
+      })
+      .on('broadcast', { event: 'clear_checked' }, () => {
+        useStore.getState()._setCheckedItems({});
+      })
+      .subscribe();
+
+    useStore.getState()._setShoppingBroadcast((event, broadcastPayload) => {
+      broadcastChannel.send({ type: 'broadcast', event, payload: broadcastPayload });
+    });
+
     const channel = supabase
       .channel(`shopping-${planId}`)
       .on(
@@ -57,8 +75,7 @@ export function useRealtimeShoppingList(planId: string | null, userId: string | 
           filter: `meal_plan_id=eq.${planId}`,
         },
         (payload) => {
-          const row = payload.old as { item_id: string; checked_by?: string };
-          if (row.checked_by === userId) return; // skip self
+          const row = payload.old as { item_id: string };
           useStore.getState()._removeCheckedItem(row.item_id);
         }
       )
@@ -98,6 +115,8 @@ export function useRealtimeShoppingList(planId: string | null, userId: string | 
       .subscribe();
 
     return () => {
+      useStore.getState()._setShoppingBroadcast(null);
+      supabase.removeChannel(broadcastChannel);
       supabase.removeChannel(channel);
     };
   }, [planId, userId]);

@@ -3,6 +3,7 @@ import "./globals.css";
 import { ServiceWorkerRegistration } from "./ServiceWorkerRegistration";
 import { StoreHydration } from "@/components/StoreHydration";
 import { StoreSync } from "@/components/StoreSync";
+import { RealtimeSync } from "@/components/RealtimeSync";
 import { AuthProvider } from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
@@ -38,6 +39,7 @@ export default function RootLayout({
         <AuthProvider>
           <StoreHydration />
           <StoreSync />
+          <RealtimeSync />
           {children}
         </AuthProvider>
         <ServiceWorkerRegistration />
