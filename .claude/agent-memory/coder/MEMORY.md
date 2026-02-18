@@ -29,17 +29,30 @@ Never call `useMemo`/`useCallback`/`useState`/`useEffect` after a conditional `r
 
 **Fix**: After creating the user recipe and an empty plan, inject the recipe into the plan via `page.evaluate()` + `localStorage`, then navigate to `/shopping-list` directly. See `us-7.1` and `us-7.2` shopping list tests for the pattern.
 
-## Store Sync Pattern (Milestone 4)
+## Store Sync Pattern (Phase 7 — Sync Intent Queue)
 
-Write-through: local `set()` first, then `if (get()._userId) { serverAction().catch(console.error) }`.
+Actions push intents to `_syncQueue`; a subscriber dispatches them to the server.
+`_userId` / `_isSyncing` / `_syncQueue` are in AppState but excluded from `partialize` — never hit localStorage.
 
-`_userId` / `_isSyncing` are in AppState but excluded from `partialize` — never hit localStorage.
+**SyncIntent** is a discriminated union exported from `src/store/store.ts`.
+**setupSyncSubscriber(store)** lives in `src/store/syncSubscriber.ts`. Called once in `StoreSync` on mount; returns unsubscribe. Drains queue on every store change; skips dispatch if `_userId` is null.
+**_drainSync()** atomically clears and returns the queue.
+
+Each store action = pure state change + `get()._pushSync({ type, ...data })`. No `if (_userId)` in actions.
 
 `swapMeal` from `@/lib/planGenerator` is aliased `swapMealInPlan` in import to avoid collision with store method.
 
 `StoreSync` uses `useRef<string | null>` to detect sign-in/sign-out transitions. Sign-in: server data wins; if server empty and local exists, upload local. Sign-out: clear store.
 
-Key files: `src/store/store.ts`, `src/components/StoreSync.tsx`.
+Key files: `src/store/store.ts`, `src/store/syncSubscriber.ts`, `src/components/StoreSync.tsx`.
+
+## Realtime Shopping List (M7)
+
+`checkedItems` is now `Record<string, string>` (itemId → checkedByEmail). Store version 2.
+Realtime hook: `src/hooks/useRealtimeShoppingList.ts` — subscribes to INSERT/DELETE on `checked_items` and `custom_shopping_items`.
+Type tip: Zustand `migrate` function parameter must be `unknown`, then cast inside: `const persisted = persistedState as Record<string, unknown>`.
+Type tip: Supabase realtime payload `category` field must be cast to `IngredientCategory` (not `string`) to satisfy `CustomShoppingListItem`.
+When updating `user?.email` in StoreSync inside a userId null-check block, TypeScript still considers `user` possibly null — use `user?.email ?? null` not `user.email ?? null`.
 
 ## useMemo for Stability
 
@@ -74,11 +87,39 @@ No `actions` array prop exists. Test IDs use `testId` field (not `data-testid`).
 The sandbox has no network. `npm run build` / `tsc --noEmit` produce "Cannot find module" errors for ALL files.
 These are pre-existing. Filter tsc output for your specific file to confirm no NEW errors were introduced.
 
-## Sign-out Flow (Confirmation Drawer)
+## Sign-out Flow (SignOutDialog component)
 
-Programmatic sign-out: `fetch('/auth/signout', { method: 'POST' })` then `router.push('/'); router.refresh()`.
-The `Drawer` component is imported directly from `@/components/ui/Drawer` (not via barrel).
-Both render branches (active plan + empty state) share the same `signOutDrawerOpen`/`signOutLoading` state declared at top of the `Dashboard` component — each branch renders its own `<Drawer>` instance with the shared state.
+Sign-out is encapsulated in `src/components/SignOutDialog.tsx`.
+Props: `userEmail: string | null | undefined`, `onSignedOut?: () => void`.
+Renders a "Sign in" link when `userEmail` is falsy, or a trigger button + confirmation Drawer.
+Usage in PageHeader: `actions={!authLoading && <SignOutDialog userEmail={user?.email} />}`
+The Drawer component is imported directly from `@/components/ui/Drawer` (not via barrel).
+
+## Shared Date Utilities
+
+Date/day helpers live in `src/lib/dates.ts`:
+- `DAYS` — array of day names (0=Monday...6=Sunday)
+- `getTodayPlanIndex(startDay)` — plan-relative index for today
+- `getDayName(startDay, dayIndex)` — day name for a plan slot
+- `getOrderedDays(startDay)` — 7-element array of day names from startDay
+- `getDateForDayIndex(startDay, dayIndex)` — formatted date string e.g. "Feb 15"
+- `getUpNextSlot(todayIndex, meals, hour)` — returns the next meal slot to cook (or null)
+
+## Component Architecture (Phase 6 refactor)
+
+**Dashboard sub-components** live in `src/components/dashboard/`:
+- `UpNextCard` — "up next" meal card (props: label, mealType, mealsWithRecipes)
+- `TomorrowPreview` — tomorrow's meals preview (props: dayName, mealsWithRecipes)
+- `ShoppingStatusCard` — shopping list progress (props: shoppingStatus {total, checked})
+- `QuickActions` — primary + full plan action buttons (props: primaryAction, todayIndex)
+
+`src/app/page.tsx` is the thin orchestrator: store access, auth, logic; passes data as props.
+
+**Plan sub-components** live in `src/components/plan/`:
+- `DaySlot` — one day's Card with all meal slots (props: dayName, dayIndex, isToday, startDay, slots, userRecipes, onAddMeal, onRemoveMeal)
+- `MealCard` — single meal row within a slot (props: meal, recipe, onRemove)
+
+`src/app/plan/current/page.tsx` orchestrates drawer state and passes callbacks down to `DaySlot`.
 
 ## FAB (Floating Action Button) Implementation
 
@@ -139,3 +180,45 @@ Both render branches (active plan + empty state) share the same `signOutDrawerOp
 ```tsx
 <div className="sticky top-[56px] z-30 px-4 py-2 bg-muted ... rounded-t-lg border-b border-border">
 ```
+
+## Unit Test Conventions (Phase 8)
+
+Tests live in `src/lib/__tests__/<module>.test.ts`. Run with `npx vitest run --project unit`.
+
+**Key patterns**:
+- AAA (Arrange/Act/Assert) with inline comments
+- `vi.useFakeTimers()` / `vi.setSystemTime()` in `beforeEach`/`afterEach` for date-dependent functions
+- Place `beforeEach`/`afterEach` BEFORE the `it` blocks in the describe block
+- For `swapMeal` random tests: built-in recipes always exist for standard meal types, so tests cannot assume a controlled pool — assert that current recipe is never returned instead of asserting a specific recipe is chosen
+- `generateShoppingList` uses `getRecipeById(id, userRecipes)` — pass user recipes with non-colliding IDs to avoid interference with built-in data
+- `getDateForDayIndex` uses `'en-US'` locale with `{ month: 'short', day: 'numeric' }` — produces "Jan 6" format
+
+**Reference dates** (for fake timer tests):
+- 2025-01-06 = Monday, 2025-01-07 = Tuesday, 2025-01-08 = Wednesday
+- 2025-01-09 = Thursday, 2025-01-12 = Sunday
+
+## Store + RLS Testing
+
+See `testing.md` for full patterns. Key points:
+- Store unit tests in `src/store/__tests__/`: use `useStore.setState({...})` to seed, no mocking needed for `_applyRemote*` actions
+- RLS tests: nested `describe` with its own `beforeAll`/`afterAll`; clean up at start of `beforeAll` too; M8 uses IDs `eeeeeeeeee02`/`eeeeeeeeee03`, prefix `__rls_m8_`
+
+## Realtime Hook Callback Stability
+
+When a realtime hook accepts an `onRemoteChange?: () => void` callback, store it in a `useRef` to avoid the WebSocket subscription tearing down/rebuilding on every parent render (inline callbacks create a new reference each render):
+
+```ts
+const onRemoteChangeRef = useRef(onRemoteChange);
+onRemoteChangeRef.current = onRemoteChange;
+// Use onRemoteChangeRef.current?.() in event handlers
+// dep array: [planId, userId] — NOT onRemoteChange
+```
+
+## Realtime Meal Plan (M8)
+
+Realtime hook: `src/hooks/useRealtimeMealPlan.ts` — subscribes to INSERT/UPDATE/DELETE on `meals` and INSERT/DELETE on `custom_shopping_items`.
+Store actions: `_applyRemoteMealInsert`, `_applyRemoteMealDelete`, `_applyRemoteMealUpdate`, `_applyRemoteCustomItemInsert`, `_applyRemoteCustomItemDelete` — these MUST NOT call `_pushSync` (incoming from server).
+Access control: `addMealAction` uses `requirePlanAccess` (not `requirePlanOwner`) so members can add meals.
+Share button stays owner-only: `planRole === 'owner' && user` guards `onShareClick`.
+Type cast: DB `meal_type` is `string`, must cast to `MealType` with `as MealType`.
+Migration: `supabase/migrations/00007_enable_realtime_meals.sql` — enables realtime on `meals` and `custom_shopping_items`.

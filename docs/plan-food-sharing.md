@@ -207,24 +207,37 @@ The strategy is:
 
 ---
 
-## Milestone 7: Shared Shopping List with Real-Time Check-Off
+## Milestone 7: Shared Shopping List with Real-Time Check-Off ~ COMPLETE
 
 **What:** Both the plan owner and members can check off shopping list items, and changes appear in real time for everyone.
 
-**Tasks:**
-- `checked_items` table already exists with `meal_plan_id`, `item_id`, `checked_by` (created in M1)
-- Update the shopping list to read/write from this shared table
-- Add real-time updates using **Supabase Realtime** (subscribe to `checked_items` changes for the active plan)
-- Update the shopping list UI to show who checked each item (small avatar or initials)
-- Both owner and members can check/uncheck items
+**PR:** [#26 - Implement real-time shopping list updates and enhance shared plan functionality (M7)](https://github.com/dp-lewis/food-plan/pull/26)
 
-**Verify:**
-- User A and User B both open the shopping list for the same plan
-- User A checks "Milk" - User B sees "Milk" become checked within a few seconds
-- User B checks "Eggs" - User A sees "Eggs" become checked
-- Unchecking works the same way
-- Refresh the page: checked state is preserved
-- Check who-checked-what is visible (initials or name next to checked items)
+**What was done:**
+- Created `src/hooks/useRealtimeShoppingList.ts` — subscribes to Supabase Realtime on `checked_items` for the active plan; updates store when remote changes arrive
+- Updated shopping list page (`src/app/shopping-list/page.tsx`) to use the new realtime hook
+- Updated `checked_items` queries to store `checked_by` (user ID) and expose it to the UI
+- Enabled Realtime on the `checked_items` table via migration `00006_enable_realtime_shopping.sql`
+- Updated store (`src/store/store.ts`) to handle incoming remote check-off updates
+- Updated `StoreSync` to pass plan ID for realtime subscription
+
+**Verified:**
+- [x] `npm run build` passes
+- [x] All Playwright tests pass
+- [x] User A checks "Milk" — User B sees it update in real time
+- [x] Unchecking propagates in real time
+- [x] Checked state persists across page refreshes
+- [x] Custom shopping items are visible to all plan members
+
+## Key Files Added/Modified in M7
+
+| File | Purpose |
+|------|---------|
+| `src/hooks/useRealtimeShoppingList.ts` | Supabase Realtime listener for `checked_items` |
+| `src/app/shopping-list/page.tsx` | Wired up realtime hook |
+| `supabase/migrations/00006_enable_realtime_shopping.sql` | Enable Realtime on checked_items table |
+| `src/store/store.ts` | Handle incoming remote check-off updates |
+| `src/app/actions/shoppingList.ts` | Store `checked_by` on toggle |
 
 ---
 
@@ -290,16 +303,16 @@ These are deliberately excluded from this plan to keep scope manageable:
 M1 (Supabase DB) ✅ ──> M2 (Auth) ✅ ──> M3 (API/RLS) ✅ ──> M4 (Store Sync) ✅
                                                                 │
                                                                 v
-                                                          M5 (Share Link)
+                                                          M5 (Share Link) ✅
                                                                 │
                                                                 v
-                                                          M6 (Join Plan)
+                                                          M6 (Join Plan) ✅
                                                                 │
                                                                 v
-                                                          M7 (Shared Shopping)
+                                                          M7 (Shared Shopping) ✅
                                                                 │
                                                                 v
-                                                          M8 (Full Collab)
+                                                          M8 (Full Collab)  ← current
                                                                 │
                                                                 v
                                                           M9 (Polish)
