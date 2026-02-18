@@ -156,7 +156,9 @@
 **Acceptance Criteria:**
 - [ ] "Clear checked" button available
 - [ ] Removes or hides all checked items
-- [ ] Confirmation not required (can regenerate list if needed)
+- [ ] Solo users: no confirmation required (can regenerate list if needed)
+- [ ] Shared plan users: confirmation drawer shown before clearing ("This will uncheck all items for everyone on the plan")
+- [ ] Confirming clears all checked items for all members in real time
 
 ---
 
@@ -201,7 +203,8 @@
 **Acceptance Criteria:**
 - [ ] Empty state shown when no plan exists
 - [ ] Clear "Create Your First Plan" button
-- [ ] Brief explanation of what the app does
+- [ ] Brief explanation of what the app does, including sharing capability
+- [ ] Description mentions sharing with household members
 
 ---
 
@@ -361,6 +364,22 @@
 - [ ] When owner deletes the plan, members see their dashboard update cleanly
 - [ ] A member can leave a shared plan and return to "no plan" state
 - [ ] Leaving does not affect the owner's plan or other members
+
+---
+
+### US-9.6: Use the app offline
+
+**As a** grocery shopper in a supermarket with patchy connectivity
+**I want to** check off items and make plan changes even when offline
+**So that** I don't lose my work when my signal drops
+
+**Acceptance Criteria:**
+- [ ] When offline, a clear indicator is shown ("You're offline")
+- [ ] Shopping item check-offs still work offline (optimistic local update)
+- [ ] Changes made while offline are queued and synced automatically when back online
+- [ ] No data is lost during the offline period
+- [ ] When reconnected, the indicator disappears and changes sync without user action
+- [ ] Checked state from localStorage is shown when offline (last known state)
 
 ---
 
