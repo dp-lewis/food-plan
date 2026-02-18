@@ -241,45 +241,114 @@ The strategy is:
 
 ---
 
-## Milestone 8: Full Collaborative Editing
+## Milestone 8: Full Collaborative Editing ~ COMPLETE
 
 **What:** Members can also add/remove/swap meals and add custom shopping items. All changes sync to everyone on the plan.
 
-**Tasks:**
-- Update API auth: members can now modify meals (not just read)
-- Apply the same real-time mechanism from Milestone 7 to meal plan changes
-- When a meal is added/removed/swapped, all users see the updated calendar
-- Custom shopping items are shared (any member can add/remove)
-- Add a simple activity indicator ("Plan updated" toast) when changes come from another user
+**PR:** [#31 - Collaborative meal editing (M8)](https://github.com/dp-lewis/food-plan/pull/31)
 
-**Verify:**
-- User B adds a meal to Wednesday dinner - User A sees it appear
-- User A swaps a meal - User B sees the swap
-- User B adds a custom shopping item - it appears on User A's shopping list
-- Changes feel responsive for the person making them (optimistic updates)
-- No data conflicts when both users edit at the same time
+**What was done:**
+- Updated API auth: members can now modify meals (not just read)
+- Applied the same real-time mechanism from M7 to meal plan changes via `useRealtimeMealPlan` hook
+- When a meal is added/removed/swapped, all users see the updated calendar in real time
+- Custom shopping items are shared (any member can add/remove)
+- Added a "Plan updated" toast activity indicator when changes arrive from another user
+
+**Verified:**
+- [x] `npm run build` passes
+- [x] All Playwright tests pass
+- [x] User B adds a meal — User A sees it appear in real time
+- [x] User A swaps a meal — User B sees the swap
+- [x] User B adds a custom shopping item — it appears on User A's shopping list
+- [x] Changes feel responsive for the person making them (optimistic updates)
+- [x] No data conflicts when both users edit at the same time
 
 ---
 
 ## Milestone 9: Polish and Edge Cases
 
-**What:** Handle the rough edges that come from multi-user collaboration.
+**What:** Handle the rough edges that come from multi-user collaboration. Delivered in three PRs.
+
+### PR 1 — Membership Actions
 
 **Tasks:**
-- Handle plan deletion by owner: notify members, clear their current plan gracefully
-- Handle member leaving a shared plan
-- Show plan members on the plan view (avatars/names)
-- Handle the "Clear checked items" action for shared lists (confirm dialog, affects everyone)
-- Add a way to revoke/regenerate the share link
-- Handle offline mode: queue changes and sync when back online
-- Update onboarding empty state to mention sharing capability
+
+#### T1: Member can leave a shared plan
+- New `leavePlanAction()` server action in `src/app/actions/share.ts` (DB query already exists in `queries.ts`)
+- "Leave Plan" button in `src/app/plan/current/page.tsx`, only shown when `_planRole === 'member'`
+- Opens a confirmation `Drawer` ("You'll return to an empty plan"), then resets store and redirects home
+
+#### T2: Owner can delete a plan (notifies members in real time)
+- New migration `00008_enable_realtime_plan.sql`: `REPLICA IDENTITY FULL` + add `meal_plans` to realtime publication
+- New `deletePlanAction()` server action in `src/app/actions/mealPlan.ts` — cascade delete handles all child rows
+- Extend `useRealtimeMealPlan.ts` to listen for DELETE events on `meal_plans` → call `_clearCurrentPlan()` store helper so members' views clear automatically
+- New `_clearCurrentPlan()` helper in `src/store/store.ts`
+- "Delete Plan" button in `src/app/plan/current/page.tsx`, owner only, red-accented Drawer
+
+#### T3 (schema): Store member email for display
+- New migration `00009_add_member_email.sql`: `ALTER TABLE plan_members ADD COLUMN user_email TEXT`
+- Update `joinPlan()` in `queries.ts` and `joinSharedPlanAction()` in `share.ts` to pass and persist `user.email` on join
+- Note: owner is not in `plan_members` by design — owner email will be fetched separately from `meal_plans` in PR 2
 
 **Verify:**
-- Owner deletes plan: member's dashboard updates cleanly (no stale data)
-- Member leaves: they return to "no plan" state, owner's plan is unaffected
-- Member list displays correctly
-- Share link can be revoked and regenerated
-- App degrades gracefully when offline (shows last known state, syncs on reconnect)
+- Member clicks "Leave Plan" → confirmation drawer → store clears → redirected to empty dashboard
+- Owner clicks "Delete Plan" → plan deleted from DB → member's dashboard clears in real time (within ~2s)
+- Existing members not in `plan_members` display correctly after schema migration
+- Owner's plan is unaffected when a member leaves
+
+---
+
+### PR 2 — Plan UI Polish
+
+**Tasks:**
+
+#### T3 (UI): Show plan members
+- New `getPlanMembersAction()` server action
+- New `src/components/plan/PlanMembersRow.tsx` — avatar chips using email initials (same `getInitials()` pattern as shopping list)
+- Rendered at the top of the plan view when there are 2+ people on the plan (owner + at least one member)
+
+#### T4: "Clear checked items" confirmation for shared plans
+- In `src/app/shopping-list/page.tsx`: when `_planRole` is set, clicking "Clear checked" opens a `Drawer` first ("This will uncheck all items for everyone on the plan")
+- Solo users (no `_planRole`): no change, fires immediately — no regression
+
+#### T5: Revoke / regenerate share link
+- New `regenerateShareLinkAction()` server action in `share.ts` (revoke old code + generate new one)
+- Refactor Share FAB in `src/app/plan/current/page.tsx` to open a `Drawer` with: current link + copy button, "Generate new link", "Revoke link"
+- Revoking does NOT remove existing members — they retain access, just no new joins via the old link
+
+#### T7: Update onboarding empty state copy
+- Update description in `src/app/page.tsx`: "Plan your week, share with your household, and check off the shopping together."
+
+**Verify:**
+- Member avatars visible on plan view after a second user joins
+- Solo: "Clear checked" still fires immediately
+- Shared plan: "Clear checked" shows confirmation drawer, affects all members on confirm
+- Owner can copy link, generate a new link (old link 404s), and revoke link
+- Onboarding empty state mentions sharing
+
+---
+
+### PR 3 — Offline Mode
+
+**Tasks:**
+
+#### T6: Queue changes and sync on reconnect
+- Add `_isOnline` / `_setIsOnline` to `src/store/store.ts` (not persisted)
+- Add `_syncQueue` to `partialize` in `store.ts` so failed intents survive page reloads
+  - Add `timestamp` to `SyncIntent` type so intents older than 24h are discarded on startup
+  - Add max queue length guard (50 intents, FIFO eviction)
+- Modify `src/store/syncSubscriber.ts`: skip draining when `_isOnline === false`
+- New `src/hooks/useOnlineSync.ts`: listen for `window` `online`/`offline` events; drain queue on reconnect
+- New `src/components/OfflineBanner.tsx`: sticky banner when offline ("You're offline — changes will sync when you reconnect")
+- Mount `useOnlineSync` and `<OfflineBanner />` in root layout
+
+**Note:** Full Service Worker Background Sync (SyncManager API) is out of scope — too complex and limited browser support. The persisted queue approach handles the common case.
+
+**Verify:**
+- DevTools → Network → Offline; check off a shopping item — local update works, banner appears
+- Restore network — item syncs to Supabase, banner disappears
+- Reload while offline — checked state persists (localStorage), banner re-appears
+- Queue drains cleanly on reconnect, no duplicate writes
 
 ---
 
@@ -312,10 +381,13 @@ M1 (Supabase DB) ✅ ──> M2 (Auth) ✅ ──> M3 (API/RLS) ✅ ──> M4 (
                                                           M7 (Shared Shopping) ✅
                                                                 │
                                                                 v
-                                                          M8 (Full Collab)  ← current
+                                                          M8 (Full Collab) ✅
                                                                 │
                                                                 v
-                                                          M9 (Polish)
+                                                          M9 (Polish)  ← current
+                                                            ├── PR1: Membership Actions
+                                                            ├── PR2: UI Polish
+                                                            └── PR3: Offline Mode
 ```
 
 Each milestone is a stable stopping point. The app works correctly after each one.
