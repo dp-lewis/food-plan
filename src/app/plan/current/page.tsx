@@ -11,9 +11,17 @@ import RecipeDrawer from '@/components/RecipeDrawer';
 import SignOutDialog from '@/components/SignOutDialog';
 import { BottomNav, Button, Card, Drawer, PageHeader, Toast } from '@/components/ui';
 import { useAuth } from '@/components/AuthProvider';
-import { generateShareLink, leavePlanAction } from '@/app/actions/share';
+import {
+  generateShareLink,
+  leavePlanAction,
+  getPlanMembersAction,
+  regenerateShareLinkAction,
+  revokeShareLink,
+  type MemberInfo,
+} from '@/app/actions/share';
 import { deletePlanAction } from '@/app/actions/mealPlan';
 import DaySlot from '@/components/plan/DaySlot';
+import PlanMembersRow from '@/components/plan/PlanMembersRow';
 
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
 
@@ -40,13 +48,22 @@ export default function CurrentPlan() {
   const clearCurrentPlan = useStore((state) => state._clearCurrentPlan);
 
   const { user, loading: authLoading } = useAuth();
-  const [shareStatus, setShareStatus] = useState<'idle' | 'loading' | 'copied'>('idle');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastVariant, setToastVariant] = useState<'success' | 'error'>('success');
   const [leavePlanDrawerOpen, setLeavePlanDrawerOpen] = useState(false);
   const [leaveLoading, setLeaveLoading] = useState(false);
   const [deletePlanDrawerOpen, setDeletePlanDrawerOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Share drawer state
+  const [shareDrawerOpen, setShareDrawerOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareLoading, setShareLoading] = useState(false);
+  const [revokeLoading, setRevokeLoading] = useState(false);
+  const [regenerateLoading, setRegenerateLoading] = useState(false);
+
+  // Plan members state
+  const [members, setMembers] = useState<{ email: string; role: 'owner' | 'member' }[]>([]);
 
   const [drawerState, setDrawerState] = useState<DrawerState>({
     isOpen: false,
@@ -156,35 +173,81 @@ export default function CurrentPlan() {
     }
   };
 
-  const handleShare = async () => {
-    if (!currentPlan || shareStatus === 'loading') return;
-    setShareStatus('loading');
+  // Open share drawer: load or generate the current share URL
+  const handleOpenShareDrawer = async () => {
+    if (!currentPlan) return;
+    setShareDrawerOpen(true);
+    setShareLoading(true);
     try {
       const result = await generateShareLink(currentPlan.id);
       if (result.error) {
-        setShareStatus('idle');
         setToastVariant('error');
-        setToastMessage(result.error ?? 'Failed to generate share link');
+        setToastMessage(result.error ?? 'Failed to load share link');
+        setShareDrawerOpen(false);
         return;
       }
-      const url = result.data!;
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: 'Meal Plan', url });
-        } catch {
-          // User cancelled share - that's fine
-        }
-      } else {
-        await navigator.clipboard.writeText(url);
-        setToastVariant('success');
-        setToastMessage('Link copied to clipboard');
-      }
-      setShareStatus('copied');
-      setTimeout(() => setShareStatus('idle'), 2000);
-    } catch (err) {
-      setShareStatus('idle');
+      setShareUrl(result.data ?? null);
+    } catch {
       setToastVariant('error');
-      setToastMessage(err instanceof Error ? err.message : 'Failed to generate share link');
+      setToastMessage('Failed to load share link');
+      setShareDrawerOpen(false);
+    } finally {
+      setShareLoading(false);
+    }
+  };
+
+  const handleCopyShareLink = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setToastVariant('success');
+      setToastMessage('Link copied to clipboard');
+    } catch {
+      setToastVariant('error');
+      setToastMessage('Failed to copy link');
+    }
+  };
+
+  const handleRegenerateShareLink = async () => {
+    if (!currentPlan) return;
+    setRegenerateLoading(true);
+    try {
+      const result = await regenerateShareLinkAction(currentPlan.id);
+      if (!result.success) {
+        setToastVariant('error');
+        setToastMessage(result.error ?? 'Failed to regenerate share link');
+        return;
+      }
+      setShareUrl(result.url);
+      setToastVariant('success');
+      setToastMessage('New share link generated');
+    } catch {
+      setToastVariant('error');
+      setToastMessage('Failed to regenerate share link');
+    } finally {
+      setRegenerateLoading(false);
+    }
+  };
+
+  const handleRevokeShareLink = async () => {
+    if (!currentPlan) return;
+    setRevokeLoading(true);
+    try {
+      const result = await revokeShareLink(currentPlan.id);
+      if (result.error) {
+        setToastVariant('error');
+        setToastMessage(result.error ?? 'Failed to revoke share link');
+        return;
+      }
+      setShareUrl(null);
+      setShareDrawerOpen(false);
+      setToastVariant('success');
+      setToastMessage('Share link revoked');
+    } catch {
+      setToastVariant('error');
+      setToastMessage('Failed to revoke share link');
+    } finally {
+      setRevokeLoading(false);
     }
   };
 
@@ -231,6 +294,20 @@ export default function CurrentPlan() {
       router.push('/');
     }
   }, [hasHydrated, currentPlan, router]);
+
+  // Load plan members when planRole is set (this is a shared plan)
+  useEffect(() => {
+    if (!planRole || !currentPlan) return;
+    getPlanMembersAction(currentPlan.id).then((result) => {
+      if (result.success) {
+        setMembers(
+          result.members
+            .filter((m: MemberInfo) => m.userEmail !== '')
+            .map((m: MemberInfo) => ({ email: m.userEmail, role: m.role }))
+        );
+      }
+    });
+  }, [planRole, currentPlan]);
 
   const todayIndex = useMemo(
     () => currentPlan ? getTodayPlanIndex(currentPlan.preferences.startDay) : 0,
@@ -320,6 +397,10 @@ export default function CurrentPlan() {
           </div>
         )}
 
+        {members.length >= 2 && (
+          <PlanMembersRow members={members} />
+        )}
+
         <div className="space-y-4">
           {slotsByDay.map(({ dayName, dayIndex, slots }) => (
             <DaySlot
@@ -337,7 +418,7 @@ export default function CurrentPlan() {
         </div>
       </main>
 
-      <BottomNav onShareClick={planRole === 'owner' && user ? handleShare : undefined} />
+      <BottomNav onShareClick={planRole === 'owner' && user ? handleOpenShareDrawer : undefined} />
 
       <RecipeDrawer
         isOpen={drawerState.isOpen}
@@ -355,6 +436,73 @@ export default function CurrentPlan() {
         variant={toastVariant}
         onDismiss={() => setToastMessage(null)}
       />
+
+      <Drawer
+        isOpen={shareDrawerOpen}
+        onClose={() => setShareDrawerOpen(false)}
+        title="Share this plan"
+      >
+        <div data-testid="share-drawer">
+          {shareLoading ? (
+            <div className="py-4 text-sm text-muted-foreground">Loading share link…</div>
+          ) : shareUrl ? (
+            <div className="space-y-4">
+              <div className="flex gap-2 items-center">
+                <input
+                  readOnly
+                  value={shareUrl}
+                  className="flex-1 bg-muted border border-border text-sm text-foreground px-3 py-2 rounded-sm truncate"
+                  aria-label="Share link"
+                />
+                <Button
+                  variant="primary"
+                  size="small"
+                  data-testid="copy-share-link"
+                  onClick={handleCopyShareLink}
+                >
+                  Copy
+                </Button>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  data-testid="regenerate-share-link"
+                  onClick={handleRegenerateShareLink}
+                  loading={regenerateLoading}
+                  disabled={revokeLoading}
+                >
+                  New link
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="flex-1 text-destructive"
+                  data-testid="revoke-share-link"
+                  onClick={handleRevokeShareLink}
+                  loading={revokeLoading}
+                  disabled={regenerateLoading}
+                >
+                  Revoke link
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                No active share link. Generate one to share this plan.
+              </p>
+              <Button
+                variant="primary"
+                className="w-full"
+                onClick={handleOpenShareDrawer}
+                loading={shareLoading}
+              >
+                Generate link
+              </Button>
+            </div>
+          )}
+        </div>
+      </Drawer>
 
       <Drawer
         isOpen={leavePlanDrawerOpen}

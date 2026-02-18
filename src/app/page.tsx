@@ -191,7 +191,7 @@ export default function Dashboard() {
             What&apos;s for dinner this week?
           </h2>
           <p className="mb-8 text-base text-muted-foreground">
-            Create a plan and we&apos;ll sort out your shopping list.
+            Plan your week, share with your household, and check off the shopping together.
           </p>
           <Link
             href="/plan"
