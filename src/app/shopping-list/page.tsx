@@ -25,9 +25,11 @@ export default function ShoppingList() {
 
   const userId = useStore((state) => state._userId);
   const userEmail = useStore((state) => state._userEmail);
+  const planRole = useStore((state) => state._planRole);
 
   const [newItemText, setNewItemText] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isConfirmClearOpen, setIsConfirmClearOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus input when drawer opens
@@ -86,7 +88,7 @@ export default function ShoppingList() {
               </span>
               {checkedCount > 0 && (
                 <button
-                  onClick={clearCheckedItems}
+                  onClick={planRole ? () => setIsConfirmClearOpen(true) : clearCheckedItems}
                   className="text-xs text-primary-foreground hover:text-primary-foreground min-h-[44px] px-2"
                   data-testid="clear-checked-btn"
                 >
@@ -208,6 +210,36 @@ export default function ShoppingList() {
             className="w-full"
           >
             Add to List
+          </Button>
+        </div>
+      </Drawer>
+
+      <Drawer
+        isOpen={isConfirmClearOpen}
+        onClose={() => setIsConfirmClearOpen(false)}
+        title="Clear all checked items?"
+      >
+        <p className="text-sm text-muted-foreground mb-6">
+          This will uncheck all items for everyone on the plan.
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            className="flex-1"
+            onClick={() => setIsConfirmClearOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            className="flex-1"
+            data-testid="confirm-clear-checked"
+            onClick={() => {
+              clearCheckedItems();
+              setIsConfirmClearOpen(false);
+            }}
+          >
+            Confirm
           </Button>
         </div>
       </Drawer>
