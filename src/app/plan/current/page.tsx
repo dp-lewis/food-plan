@@ -61,6 +61,7 @@ export default function CurrentPlan() {
   const [shareLoading, setShareLoading] = useState(false);
   const [revokeLoading, setRevokeLoading] = useState(false);
   const [regenerateLoading, setRegenerateLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // Plan members state
   const [members, setMembers] = useState<{ email: string; role: 'owner' | 'member' }[]>([]);
@@ -200,8 +201,8 @@ export default function CurrentPlan() {
     if (!shareUrl) return;
     try {
       await navigator.clipboard.writeText(shareUrl);
-      setToastVariant('success');
-      setToastMessage('Link copied to clipboard');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
       setToastVariant('error');
       setToastMessage('Failed to copy link');
@@ -459,8 +460,9 @@ export default function CurrentPlan() {
                   size="small"
                   data-testid="copy-share-link"
                   onClick={handleCopyShareLink}
+                  disabled={copied}
                 >
-                  Copy
+                  {copied ? 'Copied ✓' : 'Copy'}
                 </Button>
               </div>
               <div className="flex gap-3">
