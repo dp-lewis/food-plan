@@ -373,10 +373,7 @@ export async function joinPlan(
   const supabase = await createClient();
   const { error } = await supabase
     .from('plan_members')
-    .upsert(
-      { meal_plan_id: planId, user_id: userId, role: 'member', user_email: userEmail ?? null },
-      { onConflict: 'meal_plan_id,user_id' },
-    );
+    .insert({ meal_plan_id: planId, user_id: userId, role: 'member', user_email: userEmail ?? null });
   if (error) throw error;
 }
 
