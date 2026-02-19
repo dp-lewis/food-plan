@@ -6,10 +6,21 @@ import { User } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Alert, Button, Card, Input, PageHeader } from '@/components/ui';
 
+const NEXT_PARAM_PATTERN = /^\/shared\/[a-zA-Z0-9_-]+$/;
+
+function validateNext(value: string | null): string | null {
+  if (value && NEXT_PARAM_PATTERN.test(value)) {
+    return value;
+  }
+  return null;
+}
+
 function SignInForm() {
   const searchParams = useSearchParams();
   const urlError = searchParams.get('error');
   const router = useRouter();
+
+  const nextParam = validateNext(searchParams.get('next'));
 
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,10 +38,14 @@ function SignInForm() {
     const supabase = createClient();
     const origin = window.location.origin;
 
+    const callbackUrl = nextParam
+      ? `${origin}/auth/callback?next=${encodeURIComponent(nextParam)}`
+      : `${origin}/auth/callback`;
+
     const { error: authError } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${origin}/auth/callback`,
+        emailRedirectTo: callbackUrl,
       },
     });
 
@@ -65,7 +80,7 @@ function SignInForm() {
       return;
     }
 
-    router.push('/');
+    router.push(nextParam ?? '/');
   };
 
   if (submitted) {
