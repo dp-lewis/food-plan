@@ -6,6 +6,7 @@ import { StoreSync } from "@/components/StoreSync";
 import { RealtimeSync } from "@/components/RealtimeSync";
 import { AuthProvider } from "@/components/AuthProvider";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { DevTestSeam } from "@/components/DevTestSeam";
 
 export const metadata: Metadata = {
   title: "Food Plan",
@@ -42,6 +43,7 @@ export default function RootLayout({
           <StoreHydration />
           <StoreSync />
           <RealtimeSync />
+          <DevTestSeam />
           {children}
         </AuthProvider>
         <ServiceWorkerRegistration />
