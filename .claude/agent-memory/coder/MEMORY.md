@@ -222,3 +222,12 @@ Access control: `addMealAction` uses `requirePlanAccess` (not `requirePlanOwner`
 Share button stays owner-only: `planRole === 'owner' && user` guards `onShareClick`.
 Type cast: DB `meal_type` is `string`, must cast to `MealType` with `as MealType`.
 Migration: `supabase/migrations/00007_enable_realtime_meals.sql` — enables realtime on `meals` and `custom_shopping_items`.
+
+## Playwright WebSocket Mock (Supabase Realtime)
+
+See `realtime-mock.md` for full details. Critical points:
+- Join reply MUST echo `filter` field exactly — omitting it causes silent channel error
+- postgres_changes event data MUST include `columns: []` — missing causes `columns.find()` crash
+- Checkbox component is `<button role="checkbox">` — use `aria-checked` attribute, NOT `input[type="checkbox"]`
+- `DevTestSeam` component exposes `window.__setStoreState` for tests; mounted in layout
+- Window casting: `(window as unknown as { __setStoreState: ... })`
