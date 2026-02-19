@@ -9,13 +9,13 @@ import { OfflineBanner } from "@/components/OfflineBanner";
 import { DevTestSeam } from "@/components/DevTestSeam";
 
 export const metadata: Metadata = {
-  title: "Food Plan",
+  title: "Did we get...?",
   description: "Weekly meal planning made simple",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Food Plan",
+    title: "Did we get...?",
   },
   icons: {
     apple: "/icons/apple-touch-icon.png",

@@ -1,6 +1,6 @@
 {
-  "name": "Food Plan",
-  "short_name": "Food Plan",
+  "name": "Did we get...?",
+  "short_name": "Did we get...?",
   "description": "Weekly meal planning made simple",
   "start_url": "/",
   "display": "standalone",
