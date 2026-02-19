@@ -265,7 +265,7 @@ The strategy is:
 
 ---
 
-## Milestone 9: Polish and Edge Cases
+## Milestone 9: Polish and Edge Cases ~ COMPLETE
 
 **What:** Handle the rough edges that come from multi-user collaboration. Delivered in three PRs.
 
@@ -384,10 +384,10 @@ M1 (Supabase DB) ✅ ──> M2 (Auth) ✅ ──> M3 (API/RLS) ✅ ──> M4 (
                                                           M8 (Full Collab) ✅
                                                                 │
                                                                 v
-                                                          M9 (Polish)  ← current
-                                                            ├── PR1: Membership Actions
-                                                            ├── PR2: UI Polish
-                                                            └── PR3: Offline Mode
+                                                          M9 (Polish) ✅
+                                                            ├── PR1: Membership Actions ✅
+                                                            ├── PR2: UI Polish ✅
+                                                            └── PR3: Offline Mode ✅
 ```
 
 Each milestone is a stable stopping point. The app works correctly after each one.
