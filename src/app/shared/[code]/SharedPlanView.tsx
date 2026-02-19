@@ -7,6 +7,7 @@ import type { SharedPlanData, MealType } from '@/types';
 import { getRecipeById } from '@/data/recipes';
 import { generateShoppingList, groupByCategory, mergeShoppingLists, CATEGORY_LABELS } from '@/lib/shoppingList';
 import { Card, PageHeader, Button } from '@/components/ui';
+import { buttonVariants } from '@/components/ui/Button';
 import { useAuth } from '@/components/AuthProvider';
 import { useStore } from '@/store/store';
 import { joinSharedPlan } from '@/app/actions/share';
@@ -89,6 +90,27 @@ export default function SharedPlanView({ data, shareCode }: { data: SharedPlanDa
     <div className="min-h-screen bg-background" data-testid="shared-plan">
       <PageHeader title="Shared Meal Plan" backHref="/" sticky />
       <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-6 space-y-6">
+        {/* Join CTA for unauthenticated users */}
+        {!user && (
+          <Card data-testid="join-plan-cta">
+            <div className="text-center space-y-3">
+              <p className="text-base text-foreground font-semibold">
+                Sign in to collaborate on this plan
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Create a free account or sign in to join this meal plan.
+              </p>
+              <Link
+                href={`/auth/signin?next=/shared/${shareCode}`}
+                data-testid="join-plan-signin-btn"
+                className={buttonVariants({ variant: 'primary' }) + ' w-full'}
+              >
+                Join this plan
+              </Link>
+            </div>
+          </Card>
+        )}
+
         {/* Join banner for authenticated users */}
         {user && (
           <Card>

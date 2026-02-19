@@ -383,6 +383,25 @@
 
 ---
 
+### US-9.7: Join a shared plan as a new user (connected onboarding)
+
+**As a** person who has received a share link but doesn't have an account
+**I want to** sign up or sign in and immediately join the plan
+**So that** I don't lose the context of why I'm signing up or have to hunt for the link again
+
+**Acceptance Criteria:**
+- [ ] Unauthenticated visitors on `/shared/{code}` see a clear "Join this plan" CTA beneath the plan preview
+- [ ] The CTA explains that signing in or creating an account is required ("Sign in to collaborate on this plan")
+- [ ] Clicking the CTA navigates to the sign-in page with the share code preserved (e.g. via `?next=/shared/{code}`)
+- [ ] After successful OTP or magic link authentication, the user is redirected back to `/shared/{code}` (not `/`)
+- [ ] On returning to the share page as an authenticated user, the "Use This Plan" button is prominently displayed
+- [ ] The user completes the join with a single tap — no need to navigate elsewhere
+- [ ] The `?next` redirect is validated to only allow paths matching `/shared/[code]` (no open redirect)
+- [ ] The flow works for both new users (first sign-in ever) and existing users signing into a different device
+- [ ] If the share code is invalid or revoked when the user returns after auth, a clear error is shown
+
+---
+
 ## Story Map Overview
 
 ```
