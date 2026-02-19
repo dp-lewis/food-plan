@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { User } from 'lucide-react';
 import { Button } from '@/components/ui';
 import Drawer from '@/components/ui/Drawer';
@@ -22,16 +21,14 @@ interface SignOutDialogProps {
  * Encapsulates all sign-out state, the async handler, the trigger button, and the Drawer.
  */
 export default function SignOutDialog({ userEmail, onSignedOut }: SignOutDialogProps) {
-  const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSignOut = async () => {
     setLoading(true);
-    await fetch('/auth/signout', { method: 'POST' });
+    await fetch('/auth/signout', { method: 'POST', redirect: 'manual' });
     onSignedOut?.();
-    router.push('/');
-    router.refresh();
+    window.location.href = '/';
   };
 
   if (!userEmail) {
