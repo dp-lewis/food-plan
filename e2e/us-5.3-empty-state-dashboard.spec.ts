@@ -12,6 +12,7 @@ import { clearAppState } from './helpers/test-utils';
  * - [ ] Empty state shown when no plan exists
  * - [ ] Clear "Create Your Plan" button
  * - [ ] Brief explanation of what the app does
+ * - [ ] Copy mentions sharing capability to set expectations for new users
  */
 
 test.describe('US-5.3: Empty state for new users', () => {
@@ -37,7 +38,12 @@ test.describe('US-5.3: Empty state for new users', () => {
   test('Brief explanation of what the app does', async ({ page }) => {
     await expect(page.getByText("What's for dinner this week?")).toBeVisible();
     await expect(
-      page.getByText("Create a plan and we'll sort out your shopping list")
+      page.getByText("Plan your week, share with your household, and check off the shopping together.")
     ).toBeVisible();
+  });
+
+  test('Empty state copy mentions sharing capability', async ({ page }) => {
+    // M9 PR2 updated the tagline to highlight collaborative sharing
+    await expect(page.getByText(/share with your household/i)).toBeVisible();
   });
 });
