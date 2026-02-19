@@ -276,3 +276,268 @@ describe('_applyRemoteCustomItemDelete', () => {
     expect(customShoppingItems).toHaveLength(2);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Additional helpers
+// ---------------------------------------------------------------------------
+
+function makeCheckedItems(pairs: [string, string][]): Record<string, string> {
+  return Object.fromEntries(pairs);
+}
+
+function seedCheckedItems(items: Record<string, string> = {}) {
+  useStore.setState({ checkedItems: items });
+}
+
+// ---------------------------------------------------------------------------
+// _mergeCheckedItem
+// ---------------------------------------------------------------------------
+
+describe('_mergeCheckedItem', () => {
+  it("adds a new checked item with the checker's email", () => {
+    // Arrange
+    seedCheckedItems({});
+
+    // Act
+    useStore.getState()._mergeCheckedItem('item-1', 'alice@example.com');
+
+    // Assert
+    expect(useStore.getState().checkedItems['item-1']).toBe('alice@example.com');
+  });
+
+  it('overwrites the email if the item was already checked by someone else', () => {
+    // Arrange
+    seedCheckedItems(makeCheckedItems([['item-1', 'alice@example.com']]));
+
+    // Act
+    useStore.getState()._mergeCheckedItem('item-1', 'bob@example.com');
+
+    // Assert
+    expect(useStore.getState().checkedItems['item-1']).toBe('bob@example.com');
+  });
+
+  it('preserves other checked items when merging one', () => {
+    // Arrange
+    seedCheckedItems(makeCheckedItems([['item-1', 'alice@example.com'], ['item-2', 'bob@example.com']]));
+
+    // Act
+    useStore.getState()._mergeCheckedItem('item-3', 'carol@example.com');
+
+    // Assert
+    const { checkedItems } = useStore.getState();
+    expect(checkedItems['item-1']).toBe('alice@example.com');
+    expect(checkedItems['item-2']).toBe('bob@example.com');
+    expect(checkedItems['item-3']).toBe('carol@example.com');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// _removeCheckedItem
+// ---------------------------------------------------------------------------
+
+describe('_removeCheckedItem', () => {
+  beforeEach(() => {
+    seedCheckedItems(makeCheckedItems([['item-1', 'alice@example.com'], ['item-2', 'bob@example.com']]));
+  });
+
+  it('removes the item with the matching id', () => {
+    // Act
+    useStore.getState()._removeCheckedItem('item-1');
+
+    // Assert
+    expect('item-1' in useStore.getState().checkedItems).toBe(false);
+  });
+
+  it('preserves other checked items when removing one', () => {
+    // Act
+    useStore.getState()._removeCheckedItem('item-1');
+
+    // Assert
+    expect(useStore.getState().checkedItems['item-2']).toBe('bob@example.com');
+  });
+
+  it('is a no-op when the id is not found', () => {
+    // Act
+    useStore.getState()._removeCheckedItem('item-does-not-exist');
+
+    // Assert — both original items still present
+    const { checkedItems } = useStore.getState();
+    expect(checkedItems['item-1']).toBe('alice@example.com');
+    expect(checkedItems['item-2']).toBe('bob@example.com');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// _setCheckedItems
+// ---------------------------------------------------------------------------
+
+describe('_setCheckedItems', () => {
+  it('replaces all checked items with the provided map', () => {
+    // Arrange
+    seedCheckedItems(makeCheckedItems([['old-1', 'alice@example.com'], ['old-2', 'bob@example.com']]));
+
+    // Act
+    useStore.getState()._setCheckedItems({ 'new-1': 'carol@example.com' });
+
+    // Assert
+    expect(useStore.getState().checkedItems).toEqual({ 'new-1': 'carol@example.com' });
+  });
+
+  it('clears all checked items when called with an empty map', () => {
+    // Arrange
+    seedCheckedItems(makeCheckedItems([['item-1', 'alice@example.com']]));
+
+    // Act
+    useStore.getState()._setCheckedItems({});
+
+    // Assert
+    expect(useStore.getState().checkedItems).toEqual({});
+  });
+
+  it('sets checked items from scratch on an empty store', () => {
+    // Arrange
+    seedCheckedItems({});
+
+    // Act
+    useStore.getState()._setCheckedItems({ 'item-1': 'alice@example.com', 'item-2': 'bob@example.com' });
+
+    // Assert
+    expect(useStore.getState().checkedItems).toEqual({
+      'item-1': 'alice@example.com',
+      'item-2': 'bob@example.com',
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// _addRemoteCustomItem
+// ---------------------------------------------------------------------------
+
+describe('_addRemoteCustomItem', () => {
+  it('adds a new custom item that is not already present', () => {
+    // Arrange
+    seedStore([], [makeCustomItem('c-1')]);
+
+    // Act
+    useStore.getState()._addRemoteCustomItem(makeCustomItem('c-2', 'Salt'));
+
+    // Assert
+    const { customShoppingItems } = useStore.getState();
+    expect(customShoppingItems).toHaveLength(2);
+    expect(customShoppingItems.find((i) => i.id === 'c-2')).toBeDefined();
+  });
+
+  it('skips add if an item with the same id is already in the list', () => {
+    // Arrange
+    seedStore([], [makeCustomItem('c-1', 'Garlic')]);
+
+    // Act
+    useStore.getState()._addRemoteCustomItem(makeCustomItem('c-1', 'Different ingredient'));
+
+    // Assert — still one item, original ingredient preserved
+    const { customShoppingItems } = useStore.getState();
+    expect(customShoppingItems).toHaveLength(1);
+    expect(customShoppingItems[0].ingredient).toBe('Garlic');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// _removeRemoteCustomItem
+// ---------------------------------------------------------------------------
+
+describe('_removeRemoteCustomItem', () => {
+  beforeEach(() => {
+    seedStore([], [makeCustomItem('c-1', 'Garlic'), makeCustomItem('c-2', 'Butter')]);
+  });
+
+  it('removes the item with the matching id', () => {
+    // Act
+    useStore.getState()._removeRemoteCustomItem('c-1');
+
+    // Assert
+    const { customShoppingItems } = useStore.getState();
+    expect(customShoppingItems).toHaveLength(1);
+    expect(customShoppingItems.find((i) => i.id === 'c-1')).toBeUndefined();
+  });
+
+  it('is a no-op when the id is not found', () => {
+    // Act
+    useStore.getState()._removeRemoteCustomItem('c-does-not-exist');
+
+    // Assert — both original items still present
+    expect(useStore.getState().customShoppingItems).toHaveLength(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// _setCustomShoppingItems
+// ---------------------------------------------------------------------------
+
+describe('_setCustomShoppingItems', () => {
+  it('replaces all custom shopping items with the provided list', () => {
+    // Arrange
+    seedStore([], [makeCustomItem('c-1', 'Garlic'), makeCustomItem('c-2', 'Butter')]);
+    const newItems = [makeCustomItem('c-3', 'Salt')];
+
+    // Act
+    useStore.getState()._setCustomShoppingItems(newItems);
+
+    // Assert
+    expect(useStore.getState().customShoppingItems).toEqual(newItems);
+  });
+
+  it('clears custom shopping items when called with an empty array', () => {
+    // Arrange
+    seedStore([], [makeCustomItem('c-1', 'Garlic')]);
+
+    // Act
+    useStore.getState()._setCustomShoppingItems([]);
+
+    // Assert
+    expect(useStore.getState().customShoppingItems).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// _clearCurrentPlan
+// ---------------------------------------------------------------------------
+
+describe('_clearCurrentPlan', () => {
+  beforeEach(() => {
+    seedStore([makeMeal('meal-1')], [makeCustomItem('c-1')]);
+    seedCheckedItems({ 'item-x': 'alice@example.com' });
+    useStore.setState({ _planRole: 'member' });
+  });
+
+  it('sets currentPlan to null', () => {
+    // Act
+    useStore.getState()._clearCurrentPlan();
+
+    // Assert
+    expect(useStore.getState().currentPlan).toBeNull();
+  });
+
+  it('clears all checked items', () => {
+    // Act
+    useStore.getState()._clearCurrentPlan();
+
+    // Assert
+    expect(useStore.getState().checkedItems).toEqual({});
+  });
+
+  it('clears all custom shopping items', () => {
+    // Act
+    useStore.getState()._clearCurrentPlan();
+
+    // Assert
+    expect(useStore.getState().customShoppingItems).toEqual([]);
+  });
+
+  it('clears _planRole', () => {
+    // Act
+    useStore.getState()._clearCurrentPlan();
+
+    // Assert
+    expect(useStore.getState()._planRole).toBeNull();
+  });
+});
