@@ -82,9 +82,10 @@ export async function joinSharedPlan(
 
     return { data, error: null };
   } catch (e) {
+    console.error('[joinSharedPlan]', e);
     return {
       data: null,
-      error: e instanceof Error ? e.message : 'Failed to join plan',
+      error: e instanceof Error ? e.message : (e as { message?: string })?.message ?? 'Failed to join plan',
     };
   }
 }
