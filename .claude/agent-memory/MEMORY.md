@@ -53,6 +53,37 @@
 - State: `loading` (email submit), `verifying` (OTP verify), `submitted` (OTP form shown)
 - `data-testid` values: `signin-page`, `email-input`, `send-magic-link-btn`, `otp-input`, `verify-btn`, `resend-btn`, `signin-success`, `signin-error`
 
+## E2E Test Patterns
+
+### Checkbox component in tests
+Renders as `<button role="checkbox" aria-checked={bool}>` — NOT `<input type="checkbox">`.
+Use `page.locator('[role="checkbox"]')` and `.toHaveAttribute('aria-checked', 'true')` / `.click()`.
+Specific items: `data-testid="checkbox-{item.id}"`.
+
+### Shopping list category values
+`customShoppingItems[].category` must be from CATEGORY_ORDER:
+`'produce' | 'meat' | 'dairy' | 'frozen' | 'pantry' | 'uncategorized'`
+Using `'other'` causes item to be invisible (not in groupByCategory output).
+
+### customShoppingItems seeding
+`quantity` is `number` (not string). `checkedItems` maps `itemId → userEmail (string)`.
+
+### Auth-gated UI cannot be tested without live Supabase
+`planRole` is set by StoreSync on sign-in — not seedable via localStorage.
+Share FAB only shows when `planRole === 'owner' && user`. Mark these `test.skip`.
+`/shared/[code]` page requires live DB — `shared-plan-error` testid won't appear without it.
+
+### Playwright browser revision mismatch
+If chromium binary missing for expected revision, symlink existing revision binary:
+`ln -sf /root/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell /root/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell`
+Also copy lib*.so, *.pak, *.dat, *.bin, *.json files into the new dir.
+
+### Dev server for tests
+Copy `.env.local.example` to `.env.local` before starting. Start dev server with `npm run dev` separately — Playwright reuses it when `reuseExistingServer: true`.
+
+### Offline mode testing
+`page.context().setOffline(true)` fires window `online`/`offline` events that `useOnlineSync` listens to, updating `_isOnline` in the store → shows/hides `OfflineBanner`.
+
 ## Storybook Patterns
 - Stories file: `src/components/ui/Button.stories.tsx`
 - Add new props to `argTypes` with appropriate control type
