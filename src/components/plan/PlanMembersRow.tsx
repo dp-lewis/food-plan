@@ -26,7 +26,6 @@ export default function PlanMembersRow({ members }: PlanMembersRowProps) {
           <div
             className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground flex-shrink-0"
             title={`${member.email || 'Unknown'} (${member.role === 'owner' ? 'Owner' : 'Member'})`}
-            style={{ minWidth: '2rem', minHeight: '2rem' }}
           >
             {member.email ? getInitials(member.email) : '?'}
           </div>

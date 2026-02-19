@@ -87,7 +87,7 @@ export default function Drawer({ isOpen, onClose, title, children }: DrawerProps
     <div className="fixed inset-0 z-50">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 animate-[fade-in_150ms_ease-out]"
+        className="absolute inset-0 bg-scrim animate-[fade-in_150ms_ease-out]"
         onClick={onClose}
         aria-hidden="true"
       />

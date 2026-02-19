@@ -42,7 +42,7 @@ export default function Checkbox({
             height="12"
             viewBox="0 0 12 12"
             fill="none"
-            stroke="white"
+            stroke="var(--primary-foreground)"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"

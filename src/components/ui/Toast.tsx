@@ -48,8 +48,8 @@ export default function Toast({
         'transition-all duration-200',
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2',
         variant === 'success'
-          ? 'bg-[var(--success)] text-white'
-          : 'bg-[var(--error)] text-white',
+          ? 'bg-success text-success-foreground'
+          : 'bg-error text-error-foreground',
       )}
     >
       {message}

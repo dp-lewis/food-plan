@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#16a34a",
+  themeColor: "#15803d", // keep in sync with --primary in tokens.css
   viewportFit: "cover",
 };
 

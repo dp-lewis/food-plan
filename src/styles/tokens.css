@@ -1,5 +1,5 @@
 /**
- * Food Plan - Design Tokens
+ * Did we get...? - Design Tokens
  *
  * All tokens follow shadcn conventions and map to Tailwind
  * utility classes via @theme inline in globals.css.
@@ -42,15 +42,63 @@
   /* Semantic colors (Alert variants) */
   --success: #15803d;
   --success-light: #dcfce7;
+  --success-foreground: #ffffff;
   --warning: #b45309;
   --warning-light: #fef3c7;
+  --warning-foreground: #78350f;
   --error: #b91c1c;
   --error-light: #fee2e2;
+  --error-foreground: #ffffff;
   --info: #1d4ed8;
   --info-light: #dbeafe;
+  --info-foreground: #ffffff;
+
+  /* Interactive surface tokens */
+  --on-primary-hover: rgba(255, 255, 255, 0.10);
+  --scrim: rgba(0, 0, 0, 0.40);
 
   /* Text size aliases for base layer */
   --text-2xl: 1.5rem;
   --text-xl: 1.25rem;
   --text-lg: 1.125rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #16a34a;
+    --primary-light: #14532d;
+    --primary-foreground: #ffffff;
+    --background: #0f172a;
+    --foreground: #f8fafc;
+    --card: #1e293b;
+    --card-foreground: #f8fafc;
+    --secondary: #1e293b;
+    --secondary-foreground: #f8fafc;
+    --muted: #334155;
+    --muted-foreground: #94a3b8;
+    --accent: #334155;
+    --accent-foreground: #f8fafc;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: #334155;
+    --input: transparent;
+    --input-background: #1e293b;
+    --ring: #16a34a;
+
+    --success: #22c55e;
+    --success-light: #14532d;
+    --success-foreground: #ffffff;
+    --warning: #f59e0b;
+    --warning-light: #451a03;
+    --warning-foreground: #fef3c7;
+    --error: #f87171;
+    --error-light: #450a0a;
+    --error-foreground: #ffffff;
+    --info: #60a5fa;
+    --info-light: #1e3a5f;
+    --info-foreground: #ffffff;
+
+    --on-primary-hover: rgba(255, 255, 255, 0.10);
+    --scrim: rgba(0, 0, 0, 0.60);
+  }
 }

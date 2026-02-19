@@ -16,20 +16,7 @@ export function OfflineBanner() {
       data-testid="offline-banner"
       role="status"
       aria-live="polite"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 9999,
-        backgroundColor: 'var(--warning-light)',
-        color: 'var(--warning)',
-        textAlign: 'center',
-        padding: '0.5rem 1rem',
-        fontSize: '0.875rem',
-        fontWeight: 500,
-        borderBottom: '1px solid var(--warning)',
-      }}
+      className="fixed top-0 left-0 right-0 z-[9999] bg-warning-light text-warning-foreground text-center px-4 py-2 text-sm font-medium border-b border-warning"
     >
       You&apos;re offline &mdash; changes will sync when you reconnect.
     </div>
