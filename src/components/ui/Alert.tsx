@@ -5,10 +5,10 @@ import { cn } from '@/lib/utils';
 export const alertVariants = cva('px-3 py-2 rounded-md text-sm text-center', {
   variants: {
     variant: {
-      error: 'bg-error-light text-destructive',
-      success: 'bg-success-light text-success',
-      warning: 'bg-warning-light text-warning',
-      info: 'bg-info-light text-info',
+      error: 'bg-error-light text-error-foreground',
+      success: 'bg-success-light text-success-foreground',
+      warning: 'bg-warning-light text-warning-foreground',
+      info: 'bg-info-light text-info-foreground',
     },
   },
   defaultVariants: { variant: 'error' },
