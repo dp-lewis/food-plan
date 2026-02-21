@@ -3,7 +3,10 @@
 import { useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useStore } from '@/store/store';
+import { getRecipeById } from '@/data/recipes';
+import { dbRecipeToApp } from '@/lib/supabase/mappers';
 import type { CustomShoppingListItem, IngredientCategory, Meal, MealType } from '@/types';
+import type { Tables } from '@/types/supabase';
 
 // Minimum time the page must be hidden before we re-fetch on return (ms).
 // This avoids unnecessary round-trips for brief tab switches.
@@ -95,7 +98,23 @@ export function useRealtimeMealPlan(
         (payload) => {
           const row = payload.new as MealRow;
           if (row.user_id === userId) return; // skip self
-          useStore.getState()._applyRemoteMealInsert(mealRowToApp(row));
+          const store = useStore.getState();
+          store._applyRemoteMealInsert(mealRowToApp(row));
+          // Fetch the recipe if it is not already available locally. This
+          // handles the case where the collaborator used one of their own
+          // recipes that the current user has never seen before.
+          if (row.recipe_id && !getRecipeById(row.recipe_id, store.userRecipes)) {
+            supabase
+              .from('recipes')
+              .select('*')
+              .eq('id', row.recipe_id)
+              .single()
+              .then(({ data }) => {
+                if (data) {
+                  useStore.getState()._addRemoteRecipe(dbRecipeToApp(data as Tables<'recipes'>));
+                }
+              });
+          }
           onRemoteChangeRef.current?.();
         }
       )
@@ -194,11 +213,17 @@ export function useRealtimeMealPlan(
         const store = useStore.getState();
         const currentMeals = store.currentPlan?.meals ?? [];
 
-        // Insert meals that are in DB but not in local state
+        // Insert meals that are in DB but not in local state.
+        // Collect recipe IDs that are not yet available locally so we can
+        // batch-fetch them after updating the plan.
         const currentIds = new Set(currentMeals.map((m) => m.id));
+        const missingRecipeIds = new Set<string>();
         for (const meal of freshMeals) {
           if (!currentIds.has(meal.id)) {
             store._applyRemoteMealInsert(meal);
+            if (meal.recipeId && !getRecipeById(meal.recipeId, store.userRecipes)) {
+              missingRecipeIds.add(meal.recipeId);
+            }
           }
         }
 
@@ -207,6 +232,17 @@ export function useRealtimeMealPlan(
         for (const meal of currentMeals) {
           if (!freshIds.has(meal.id)) {
             store._applyRemoteMealDelete(meal.id);
+          }
+        }
+
+        // Fetch any recipes that are referenced but not yet in the store
+        if (missingRecipeIds.size > 0) {
+          const { data: recipeRows } = await supabase
+            .from('recipes')
+            .select('*')
+            .in('id', [...missingRecipeIds]);
+          for (const row of recipeRows ?? []) {
+            useStore.getState()._addRemoteRecipe(dbRecipeToApp(row as Tables<'recipes'>));
           }
         }
       }

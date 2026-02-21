@@ -72,6 +72,7 @@ interface AppState {
   _applyRemoteMealUpdate: (meal: Meal) => void;
   _applyRemoteCustomItemInsert: (item: CustomShoppingListItem) => void;
   _applyRemoteCustomItemDelete: (itemId: string) => void;
+  _addRemoteRecipe: (recipe: Recipe) => void;
   // Plan lifecycle helpers
   _clearCurrentPlan: () => void;
   // Broadcast helpers — allow the realtime hook to register a sender so the
@@ -312,6 +313,12 @@ export const useStore = create<AppState>()(
         set((state) => ({
           customShoppingItems: state.customShoppingItems.filter((item) => item.id !== itemId),
         }));
+      },
+      _addRemoteRecipe: (recipe) => {
+        set((state) => {
+          if (state.userRecipes.some((r) => r.id === recipe.id)) return state;
+          return { userRecipes: [...state.userRecipes, recipe] };
+        });
       },
       _clearCurrentPlan: () => {
         set({
