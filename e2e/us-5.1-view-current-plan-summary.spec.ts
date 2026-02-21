@@ -50,9 +50,9 @@ test.describe('US-5.1: View current plan summary', () => {
 
     // If up-next card is visible, it should have meal details
     if (await upNextCard.isVisible().catch(() => false)) {
-      // Should show at least one meal with recipe link
-      const recipeLink = page.getByTestId('up-next-recipe-link');
-      await expect(recipeLink).toBeVisible();
+      // Should show at least one meal with a view recipe button
+      const recipeBtn = page.getByTestId('up-next-view-recipe-btn');
+      await expect(recipeBtn).toBeVisible();
 
       // Should show meal type (breakfast, lunch, or dinner)
       const cardText = await upNextCard.textContent();
