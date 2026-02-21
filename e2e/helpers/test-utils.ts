@@ -1,9 +1,14 @@
 import { Page } from '@playwright/test';
 
 /**
- * Clear localStorage to reset app state
+ * Clear localStorage to reset app state.
+ * Navigates to '/' first only when on about:blank, so localStorage access does
+ * not throw a SecurityError in a beforeEach before any navigation has happened.
  */
 export async function clearAppState(page: Page) {
+  if (!page.url().startsWith('http')) {
+    await page.goto('/');
+  }
   await page.evaluate(() => {
     localStorage.clear();
   });
