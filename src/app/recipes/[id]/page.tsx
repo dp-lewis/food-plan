@@ -145,7 +145,7 @@ export default function UserRecipeDetail() {
       >
         <div data-testid="delete-recipe-drawer">
           <p className="mb-6 text-base text-muted-foreground">
-            Are you sure you want to delete &ldquo;{recipe.title}&rdquo;? This cannot be undone.
+            This will permanently delete &ldquo;{recipe.title}&rdquo; from your recipes. This cannot be undone.
           </p>
           <div className="flex flex-col gap-3">
             <Button
