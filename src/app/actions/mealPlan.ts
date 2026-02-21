@@ -60,7 +60,7 @@ export async function loadActivePlan(): Promise<ActionResult<ActivePlanData | nu
 
     const [ownRecipes, planRecipes, checkedItems, customItems] = await Promise.all([
       getUserRecipes(user.id),
-      role === 'member' ? getRecipesByIds(planRecipeIds) : Promise.resolve([]),
+      getRecipesByIds(planRecipeIds),
       getCheckedItems(plan.id),
       getCustomItems(plan.id),
     ]);
