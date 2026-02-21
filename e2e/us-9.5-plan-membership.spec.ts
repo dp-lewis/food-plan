@@ -141,3 +141,77 @@ test.describe('US-9.5: Manage plan membership', () => {
     await expect(page.getByTestId('plan-members-row')).toBeVisible();
   });
 });
+
+test.describe('Reset plan', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await clearAppState(page);
+  });
+
+  test('Reset plan button is visible on plan page', async ({ page }) => {
+    await createPlanWithMeals(page);
+    await expect(page.getByText('Reset plan')).toBeVisible();
+  });
+
+  test('Reset plan drawer opens with correct content', async ({ page }) => {
+    await createPlanWithMeals(page);
+    await page.getByText('Reset plan').click();
+
+    await expect(page.getByText('Reset Plan')).toBeVisible();
+    await expect(page.getByText('This will clear all meals for everyone on this plan. The share link will stay active.')).toBeVisible();
+    await expect(page.getByTestId('confirm-reset-plan')).toBeVisible();
+  });
+
+  test('Reset plan drawer shows day picker pre-filled with current start day', async ({ page }) => {
+    await createPlanWithMeals(page, 5); // Saturday start
+    await page.getByText('Reset plan').click();
+
+    // Saturday (value "5") should be pre-selected
+    await expect(page.getByTestId('reset-day-5')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('Reset plan drawer day picker can be changed', async ({ page }) => {
+    await createPlanWithMeals(page, 5); // Saturday start
+    await page.getByText('Reset plan').click();
+
+    await page.getByTestId('reset-day-0').click();
+    await expect(page.getByTestId('reset-day-0')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId('reset-day-5')).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('Cancelling Reset plan drawer dismisses without changing the plan', async ({ page }) => {
+    await createPlanWithMeals(page);
+    await page.getByText('Reset plan').click();
+
+    await expect(page.getByTestId('confirm-reset-plan')).toBeVisible();
+    await page.getByRole('button', { name: 'Cancel' }).click();
+
+    await expect(page.getByTestId('confirm-reset-plan')).not.toBeVisible();
+    await expect(page.getByTestId('meal-plan')).toBeVisible();
+    // Meals should still be present (not wiped)
+    await expect(page.getByText('No meals planned')).not.toBeVisible();
+  });
+
+  test.skip('Confirming reset clears all meals (requires auth)', async ({ page }) => {
+    // resetPlanAction requires live Supabase auth — cannot run without sign-in
+    await createPlanWithMeals(page);
+    await page.getByText('Reset plan').click();
+    await page.getByTestId('confirm-reset-plan').click();
+
+    const emptySlots = page.getByText('No meals planned');
+    await expect(emptySlots.first()).toBeVisible();
+    expect(await emptySlots.count()).toBe(21);
+  });
+
+  test.skip('Confirming reset with changed start day updates the plan (requires auth)', async ({ page }) => {
+    // resetPlanAction requires live Supabase auth — cannot run without sign-in
+    await createPlanWithMeals(page, 5); // Saturday start
+    await page.getByText('Reset plan').click();
+
+    await page.getByTestId('reset-day-0').click(); // change to Monday
+    await page.getByTestId('confirm-reset-plan').click();
+
+    const firstDayCard = page.getByTestId('day-0');
+    await expect(firstDayCard.getByText('Monday')).toBeVisible();
+  });
+});
