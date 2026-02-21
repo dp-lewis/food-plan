@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Recipe, MealType } from '@/types';
 import { Drawer } from './ui';
 import { cn } from '@/lib/utils';
@@ -30,12 +30,9 @@ export default function RecipeDrawer({
   const title = mode === 'add' ? `Add a ${mealTypeLabel}` : `Choose a ${mealTypeLabel}`;
 
   const [searchQuery, setSearchQuery] = useState('');
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      searchInputRef.current?.focus();
-    } else {
+    if (!isOpen) {
       setSearchQuery('');
     }
   }, [isOpen]);
@@ -67,7 +64,6 @@ export default function RecipeDrawer({
 
       {/* Search input */}
       <input
-        ref={searchInputRef}
         type="text"
         value={searchQuery}
         onChange={e => setSearchQuery(e.target.value)}
