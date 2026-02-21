@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { ChefHat } from 'lucide-react';
 import { Card } from '@/components/ui';
+import { buttonVariants } from '@/components/ui/Button';
 import { Meal, MealType } from '@/types';
 import { Recipe } from '@/types';
 
@@ -33,13 +35,19 @@ export default function UpNextCard({ label, mealType, mealsWithRecipes }: UpNext
           const isFirst = index === 0;
           return (
             <div key={meal.id} data-testid={`up-next-meal-${meal.id}`}>
-              <Link href={recipeUrl} data-testid={isFirst ? 'up-next-recipe-link' : undefined}>
-                <p className={`mb-1 font-semibold text-foreground ${isFirst ? 'text-2xl' : 'text-base'}`}>
-                  {recipe.title}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {recipe.prepTime + recipe.cookTime} mins
-                </p>
+              <p className={`mb-1 font-semibold text-foreground ${isFirst ? 'text-2xl' : 'text-base'}`}>
+                {recipe.title}
+              </p>
+              <p className="mb-2 text-sm text-muted-foreground">
+                {recipe.prepTime + recipe.cookTime} mins
+              </p>
+              <Link
+                href={recipeUrl}
+                data-testid={isFirst ? 'up-next-view-recipe-btn' : undefined}
+                className={buttonVariants({ variant: isFirst ? 'primary' : 'secondary' }) + ' w-full'}
+              >
+                <ChefHat className="w-4 h-4 mr-2" />
+                View Recipe
               </Link>
             </div>
           );
