@@ -181,4 +181,77 @@ test.describe('US-2.3: Manage meals in plan', () => {
     const mealCount = await slot.locator('[data-testid^="meal-"]').count();
     expect(mealCount).toBe(initialMeals);
   });
+
+  test('Recipe drawer shows a search input', async ({ page }) => {
+    const firstDay = page.getByTestId('day-0');
+    const slot = firstDay.locator('[data-testid="slot-0-breakfast"]');
+    const addButton = slot.locator('[data-testid="add-meal-0-breakfast"]');
+    await addButton.click();
+
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+
+    await expect(page.getByTestId('recipe-search-input')).toBeVisible();
+  });
+
+  test('Searching filters the recipe list', async ({ page }) => {
+    const firstDay = page.getByTestId('day-0');
+    const slot = firstDay.locator('[data-testid="slot-0-breakfast"]');
+    const addButton = slot.locator('[data-testid="add-meal-0-breakfast"]');
+    await addButton.click();
+
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+
+    const countBefore = await page.locator('[data-testid^="recipe-option-"]').count();
+
+    await page.getByTestId('recipe-search-input').fill('egg');
+
+    const countAfter = await page.locator('[data-testid^="recipe-option-"]').count();
+    const emptyState = page.getByTestId('recipe-search-empty');
+    const emptyStateCount = await emptyState.count();
+
+    // Either the list was filtered down or the empty state is shown
+    expect(countAfter < countBefore || emptyStateCount > 0).toBe(true);
+
+    // At least one of recipe options or empty state must be visible
+    expect(countAfter + emptyStateCount).toBeGreaterThan(0);
+  });
+
+  test('Searching with no match shows empty state', async ({ page }) => {
+    const firstDay = page.getByTestId('day-0');
+    const slot = firstDay.locator('[data-testid="slot-0-breakfast"]');
+    const addButton = slot.locator('[data-testid="add-meal-0-breakfast"]');
+    await addButton.click();
+
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+
+    await page.getByTestId('recipe-search-input').fill('zzznomatch');
+
+    await expect(page.getByTestId('recipe-search-empty')).toBeVisible();
+    await expect(page.getByTestId('recipe-search-empty')).toContainText('No recipes match your search.');
+
+    const recipeOptions = page.locator('[data-testid^="recipe-option-"]');
+    await expect(recipeOptions).toHaveCount(0);
+  });
+
+  test('Search resets when drawer is closed and reopened', async ({ page }) => {
+    const firstDay = page.getByTestId('day-0');
+    const slot = firstDay.locator('[data-testid="slot-0-breakfast"]');
+    const addButton = slot.locator('[data-testid="add-meal-0-breakfast"]');
+
+    await addButton.click();
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+
+    await page.getByTestId('recipe-search-input').fill('zzznomatch');
+
+    // Close the drawer
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible();
+
+    // Reopen the drawer
+    await addButton.click();
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+
+    // Search input should be reset to empty
+    await expect(page.getByTestId('recipe-search-input')).toHaveValue('');
+  });
 });
