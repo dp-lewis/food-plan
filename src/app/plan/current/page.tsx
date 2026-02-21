@@ -8,7 +8,7 @@ import { getTodayPlanIndex, getOrderedDays } from '@/lib/dates';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
 import SignOutDialog from '@/components/SignOutDialog';
-import { BottomNav, Button, Card, Drawer, PageHeader, Toast } from '@/components/ui';
+import { BottomNav, Button, Card, Drawer, PageHeader, Toast, ToggleGroup } from '@/components/ui';
 import { useAuth } from '@/components/AuthProvider';
 import {
   generateShareLink,
@@ -23,6 +23,16 @@ import DaySlot from '@/components/plan/DaySlot';
 import PlanMembersRow from '@/components/plan/PlanMembersRow';
 
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner'];
+
+const DAY_OPTIONS = [
+  { value: '0', label: 'Mon' },
+  { value: '1', label: 'Tue' },
+  { value: '2', label: 'Wed' },
+  { value: '3', label: 'Thu' },
+  { value: '4', label: 'Fri' },
+  { value: '5', label: 'Sat' },
+  { value: '6', label: 'Sun' },
+];
 
 type DrawerMode = 'swap' | 'add';
 
@@ -56,6 +66,7 @@ export default function CurrentPlan() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [resetPlanDrawerOpen, setResetPlanDrawerOpen] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+  const [resetStartDay, setResetStartDay] = useState<number>(currentPlan?.preferences.startDay ?? 5);
 
   // Share drawer state
   const [shareDrawerOpen, setShareDrawerOpen] = useState(false);
@@ -180,13 +191,13 @@ export default function CurrentPlan() {
     if (!currentPlan) return;
     setResetLoading(true);
     try {
-      const result = await resetPlanAction(currentPlan.id);
+      const result = await resetPlanAction(currentPlan.id, resetStartDay);
       if (!result.success) {
         setToastVariant('error');
         setToastMessage(result.error ?? 'Failed to reset plan');
         return;
       }
-      clearPlanMeals();
+      clearPlanMeals(resetStartDay);
       setToastVariant('success');
       setToastMessage('Plan reset');
     } catch {
@@ -408,7 +419,10 @@ export default function CurrentPlan() {
           <div className="flex items-center justify-end gap-3">
             <button
               className="text-sm text-primary"
-              onClick={() => setResetPlanDrawerOpen(true)}
+              onClick={() => {
+                setResetStartDay(currentPlan?.preferences.startDay ?? 5);
+                setResetPlanDrawerOpen(true);
+              }}
             >
               Reset plan
             </button>
@@ -567,9 +581,19 @@ export default function CurrentPlan() {
         onClose={() => setResetPlanDrawerOpen(false)}
         title="Reset Plan"
       >
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-sm text-muted-foreground mb-4">
           This will clear all meals for everyone on this plan. The share link will stay active.
         </p>
+        <div className="mb-6">
+          <ToggleGroup
+            label="Week starts on"
+            options={DAY_OPTIONS}
+            value={String(resetStartDay)}
+            onChange={(value) => setResetStartDay(Number(value))}
+            variant="compact"
+            testIdPrefix="reset-day"
+          />
+        </div>
         <div className="flex gap-3">
           <Button
             variant="secondary"
