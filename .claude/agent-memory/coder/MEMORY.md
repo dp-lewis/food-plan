@@ -231,3 +231,20 @@ See `realtime-mock.md` for full details. Critical points:
 - Checkbox component is `<button role="checkbox">` — use `aria-checked` attribute, NOT `input[type="checkbox"]`
 - `DevTestSeam` component exposes `window.__setStoreState` for tests; mounted in layout
 - Window casting: `(window as unknown as { __setStoreState: ... })`
+
+## E2E Test Environment: Chromium Version Mismatch
+
+Playwright 1.58.1 requires `chromium_headless_shell-1208`, but this environment has only 1194 installed (download blocked). Fix with a symlink:
+```bash
+mkdir -p /root/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/
+ln -sf /root/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell \
+  /root/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell
+```
+
+Also: create `.env.local` from `.env.local.example` so the middleware doesn't return 500 (Playwright won't reuse a server returning non-200).
+
+## Playwright Selector: Ambiguous getByText
+
+`getByText()` is case-insensitive by default. When a drawer title (e.g., `<h2>Reset Plan</h2>`) and a button (e.g., `<button>Reset plan</button>`) share similar text, `getByText('Reset Plan')` causes a strict-mode violation (2 elements matched).
+
+Fix: use `getByRole('heading', { name: 'Reset Plan' })` to target only the heading.
