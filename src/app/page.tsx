@@ -12,7 +12,7 @@ import SignOutDialog from '@/components/SignOutDialog';
 import { BottomNav, PageHeader } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
 import { useAuth } from '@/components/AuthProvider';
-import { ChefHat, ShoppingCart, Calendar, Utensils } from 'lucide-react';
+import { ShoppingCart, Calendar, Utensils } from 'lucide-react';
 import UpNextCard from '@/components/dashboard/UpNextCard';
 import TomorrowPreview from '@/components/dashboard/TomorrowPreview';
 import ShoppingStatusCard from '@/components/dashboard/ShoppingStatusCard';
@@ -128,12 +128,6 @@ export default function Dashboard() {
     if (!shoppingStarted && shoppingStatus && shoppingStatus.total > 0) {
       const remaining = shoppingStatus.total - shoppingStatus.checked;
       primaryAction = { href: '/shopping-list', label: 'Go Shopping', subtitle: `${remaining} items remaining`, icon: ShoppingCart };
-    } else if (hasUpNext && upNextMealsWithRecipes.length === 1) {
-      const firstRecipe = upNextMealsWithRecipes[0].recipe;
-      const recipeUrl = firstRecipe.isUserRecipe ? `/recipes/${firstRecipe.id}` : `/recipe/${firstRecipe.id}`;
-      primaryAction = { href: recipeUrl, label: 'View Recipe', subtitle: `${firstRecipe.prepTime + firstRecipe.cookTime} mins total`, icon: ChefHat };
-    } else if (hasUpNext) {
-      primaryAction = { href: '/plan/current', label: 'View Recipes', subtitle: `${upNextMealsWithRecipes.length} meals`, icon: ChefHat };
     } else {
       primaryAction = { href: '/plan/current', label: 'View Full Plan', subtitle: `Day ${todayIndex + 1} of 7`, icon: Calendar };
     }
