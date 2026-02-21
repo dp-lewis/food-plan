@@ -158,7 +158,7 @@ export async function deletePlanAction(planId: string): Promise<{ success: boole
   }
 }
 
-export async function resetPlanAction(planId: string): Promise<{ success: boolean; error?: string }> {
+export async function resetPlanAction(planId: string, startDay: number): Promise<{ success: boolean; error?: string }> {
   try {
     const user = await getAuthUser();
     await requirePlanOwner(planId, user.id);
@@ -178,6 +178,11 @@ export async function resetPlanAction(planId: string): Promise<{ success: boolea
       .delete()
       .eq('meal_plan_id', planId);
     if (customError) throw customError;
+    const { error: prefError } = await supabase
+      .from('meal_plans')
+      .update({ preferences: { startDay } })
+      .eq('id', planId);
+    if (prefError) throw prefError;
     return { success: true };
   } catch (e) {
     console.error('[resetPlanAction]', e);
