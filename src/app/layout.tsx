@@ -20,6 +20,12 @@ export const metadata: Metadata = {
   icons: {
     apple: "/icons/apple-touch-icon.png",
   },
+  openGraph: {
+    title: "Did we get...?",
+    description: "Weekly meal planning made simple",
+    siteName: "Did we get...?",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
