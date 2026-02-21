@@ -75,6 +75,7 @@ interface AppState {
   _addRemoteRecipe: (recipe: Recipe) => void;
   // Plan lifecycle helpers
   _clearCurrentPlan: () => void;
+  _clearPlanMeals: () => void;
   // Broadcast helpers — allow the realtime hook to register a sender so the
   // store can trigger client-to-client broadcasts (e.g. uncheck, bulk clear)
   _shoppingBroadcast: ((event: string, payload: Record<string, unknown>) => void) | null;
@@ -327,6 +328,15 @@ export const useStore = create<AppState>()(
           customShoppingItems: [],
           _planRole: null,
         });
+      },
+      _clearPlanMeals: () => {
+        set((state) => ({
+          currentPlan: state.currentPlan
+            ? { ...state.currentPlan, meals: [] }
+            : null,
+          checkedItems: {},
+          customShoppingItems: [],
+        }));
       },
       _shoppingBroadcast: null,
       _setShoppingBroadcast: (fn) => {

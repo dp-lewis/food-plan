@@ -157,3 +157,30 @@ export async function deletePlanAction(planId: string): Promise<{ success: boole
     return { success: false, error: e instanceof Error ? e.message : 'Failed to delete plan' };
   }
 }
+
+export async function resetPlanAction(planId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await getAuthUser();
+    await requirePlanOwner(planId, user.id);
+    const supabase = await createClient();
+    const { error: mealsError } = await supabase
+      .from('meals')
+      .delete()
+      .eq('meal_plan_id', planId);
+    if (mealsError) throw mealsError;
+    const { error: checkedError } = await supabase
+      .from('checked_items')
+      .delete()
+      .eq('meal_plan_id', planId);
+    if (checkedError) throw checkedError;
+    const { error: customError } = await supabase
+      .from('custom_shopping_items')
+      .delete()
+      .eq('meal_plan_id', planId);
+    if (customError) throw customError;
+    return { success: true };
+  } catch (e) {
+    console.error('[resetPlanAction]', e);
+    return { success: false, error: e instanceof Error ? e.message : 'Failed to reset plan' };
+  }
+}

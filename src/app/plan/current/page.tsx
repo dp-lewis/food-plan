@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { getRecipesByMealType } from '@/data/recipes';
 import { getTodayPlanIndex, getOrderedDays } from '@/lib/dates';
@@ -19,7 +18,7 @@ import {
   revokeShareLink,
   type MemberInfo,
 } from '@/app/actions/share';
-import { deletePlanAction } from '@/app/actions/mealPlan';
+import { deletePlanAction, resetPlanAction } from '@/app/actions/mealPlan';
 import DaySlot from '@/components/plan/DaySlot';
 import PlanMembersRow from '@/components/plan/PlanMembersRow';
 
@@ -46,6 +45,7 @@ export default function CurrentPlan() {
   const removeMeal = useStore((state) => state.removeMeal);
   const userRecipes = useStore((state) => state.userRecipes);
   const clearCurrentPlan = useStore((state) => state._clearCurrentPlan);
+  const clearPlanMeals = useStore((state) => state._clearPlanMeals);
 
   const { user, loading: authLoading } = useAuth();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -54,6 +54,8 @@ export default function CurrentPlan() {
   const [leaveLoading, setLeaveLoading] = useState(false);
   const [deletePlanDrawerOpen, setDeletePlanDrawerOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [resetPlanDrawerOpen, setResetPlanDrawerOpen] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
   // Share drawer state
   const [shareDrawerOpen, setShareDrawerOpen] = useState(false);
@@ -171,6 +173,28 @@ export default function CurrentPlan() {
     } finally {
       setDeleteLoading(false);
       setDeletePlanDrawerOpen(false);
+    }
+  };
+
+  const handleResetPlan = async () => {
+    if (!currentPlan) return;
+    setResetLoading(true);
+    try {
+      const result = await resetPlanAction(currentPlan.id);
+      if (!result.success) {
+        setToastVariant('error');
+        setToastMessage(result.error ?? 'Failed to reset plan');
+        return;
+      }
+      clearPlanMeals();
+      setToastVariant('success');
+      setToastMessage('Plan reset');
+    } catch {
+      setToastVariant('error');
+      setToastMessage('Failed to reset plan');
+    } finally {
+      setResetLoading(false);
+      setResetPlanDrawerOpen(false);
     }
   };
 
@@ -382,9 +406,12 @@ export default function CurrentPlan() {
           </div>
         ) : (
           <div className="flex items-center justify-end gap-3">
-            <Link href="/plan" className="text-sm text-primary">
+            <button
+              className="text-sm text-primary"
+              onClick={() => setResetPlanDrawerOpen(true)}
+            >
               Reset plan
-            </Link>
+            </button>
             {planRole === 'owner' && (
               <Button
                 variant="ghost"
@@ -531,6 +558,35 @@ export default function CurrentPlan() {
             loading={leaveLoading}
           >
             Confirm
+          </Button>
+        </div>
+      </Drawer>
+
+      <Drawer
+        isOpen={resetPlanDrawerOpen}
+        onClose={() => setResetPlanDrawerOpen(false)}
+        title="Reset Plan"
+      >
+        <p className="text-sm text-muted-foreground mb-6">
+          This will clear all meals for everyone on this plan. The share link will stay active.
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            className="flex-1"
+            onClick={() => setResetPlanDrawerOpen(false)}
+            disabled={resetLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            className="flex-1"
+            data-testid="confirm-reset-plan"
+            onClick={handleResetPlan}
+            loading={resetLoading}
+          >
+            Reset
           </Button>
         </div>
       </Drawer>
