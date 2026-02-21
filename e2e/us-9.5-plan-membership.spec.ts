@@ -157,7 +157,7 @@ test.describe('Reset plan', () => {
     await createPlanWithMeals(page);
     await page.getByText('Reset plan').click();
 
-    await expect(page.getByText('Reset Plan')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Reset Plan' })).toBeVisible();
     await expect(page.getByText('This will clear all meals for everyone on this plan. The share link will stay active.')).toBeVisible();
     await expect(page.getByTestId('confirm-reset-plan')).toBeVisible();
   });
