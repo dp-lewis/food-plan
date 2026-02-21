@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useEffect, useState } from 'react';
 import { Recipe, MealType } from '@/types';
 import { Drawer } from './ui';
 import { cn } from '@/lib/utils';
@@ -28,6 +29,27 @@ export default function RecipeDrawer({
   const mealTypeLabel = mealType ? mealType.charAt(0).toUpperCase() + mealType.slice(1) : '';
   const title = mode === 'add' ? `Add a ${mealTypeLabel}` : `Choose a ${mealTypeLabel}`;
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      searchInputRef.current?.focus();
+    } else {
+      setSearchQuery('');
+    }
+  }, [isOpen]);
+
+  const query = searchQuery.trim().toLowerCase();
+  const filteredRecipes = query
+    ? recipes.filter(recipe => {
+        if (recipe.title.toLowerCase().includes(query)) return true;
+        if (recipe.description.toLowerCase().includes(query)) return true;
+        if (recipe.tags.some(tag => tag.toLowerCase().includes(query))) return true;
+        return false;
+      })
+    : recipes;
+
   return (
     <Drawer isOpen={isOpen} onClose={onClose} title={title}>
       {/* Surprise me button */}
@@ -43,13 +65,36 @@ export default function RecipeDrawer({
         Surprise me
       </button>
 
+      {/* Search input */}
+      <input
+        ref={searchInputRef}
+        type="text"
+        value={searchQuery}
+        onChange={e => setSearchQuery(e.target.value)}
+        placeholder="Search recipes..."
+        aria-label="Search recipes"
+        data-testid="recipe-search-input"
+        className="w-full px-3 py-2 rounded-sm bg-background border border-border text-base text-foreground mb-4"
+      />
+
       {/* Recipe list */}
       <div className="flex flex-col gap-2" data-testid="recipe-drawer-list">
         {(() => {
-          const userRecipes = recipes.filter(r => r.isUserRecipe);
-          const builtInRecipes = recipes.filter(r => !r.isUserRecipe);
+          const userRecipes = filteredRecipes.filter(r => r.isUserRecipe);
+          const builtInRecipes = filteredRecipes.filter(r => !r.isUserRecipe);
           const hasUserRecipes = userRecipes.length > 0;
           const hasBuiltInRecipes = builtInRecipes.length > 0;
+
+          if (!hasUserRecipes && !hasBuiltInRecipes) {
+            return (
+              <p
+                className="text-sm text-muted-foreground text-center py-4"
+                data-testid="recipe-search-empty"
+              >
+                No recipes match your search.
+              </p>
+            );
+          }
 
           const renderRecipe = (recipe: Recipe) => {
             const isCurrent = recipe.id === currentRecipeId;
