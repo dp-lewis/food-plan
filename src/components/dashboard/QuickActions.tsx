@@ -31,17 +31,19 @@ export default function QuickActions({ primaryAction, todayIndex }: QuickActions
           <div className="text-sm font-normal opacity-70">{primaryAction.subtitle}</div>
         </div>
       </Link>
-      <Link
-        href="/plan/current"
-        data-testid="view-full-plan-link"
-        className={buttonVariants({ variant: 'secondary' }) + ' w-full h-auto py-4 justify-start text-left'}
-      >
-        <Calendar className="w-5 h-5 mr-3 flex-shrink-0" />
-        <div>
-          <div className="font-semibold">Full Plan</div>
-          <div className="text-sm font-normal opacity-70">Day {todayIndex + 1} of 7</div>
-        </div>
-      </Link>
+      {primaryAction.href !== '/plan/current' && (
+        <Link
+          href="/plan/current"
+          data-testid="view-full-plan-link"
+          className={buttonVariants({ variant: 'secondary' }) + ' w-full h-auto py-4 justify-start text-left'}
+        >
+          <Calendar className="w-5 h-5 mr-3 flex-shrink-0" />
+          <div>
+            <div className="font-semibold">Full Plan</div>
+            <div className="text-sm font-normal opacity-70">Day {todayIndex + 1} of 7</div>
+          </div>
+        </Link>
+      )}
     </div>
   );
 }
