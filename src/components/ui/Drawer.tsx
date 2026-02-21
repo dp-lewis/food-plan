@@ -98,7 +98,7 @@ export default function Drawer({ isOpen, onClose, title, children }: DrawerProps
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="absolute bottom-0 left-0 right-0 max-h-[75vh] bg-background rounded-t-lg flex flex-col animate-[slide-up_200ms_ease-out]"
+        className="absolute bottom-0 left-0 right-0 h-[75vh] bg-background rounded-t-lg flex flex-col animate-[slide-up_200ms_ease-out]"
       >
         {/* Drag handle */}
         <div className="w-9 h-1 bg-border rounded-full mx-auto mt-3 mb-2" />
