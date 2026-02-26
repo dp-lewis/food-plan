@@ -2,7 +2,7 @@ import { HTMLAttributes, forwardRef } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-export const cardVariants = cva('bg-card rounded-lg', {
+export const cardVariants = cva('bg-card rounded-2xl', {
   variants: {
     variant: {
       default: 'border border-border',

@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { Card, Button, ProgressBar } from '@/components/ui';
-import { Calendar } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 
 interface ShoppingStatus {
   total: number;
@@ -15,10 +15,10 @@ interface ShoppingStatusCardProps {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 mb-4">
-      <div className="flex-1 h-px bg-border" />
-      <span className="text-base font-semibold text-foreground">{children}</span>
-      <div className="flex-1 h-px bg-border" />
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <span className="bg-card px-4 text-xl font-normal text-foreground whitespace-nowrap font-display">
+        {children}
+      </span>
     </div>
   );
 }
@@ -27,12 +27,12 @@ export default function ShoppingStatusCard({ shoppingStatus }: ShoppingStatusCar
   const router = useRouter();
 
   return (
-    <Card data-testid="shopping-status-card" className="mb-4">
+    <Card data-testid="shopping-status-card" className="relative pt-8">
       <SectionHeading>Shopping list</SectionHeading>
 
       {/* Large number display */}
-      <div className="flex items-baseline gap-2 mb-3">
-        <span className="text-4xl font-bold text-foreground" data-testid="shopping-status-count">
+      <div className="flex items-baseline gap-2 mb-4">
+        <span className="text-4xl font-normal text-foreground font-display" data-testid="shopping-status-count">
           {shoppingStatus.checked}/{shoppingStatus.total}
         </span>
         <span className="text-base text-muted-foreground">items</span>
@@ -51,11 +51,11 @@ export default function ShoppingStatusCard({ shoppingStatus }: ShoppingStatusCar
       {/* CTA button */}
       <Button
         variant="primary"
-        className="w-full"
+        className="w-full justify-start h-auto py-4 px-4 rounded-[16px]"
         data-testid="shopping-status-link"
         onClick={() => router.push('/shopping-list')}
       >
-        <Calendar className="w-4 h-4 mr-2" aria-hidden="true" />
+        <ShoppingCart className="w-4 h-4 mr-2" aria-hidden="true" />
         View shopping list
       </Button>
     </Card>

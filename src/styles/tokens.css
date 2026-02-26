@@ -10,20 +10,20 @@
      TYPOGRAPHY
      ========================================== */
 
-  --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-                 Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-castoro), Georgia, serif;
 
   /* ==========================================
      SHADCN-CONVENTION ALIASES
      Maps to Tailwind utility classes via @theme inline
      ========================================== */
 
-  --primary: #15803d;
-  --primary-light: #dcfce7;
+  --primary: #5b806e;
+  --primary-light: #d4e4dc;
   --primary-foreground: #ffffff;
-  --background: #f5f0e8;
+  --background: #f4ece6;
   --foreground: #111827;
-  --card: #faf7f2;
+  --card: #f4ece6;
   --card-foreground: #111827;
   --progress-shopping: #c84b2f;
   --secondary: #f9fafb;
@@ -34,15 +34,15 @@
   --accent-foreground: #111827;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #e5e7eb;
+  --border: #ebcfbc;
   --input: transparent;
   --input-background: #f9fafb;
-  --ring: #15803d;
+  --ring: #5b806e;
   --radius: 0.5rem;
 
   /* Semantic colors (Alert variants) */
-  --success: #15803d;
-  --success-light: #dcfce7;
+  --success: #5b806e;
+  --success-light: #d4e4d8;
   --success-foreground: #ffffff;
   --warning: #b45309;
   --warning-light: #fef3c7;
@@ -66,10 +66,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary: #16a34a;
-    --primary-light: #14532d;
+    --primary: #5a7f62;
+    --primary-light: #2a3d2e;
     --primary-foreground: #ffffff;
-    --background: #1a1612;
+    --background: #221e18;
     --foreground: #f8fafc;
     --card: #221e18;
     --card-foreground: #f8fafc;
@@ -85,10 +85,10 @@
     --border: #334155;
     --input: transparent;
     --input-background: #1e293b;
-    --ring: #16a34a;
+    --ring: #5a7f62;
 
-    --success: #22c55e;
-    --success-light: #14532d;
+    --success: #5a7f62;
+    --success-light: #2a3d2e;
     --success-foreground: #ffffff;
     --warning: #f59e0b;
     --warning-light: #451a03;

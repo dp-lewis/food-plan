@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, Button } from '@/components/ui';
 import { Meal, MealType, Recipe } from '@/types';
-import { Calendar } from 'lucide-react';
+import { BookOpen, Calendar } from 'lucide-react';
 
 export interface TodayMealWithRecipe {
   meal: Meal;
@@ -30,10 +30,10 @@ const MEAL_LABELS: Record<MealType, string> = {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 mb-4">
-      <div className="flex-1 h-px bg-border" />
-      <span className="text-base font-semibold text-foreground">{children}</span>
-      <div className="flex-1 h-px bg-border" />
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <span className="bg-card px-4 text-xl font-normal text-foreground whitespace-nowrap font-display">
+        {children}
+      </span>
     </div>
   );
 }
@@ -73,12 +73,12 @@ export default function TodayCard({
   }
 
   return (
-    <Card data-testid="today-card" className="mb-4">
+    <Card data-testid="today-card" className="relative pt-8">
       <SectionHeading>Today</SectionHeading>
 
       {/* Meal type tabs */}
       {presentMealTypes.length > 0 && (
-        <div className="flex gap-2 mb-4 flex-wrap">
+        <div className="flex gap-2 mb-4">
           {presentMealTypes.map((mt) => {
             const isSelected = mt === selectedMealType;
             return (
@@ -87,10 +87,10 @@ export default function TodayCard({
                 data-testid={`today-tab-${mt}`}
                 onClick={() => setSelectedMealType(mt)}
                 className={[
-                  'px-4 py-2 rounded-full text-sm font-medium border transition-colors min-h-[44px]',
+                  'flex-1 py-2 rounded-full text-sm font-medium border transition-colors min-h-[44px] text-center',
                   isSelected
                     ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-transparent text-foreground border-border',
+                    : 'bg-transparent text-primary border-primary',
                 ].join(' ')}
               >
                 {MEAL_LABELS[mt]}
@@ -103,19 +103,19 @@ export default function TodayCard({
       {primaryRecipe ? (
         <>
           {/* Recipe name */}
-          <h2 className="text-2xl font-bold text-foreground mb-2" data-testid="today-recipe-title">
+          <h2 className="text-[2rem] font-normal text-foreground mb-2" data-testid="today-recipe-title">
             {primaryRecipe.title}
           </h2>
 
           {/* Metadata */}
-          <p className="text-sm text-muted-foreground mb-1">
+          <p className="text-sm text-muted-foreground mb-2">
             {primaryRecipe.prepTime + primaryRecipe.cookTime} minutes
             {primaryRecipe.servings ? ` | serves ${primaryRecipe.servings}` : ''}
           </p>
 
           {/* Description */}
           {primaryRecipe.description && (
-            <p className="text-sm text-muted-foreground mb-1">
+            <p className="text-sm text-muted-foreground mb-2">
               {primaryRecipe.description}
             </p>
           )}
@@ -128,21 +128,21 @@ export default function TodayCard({
           )}
 
           {/* CTAs */}
-          <div className="space-y-2 mt-4">
+          <div className="flex flex-col gap-2 mt-4">
             {recipeUrl && (
               <Button
                 variant="primary"
-                className="w-full"
+                className="w-full justify-start h-auto py-4 px-4 rounded-[16px]"
                 data-testid="today-view-recipe-btn"
                 onClick={() => router.push(recipeUrl)}
               >
-                <Calendar className="w-4 h-4 mr-2" aria-hidden="true" />
+                <BookOpen className="w-4 h-4 mr-2" aria-hidden="true" />
                 View recipe
               </Button>
             )}
             <Button
               variant="secondary"
-              className="w-full"
+              className="w-full justify-start bg-background h-auto py-4 px-4 rounded-[16px]"
               data-testid="today-view-plan-btn"
               onClick={() => router.push('/plan/current')}
             >

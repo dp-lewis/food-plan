@@ -1,5 +1,19 @@
 import type { Metadata, Viewport } from "next";
+import { Castoro, Inter } from "next/font/google";
 import "./globals.css";
+
+const castoro = Castoro({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-castoro",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 import { ServiceWorkerRegistration } from "./ServiceWorkerRegistration";
 import { StoreHydration } from "@/components/StoreHydration";
 import { StoreSync } from "@/components/StoreSync";
@@ -23,7 +37,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#15803d", // keep in sync with --primary in tokens.css
+  themeColor: "#5b806e", // keep in sync with --primary in tokens.css
   viewportFit: "cover",
 };
 
@@ -33,7 +47,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${castoro.variable} ${inter.variable}`}>
       <body className="antialiased">
         <a href="#main-content" className="skip-link">
           Skip to main content

@@ -40,14 +40,15 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-family);
+  --font-display: var(--font-display);
 }
 
 @layer base {
   * { @apply border-border; }
   body { @apply bg-background text-foreground antialiased; }
-  h1 { font-size: var(--text-2xl); font-weight: 600; }
-  h2 { font-size: var(--text-xl); font-weight: 600; }
-  h3 { font-size: var(--text-lg); font-weight: 600; }
+  h1 { font-size: var(--text-2xl); font-weight: 400; font-family: var(--font-display); }
+  h2 { font-size: var(--text-xl); font-weight: 400; font-family: var(--font-display); }
+  h3 { font-size: var(--text-lg); font-weight: 400; font-family: var(--font-display); }
 }
 
 body {
