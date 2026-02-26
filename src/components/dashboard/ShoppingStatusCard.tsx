@@ -23,8 +23,22 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
+function getProgressCommentary(checked: number, total: number): string | null {
+  if (total === 0) return null;
+  const pct = checked / total;
+  if (pct === 0) return 'Ready to start shopping';
+  if (pct === 1) return 'All done — great work!';
+  if (pct >= 0.9) return 'Nearly there now';
+  if (pct >= 0.75) return 'Almost there';
+  if (pct >= 0.5) return 'More than half way';
+  if (pct >= 0.45) return 'Almost half way';
+  if (pct >= 0.25) return 'Making good progress';
+  return 'Just getting started';
+}
+
 export default function ShoppingStatusCard({ shoppingStatus }: ShoppingStatusCardProps) {
   const router = useRouter();
+  const commentary = getProgressCommentary(shoppingStatus.checked, shoppingStatus.total);
 
   return (
     <Card data-testid="shopping-status-card" className="relative pt-8">
@@ -39,7 +53,7 @@ export default function ShoppingStatusCard({ shoppingStatus }: ShoppingStatusCar
       </div>
 
       {/* Progress bar with orange-red color */}
-      <div className="mb-4">
+      <div className="mb-2">
         <ProgressBar
           value={shoppingStatus.checked}
           max={shoppingStatus.total}
@@ -47,6 +61,11 @@ export default function ShoppingStatusCard({ shoppingStatus }: ShoppingStatusCar
           label={`Shopping progress: ${shoppingStatus.checked} of ${shoppingStatus.total} items`}
         />
       </div>
+
+      {/* Progress commentary */}
+      {commentary && (
+        <p className="text-sm text-muted-foreground mb-4">{commentary}</p>
+      )}
 
       {/* CTA button */}
       <Button

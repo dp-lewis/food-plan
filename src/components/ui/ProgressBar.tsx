@@ -11,7 +11,10 @@ export default function ProgressBar({ value, max, showLabel = false, label, colo
 
   return (
     <div className="w-full">
-      <div className="h-2 rounded-full bg-muted overflow-hidden">
+      <div
+        className="h-3 rounded-full overflow-hidden border"
+        style={{ borderColor: colorVar ?? 'var(--primary)', backgroundColor: 'transparent' }}
+      >
         <div
           className="h-full rounded-full transition-[width] duration-300"
           style={{ width: `${percentage}%`, backgroundColor: colorVar ?? 'var(--primary)' }}
