@@ -149,7 +149,7 @@ test.describe('US-2.3: Manage meals in plan', () => {
     await page.goto('/');
     await expect(page.getByTestId('dashboard')).toBeVisible({ timeout: 15000 });
 
-    const fullPlanLink = page.getByTestId('view-full-plan-link');
+    const fullPlanLink = page.getByTestId('today-view-plan-btn');
     await fullPlanLink.scrollIntoViewIfNeeded();
     // Click at top-left of the button to avoid FAB overlap
     await fullPlanLink.click({ position: { x: 10, y: 10 } });

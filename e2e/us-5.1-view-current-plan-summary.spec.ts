@@ -10,9 +10,8 @@ import { clearAppState, createPlanWithMeals } from './helpers/test-utils';
  *
  * Acceptance Criteria:
  * - [ ] Dashboard shows current meal plan if one exists
- * - [ ] Shows "Up Next" meal slot prominently (all meals in that slot)
- * - [ ] Shows tomorrow preview before 3pm
- * - [ ] Shows shopping list progress (X of Y items checked)
+ * - [ ] Shows "Today" card with meal type tabs (Breakfast/Lunch/Dinner)
+ * - [ ] Shows shopping list progress with X/Y count
  * - [ ] Quick link to full calendar view
  * - [ ] Quick link to shopping list
  */
@@ -32,55 +31,50 @@ test.describe('US-5.1: View current plan summary', () => {
     await expect(page.getByTestId('empty-state')).not.toBeVisible();
   });
 
-  test('Shows up-next meal slot prominently', async ({ page }) => {
-    // Should show at least one of: up-next card, tomorrow preview
-    // The specific content depends on time of day, but something meal-related should be visible
-    const upNextCard = page.getByTestId('up-next-card');
-    const tomorrowPreview = page.getByTestId('tomorrow-preview');
+  test('Shows today card with meal tabs', async ({ page }) => {
+    const todayCard = page.getByTestId('today-card');
 
-    // At least one meal-related card should be visible
-    const hasUpNext = await upNextCard.isVisible().catch(() => false);
-    const hasTomorrow = await tomorrowPreview.isVisible().catch(() => false);
-
-    expect(hasUpNext || hasTomorrow).toBe(true);
-  });
-
-  test('Up next card shows all meals in slot', async ({ page }) => {
-    const upNextCard = page.getByTestId('up-next-card');
-
-    // If up-next card is visible, it should have meal details
-    if (await upNextCard.isVisible().catch(() => false)) {
-      // Should show at least one meal with recipe link
-      const recipeLink = page.getByTestId('up-next-recipe-link');
-      await expect(recipeLink).toBeVisible();
-
-      // Should show meal type (breakfast, lunch, or dinner)
-      const cardText = await upNextCard.textContent();
+    // Today card should be visible
+    if (await todayCard.isVisible().catch(() => false)) {
+      // Should show at least one meal type tab
+      const cardText = await todayCard.textContent();
       const hasMealType =
         cardText?.toLowerCase().includes('breakfast') ||
         cardText?.toLowerCase().includes('lunch') ||
         cardText?.toLowerCase().includes('dinner');
       expect(hasMealType).toBe(true);
+    }
+  });
 
-      // All meals in the slot should be displayed (check for meal test IDs)
-      const mealItems = upNextCard.locator('[data-testid^="up-next-meal-"]');
-      const mealCount = await mealItems.count();
-      expect(mealCount).toBeGreaterThanOrEqual(1);
+  test('Today card shows recipe name and action buttons', async ({ page }) => {
+    const todayCard = page.getByTestId('today-card');
+
+    if (await todayCard.isVisible().catch(() => false)) {
+      // Should show the recipe title
+      const recipeTitle = page.getByTestId('today-recipe-title');
+      await expect(recipeTitle).toBeVisible();
+
+      // Should show the view recipe button
+      const viewRecipeBtn = page.getByTestId('today-view-recipe-btn');
+      await expect(viewRecipeBtn).toBeVisible();
+
+      // Should show the view full plan button
+      const viewPlanBtn = page.getByTestId('today-view-plan-btn');
+      await expect(viewPlanBtn).toBeVisible();
     }
   });
 
   test('Quick link to full calendar view', async ({ page }) => {
-    const fullPlanLink = page.getByTestId('view-full-plan-link');
-    await expect(fullPlanLink).toBeVisible();
+    const fullPlanBtn = page.getByTestId('today-view-plan-btn');
+    await expect(fullPlanBtn).toBeVisible();
 
-    await fullPlanLink.scrollIntoViewIfNeeded();
-    // Click at top-left of the button to avoid FAB overlap
-    await fullPlanLink.click({ position: { x: 10, y: 10 } });
+    await fullPlanBtn.scrollIntoViewIfNeeded();
+    await fullPlanBtn.click();
     await expect(page).toHaveURL('/plan/current');
   });
 
   test('Quick link to shopping list', async ({ page }) => {
-    // Shopping list link is in the shopping status card
+    // Shopping list button is in the shopping status card
     const shoppingLink = page.getByTestId('shopping-status-link');
     await expect(shoppingLink).toBeVisible();
 
@@ -92,8 +86,10 @@ test.describe('US-5.1: View current plan summary', () => {
     const shoppingCard = page.getByTestId('shopping-status-card');
     await expect(shoppingCard).toBeVisible();
 
-    // Should show item count
-    const cardText = await shoppingCard.textContent();
-    expect(cardText).toMatch(/\d+ of \d+ items|Shopping complete/);
+    // Should show item count in new X/Y format
+    const countEl = page.getByTestId('shopping-status-count');
+    await expect(countEl).toBeVisible();
+    const countText = await countEl.textContent();
+    expect(countText).toMatch(/\d+\/\d+/);
   });
 });

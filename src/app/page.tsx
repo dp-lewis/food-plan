@@ -5,18 +5,16 @@ import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { getRecipeById, getRecipesByMealType } from '@/data/recipes';
 import { generateShoppingList, mergeShoppingLists } from '@/lib/shoppingList';
-import { getTodayPlanIndex, getDayName, getUpNextSlot } from '@/lib/dates';
+import { getTodayPlanIndex, getUpNextSlot } from '@/lib/dates';
 import { MealType, Meal } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
 import SignOutDialog from '@/components/SignOutDialog';
 import { BottomNav, PageHeader } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
 import { useAuth } from '@/components/AuthProvider';
-import { ChefHat, ShoppingCart, Calendar, Utensils } from 'lucide-react';
-import UpNextCard from '@/components/dashboard/UpNextCard';
-import TomorrowPreview from '@/components/dashboard/TomorrowPreview';
+import { Utensils } from 'lucide-react';
+import TodayCard from '@/components/dashboard/UpNextCard';
 import ShoppingStatusCard from '@/components/dashboard/ShoppingStatusCard';
-import QuickActions, { PrimaryAction } from '@/components/dashboard/QuickActions';
 
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
 
@@ -98,71 +96,43 @@ export default function Dashboard() {
     const hour = now.getHours();
     const todayIndex = getTodayPlanIndex(currentPlan.preferences.startDay);
 
-    // Up next slot
+    // Up next slot — used to determine the default tab
     const upNextSlot = getUpNextSlot(todayIndex, currentPlan.meals, hour);
-    const upNextMealsWithRecipes = upNextSlot
-      ? upNextSlot.meals
-          .map(meal => ({ meal, recipe: getRecipeById(meal.recipeId, userRecipes) }))
-          .filter((item): item is { meal: Meal; recipe: NonNullable<ReturnType<typeof getRecipeById>> } => item.recipe !== undefined)
-      : [];
-    const hasUpNext = upNextMealsWithRecipes.length > 0;
 
-    // Tomorrow's meals (for the preview line)
-    const tomorrowIndex = (todayIndex + 1) % 7;
-    const showTomorrow = upNextSlot?.label !== 'Tomorrow';
-    const tomorrowMealsWithRecipes = showTomorrow
-      ? currentPlan.meals
-          .filter((m) => m.dayIndex === tomorrowIndex)
-          .sort((a, b) => MEAL_ORDER.indexOf(a.mealType) - MEAL_ORDER.indexOf(b.mealType))
-          .map(meal => ({ meal, recipe: getRecipeById(meal.recipeId, userRecipes) }))
-          .filter((item): item is { meal: Meal; recipe: NonNullable<ReturnType<typeof getRecipeById>> } => item.recipe !== undefined)
-      : [];
+    // All meals for today, sorted by meal order
+    const todayMealsWithRecipes = currentPlan.meals
+      .filter((m) => m.dayIndex === todayIndex)
+      .sort((a, b) => MEAL_ORDER.indexOf(a.mealType) - MEAL_ORDER.indexOf(b.mealType))
+      .map((meal) => ({ meal, recipe: getRecipeById(meal.recipeId, userRecipes) }))
+      .filter(
+        (item): item is { meal: Meal; recipe: NonNullable<ReturnType<typeof getRecipeById>> } =>
+          item.recipe !== undefined
+      );
 
-    const tomorrowDayName = getDayName(currentPlan.preferences.startDay, tomorrowIndex);
+    const hasTodayMeals = todayMealsWithRecipes.length > 0;
 
-    // Shopping status flags
-    const shoppingStarted = shoppingStatus && shoppingStatus.checked > 0;
-
-    // Context-aware primary action
-    let primaryAction: PrimaryAction;
-    if (!shoppingStarted && shoppingStatus && shoppingStatus.total > 0) {
-      const remaining = shoppingStatus.total - shoppingStatus.checked;
-      primaryAction = { href: '/shopping-list', label: 'Go Shopping', subtitle: `${remaining} items remaining`, icon: ShoppingCart };
-    } else if (hasUpNext && upNextMealsWithRecipes.length === 1) {
-      const firstRecipe = upNextMealsWithRecipes[0].recipe;
-      const recipeUrl = firstRecipe.isUserRecipe ? `/recipes/${firstRecipe.id}` : `/recipe/${firstRecipe.id}`;
-      primaryAction = { href: recipeUrl, label: 'View Recipe', subtitle: `${firstRecipe.prepTime + firstRecipe.cookTime} mins total`, icon: ChefHat };
-    } else if (hasUpNext) {
-      primaryAction = { href: '/plan/current', label: 'View Recipes', subtitle: `${upNextMealsWithRecipes.length} meals`, icon: ChefHat };
-    } else {
-      primaryAction = { href: '/plan/current', label: 'View Full Plan', subtitle: `Day ${todayIndex + 1} of 7`, icon: Calendar };
-    }
+    // Default tab: prefer the up-next slot's meal type, else first present meal type
+    const defaultMealType: MealType =
+      upNextSlot && upNextSlot.label !== 'Tomorrow'
+        ? upNextSlot.mealType
+        : todayMealsWithRecipes[0]?.meal.mealType ?? 'dinner';
 
     return (
       <div className="min-h-screen bg-background" data-testid="dashboard">
         {pageHeader}
         <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
 
-          {hasUpNext && upNextSlot && (
-            <UpNextCard
-              label={upNextSlot.label}
-              mealType={upNextSlot.mealType}
-              mealsWithRecipes={upNextMealsWithRecipes}
-            />
-          )}
-
-          {showTomorrow && tomorrowMealsWithRecipes.length > 0 && (
-            <TomorrowPreview
-              dayName={tomorrowDayName}
-              mealsWithRecipes={tomorrowMealsWithRecipes}
+          {hasTodayMeals && (
+            <TodayCard
+              todayMealsWithRecipes={todayMealsWithRecipes}
+              defaultMealType={defaultMealType}
+              shoppingStatus={shoppingStatus ?? { checked: 0, total: 0 }}
             />
           )}
 
           {shoppingStatus && shoppingStatus.total > 0 && (
             <ShoppingStatusCard shoppingStatus={shoppingStatus} />
           )}
-
-          <QuickActions primaryAction={primaryAction} todayIndex={todayIndex} />
 
         </main>
 
