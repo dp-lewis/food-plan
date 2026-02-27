@@ -27,7 +27,7 @@ export default function PageHeader({
     <Link
       href={backHref}
       data-testid="page-header-back"
-      className="min-h-[44px] min-w-[44px] flex items-center justify-center -ml-3 rounded-md hover:bg-on-primary-hover transition-colors"
+      className="min-h-11 min-w-11 flex items-center justify-center -ml-3 rounded-md hover:bg-on-primary-hover transition-colors"
       aria-label="Go back"
     >
       <ArrowLeft className="w-5 h-5" />
@@ -37,7 +37,7 @@ export default function PageHeader({
       type="button"
       onClick={onBack}
       data-testid="page-header-back"
-      className="min-h-[44px] min-w-[44px] flex items-center justify-center -ml-3 rounded-md hover:bg-on-primary-hover transition-colors"
+      className="min-h-11 min-w-11 flex items-center justify-center -ml-3 rounded-md hover:bg-on-primary-hover transition-colors"
       aria-label="Go back"
     >
       <ArrowLeft className="w-5 h-5" />

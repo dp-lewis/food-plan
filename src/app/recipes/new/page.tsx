@@ -182,7 +182,7 @@ export default function NewRecipe() {
                     </select>
                     <button
                       onClick={() => removeIngredient(index)}
-                      className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded text-destructive text-sm"
+                      className="min-h-11 min-w-11 flex items-center justify-center rounded text-destructive text-sm"
                       data-testid={`remove-ingredient-${index}`}
                       aria-label={`Remove ${ing.parsed.name}`}
                     >

@@ -51,7 +51,7 @@ export default function SignOutDialog({ userEmail, onSignedOut }: SignOutDialogP
         data-testid="user-menu-btn"
         onClick={() => setDrawerOpen(true)}
         disabled={loading}
-        className="min-h-[44px] px-2 text-xs text-primary-foreground hover:text-primary-foreground"
+        className="min-h-11 px-2 text-xs text-primary-foreground hover:text-primary-foreground"
       >
         {loading ? 'Signing out…' : userEmail}
       </button>
