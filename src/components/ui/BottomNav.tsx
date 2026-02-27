@@ -88,7 +88,7 @@ export default function BottomNav({
           onClick={primaryAction.onClick}
           data-testid={primaryAction.testId}
           aria-label={primaryAction.label}
-          className="fixed bottom-[calc(5rem+28px+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 min-h-[44px] px-4 py-2.5 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all hover:shadow-xl flex items-center justify-center gap-2 z-30 pointer-events-auto"
+          className="fixed bottom-[calc(5rem+28px+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 min-h-11 px-4 py-2.5 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all hover:shadow-xl flex items-center justify-center gap-2 z-30 pointer-events-auto"
         >
           <primaryAction.icon className="w-5 h-5" />
           <span className="font-semibold text-sm whitespace-nowrap">{primaryAction.label}</span>

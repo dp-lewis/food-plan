@@ -70,7 +70,7 @@ export default function TodayCard({
                 data-testid={`today-tab-${mt}`}
                 onClick={() => setSelectedMealType(mt)}
                 className={[
-                  'flex-1 py-2 rounded-full text-sm font-medium border transition-colors min-h-[44px] text-center',
+                  'flex-1 py-2 rounded-full text-sm font-medium border transition-colors min-h-11 text-center',
                   isSelected
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-muted text-primary border-primary',

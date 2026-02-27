@@ -89,7 +89,7 @@ export default function ShoppingList() {
               {checkedCount > 0 && (
                 <button
                   onClick={planRole ? () => setIsConfirmClearOpen(true) : clearCheckedItems}
-                  className="text-xs text-primary-foreground hover:text-primary-foreground min-h-[44px] px-2"
+                  className="text-xs text-primary-foreground hover:text-primary-foreground min-h-11 px-2"
                   data-testid="clear-checked-btn"
                 >
                   Clear checked
@@ -156,7 +156,7 @@ export default function ShoppingList() {
                         {isCustom && (
                           <button
                             onClick={() => removeCustomItem(item.id)}
-                            className="min-h-[44px] min-w-[44px] flex items-center justify-center ml-1 text-destructive text-base bg-transparent border-none cursor-pointer"
+                            className="min-h-11 min-w-11 flex items-center justify-center ml-1 text-destructive text-base bg-transparent border-none cursor-pointer"
                             data-testid={`delete-${item.id}`}
                             aria-label={`Remove ${item.ingredient}`}
                           >
