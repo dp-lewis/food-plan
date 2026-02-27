@@ -59,9 +59,6 @@ body {
 
 /* Extra bottom padding in standalone (home screen) mode for safe area */
 @media (display-mode: standalone) {
-  html, body {
-    overscroll-behavior-y: none;
-  }
   main {
     padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
   }
