@@ -45,6 +45,7 @@
 
 @layer base {
   * { @apply border-border; }
+  html { background-color: var(--background); }
   body { @apply bg-background text-foreground antialiased; }
   h1 { font-size: var(--text-2xl); font-weight: 400; font-family: var(--font-display); }
   h2 { font-size: var(--text-xl); font-weight: 400; font-family: var(--font-display); }
@@ -58,6 +59,9 @@ body {
 
 /* Extra bottom padding in standalone (home screen) mode for safe area */
 @media (display-mode: standalone) {
+  html, body {
+    overscroll-behavior-y: none;
+  }
   main {
     padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
   }
