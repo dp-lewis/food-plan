@@ -317,9 +317,9 @@ export default function CurrentPlan() {
 
   if (!hasHydrated || !currentPlan) {
     return (
-      <div className="min-h-screen bg-background" data-testid="meal-plan">
+      <div className="min-h-screen bg-primary" data-testid="meal-plan">
         <PageHeader title="Meal Plan" backHref="/" sticky />
-        <main className="max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
+        <main className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
           <div className="flex items-center justify-end">
             <div className="h-4 w-28 bg-muted animate-pulse rounded" />
           </div>
@@ -354,7 +354,7 @@ export default function CurrentPlan() {
     : [];
 
   return (
-    <div className="min-h-screen bg-background" data-testid="meal-plan">
+    <div className="min-h-screen bg-primary" data-testid="meal-plan">
       <PageHeader
         title="Meal Plan"
         backHref="/"
@@ -365,7 +365,7 @@ export default function CurrentPlan() {
           )
         }
       />
-      <main id="main-content" className="max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
+      <main id="main-content" className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
         {planRole === 'member' ? (
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full" data-testid="shared-plan-badge">

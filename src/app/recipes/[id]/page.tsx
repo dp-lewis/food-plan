@@ -26,9 +26,9 @@ export default function UserRecipeDetail() {
 
   if (!recipe) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-primary">
         <PageHeader title="Recipe" backHref="/recipes" sticky />
-        <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+        <main className="bg-background rounded-t-3xl max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
           <div className="text-center py-12">
             <p className="text-muted-foreground">Recipe not found</p>
             <Link
@@ -46,9 +46,9 @@ export default function UserRecipeDetail() {
   const totalTime = recipe.prepTime + recipe.cookTime;
 
   return (
-    <div className="min-h-screen bg-background" data-testid="user-recipe-page">
+    <div className="min-h-screen bg-primary" data-testid="user-recipe-page">
       <PageHeader title={recipe.title} backHref="/recipes" titleTestId="recipe-title" sticky />
-      <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+      <main className="bg-background rounded-t-3xl max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
         <p
           data-testid="recipe-source"
           className="text-sm text-muted-foreground"

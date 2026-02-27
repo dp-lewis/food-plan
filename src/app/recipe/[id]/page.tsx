@@ -13,9 +13,9 @@ export default function RecipeDetail() {
 
   if (!recipe) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-primary">
         <PageHeader title="Recipe" onBack={() => router.back()} sticky />
-        <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+        <main className="bg-background rounded-t-3xl max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
           <div className="text-center py-12">
             <p className="text-muted-foreground">Recipe not found</p>
             <Link
@@ -33,9 +33,9 @@ export default function RecipeDetail() {
   const totalTime = recipe.prepTime + recipe.cookTime;
 
   return (
-    <div className="min-h-screen bg-background" data-testid="recipe-page">
+    <div className="min-h-screen bg-primary" data-testid="recipe-page">
       <PageHeader title={recipe.title} onBack={() => router.back()} titleTestId="recipe-title" sticky />
-      <main className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+      <main className="bg-background rounded-t-3xl max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
         <p className="text-base text-muted-foreground">
           {recipe.description}
         </p>

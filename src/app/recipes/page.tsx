@@ -65,9 +65,9 @@ export default function MyRecipes() {
   };
 
   return (
-    <div className="min-h-screen bg-background" data-testid="my-recipes-page">
+    <div className="min-h-screen bg-primary" data-testid="my-recipes-page">
       <PageHeader title="My Recipes" backHref="/" sticky />
-      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
+      <main id="main-content" className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
         {/* Empty state */}
         {userRecipes.length === 0 && (
           <div data-testid="empty-recipes">

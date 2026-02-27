@@ -118,9 +118,9 @@ export default function Dashboard() {
         : todayMealsWithRecipes[0]?.meal.mealType ?? 'dinner';
 
     return (
-      <div className="min-h-screen bg-background" data-testid="dashboard">
+      <div className="min-h-screen bg-primary" data-testid="dashboard">
         {pageHeader}
-        <main id="main-content" className="max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
+        <main id="main-content" className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
 
           {hasTodayMeals && (
             <TodayCard
@@ -146,16 +146,16 @@ export default function Dashboard() {
           onSurpriseMe={handleSurpriseMe}
         />
 
-        <BottomNav hideFab={isReadOnly} />
+        <BottomNav hideFab />
       </div>
     );
   }
 
   // ─── Empty state: no plan yet ───
   return (
-    <div className="min-h-screen bg-background" data-testid="empty-state">
+    <div className="min-h-screen bg-primary" data-testid="empty-state">
       {pageHeader}
-      <main id="main-content" className="max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
+      <main id="main-content" className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
         <div className="text-center py-12">
           <h2 className="mb-2 text-2xl font-semibold text-foreground">
             What&apos;s for dinner this week?
@@ -172,7 +172,7 @@ export default function Dashboard() {
           </Link>
         </div>
       </main>
-      <BottomNav />
+      <BottomNav hideFab />
     </div>
   );
 }

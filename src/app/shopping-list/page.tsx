@@ -74,7 +74,7 @@ export default function ShoppingList() {
   const openDrawer = () => setIsDrawerOpen(true);
 
   return (
-    <div className="min-h-screen bg-background" data-testid={isEmpty ? undefined : 'shopping-list'}>
+    <div className="min-h-screen bg-primary" data-testid={isEmpty ? undefined : 'shopping-list'}>
       <PageHeader
         title="Shopping List"
         backHref="/"
@@ -102,7 +102,7 @@ export default function ShoppingList() {
       </PageHeader>
 
       {isEmpty ? (
-        <main className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
+        <main className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
           <div className="text-center py-8">
             <p className="text-muted-foreground mb-4">
               No meal plan found. Create one to generate a shopping list, or add items manually.
@@ -116,7 +116,7 @@ export default function ShoppingList() {
           </div>
         </main>
       ) : (
-        <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
+        <main id="main-content" className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
           <div className="space-y-6">
             {Array.from(groupedItems.entries()).map(([category, items]) => (
               <section key={category} data-testid={`category-${category}`}>
