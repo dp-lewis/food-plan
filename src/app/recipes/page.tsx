@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
-import { BottomNav, Button, Card, EmptyState, Drawer, PageHeader } from '@/components/ui';
+import { BottomNav, Button, Card, EmptyState, Drawer, Input, PageHeader } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
 import { LinkIcon } from 'lucide-react';
 
@@ -141,15 +141,12 @@ export default function MyRecipes() {
       >
         <div data-testid="import-recipe-drawer">
           <div className="flex gap-2">
-            <label htmlFor="import-url-input" className="sr-only">
-              Recipe URL
-            </label>
-            <input
+            <Input
               ref={inputRef}
               id="import-url-input"
               type="url"
               value={importUrl}
-              onChange={(e) => setImportUrl(e.target.value)}
+              onChange={setImportUrl}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && importUrl.trim() && !isLoading) {
                   e.preventDefault();
@@ -157,7 +154,7 @@ export default function MyRecipes() {
                 }
               }}
               placeholder="https://www.recipetineats.com/..."
-              className="flex-1 bg-background border border-border text-base text-foreground px-3 py-2 rounded-sm"
+              className="flex-1"
               data-testid="import-url-input"
               aria-describedby={error ? 'import-error' : undefined}
             />

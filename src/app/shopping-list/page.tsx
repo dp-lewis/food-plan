@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { generateShoppingList, groupByCategory, mergeShoppingLists, CATEGORY_LABELS } from '@/lib/shoppingList';
 import { parseIngredient } from '@/lib/ingredientParser';
-import { BottomNav, ProgressBar, Checkbox, Button, Drawer, PageHeader } from '@/components/ui';
+import { BottomNav, ProgressBar, Checkbox, Button, Drawer, Input, PageHeader } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
 
 function getInitials(email: string): string {
@@ -102,7 +102,7 @@ export default function ShoppingList() {
       </PageHeader>
 
       {isEmpty ? (
-        <main className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
+        <main id="main-content" className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
           <div className="text-center py-8">
             <p className="text-muted-foreground mb-4">
               No meal plan found. Create one to generate a shopping list, or add items manually.
@@ -156,7 +156,7 @@ export default function ShoppingList() {
                         {isCustom && (
                           <button
                             onClick={() => removeCustomItem(item.id)}
-                            className="p-2 ml-2 text-destructive text-base bg-transparent border-none cursor-pointer"
+                            className="min-h-[44px] min-w-[44px] flex items-center justify-center ml-1 text-destructive text-base bg-transparent border-none cursor-pointer"
                             data-testid={`delete-${item.id}`}
                             aria-label={`Remove ${item.ingredient}`}
                           >
@@ -180,15 +180,12 @@ export default function ShoppingList() {
       >
         <div data-testid="add-custom-item-section">
           <div className="flex gap-2">
-            <label htmlFor="add-item-input" className="sr-only">
-              Add item to shopping list
-            </label>
-            <input
+            <Input
               ref={inputRef}
               id="add-item-input"
               type="text"
               value={newItemText}
-              onChange={(e) => setNewItemText(e.target.value)}
+              onChange={setNewItemText}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && newItemText.trim()) {
                   e.preventDefault();
@@ -196,7 +193,7 @@ export default function ShoppingList() {
                 }
               }}
               placeholder="e.g., toilet paper, 2 bottles milk"
-              className="flex-1 bg-background border border-border text-base text-foreground px-3 py-2 rounded-sm"
+              className="flex-1"
               data-testid="add-item-input"
             />
           </div>
