@@ -9,7 +9,7 @@ import { getTodayPlanIndex, getOrderedDays } from '@/lib/dates';
 import { MealType } from '@/types';
 import RecipeDrawer from '@/components/RecipeDrawer';
 import SignOutDialog from '@/components/SignOutDialog';
-import { BottomNav, Button, Card, Drawer, PageHeader, Toast } from '@/components/ui';
+import { BottomNav, Button, Card, Drawer, Input, PageHeader, Toast } from '@/components/ui';
 import { useAuth } from '@/components/AuthProvider';
 import {
   generateShareLink,
@@ -319,7 +319,7 @@ export default function CurrentPlan() {
     return (
       <div className="min-h-screen bg-primary" data-testid="meal-plan">
         <PageHeader title="Meal Plan" backHref="/" sticky />
-        <main className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
+        <main id="main-content" className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
           <div className="flex items-center justify-end">
             <div className="h-4 w-28 bg-muted animate-pulse rounded" />
           </div>
@@ -449,10 +449,10 @@ export default function CurrentPlan() {
           ) : shareUrl ? (
             <div className="space-y-4">
               <div className="flex gap-2 items-center">
-                <input
+                <Input
                   readOnly
                   value={shareUrl}
-                  className="flex-1 bg-muted border border-border text-sm text-foreground px-3 py-2 rounded-sm truncate"
+                  className="flex-1"
                   aria-label="Share link"
                 />
                 <Button
