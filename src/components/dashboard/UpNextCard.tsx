@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, Button } from '@/components/ui';
 import { Meal, MealType, Recipe } from '@/types';
 import { BookOpen, Calendar } from 'lucide-react';
+import SectionHeading from './SectionHeading';
 
 export interface TodayMealWithRecipe {
   meal: Meal;
@@ -27,16 +28,6 @@ const MEAL_LABELS: Record<MealType, string> = {
   lunch: 'Lunch',
   dinner: 'Dinner',
 };
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <span className="bg-card px-4 text-xl font-normal text-foreground whitespace-nowrap font-display">
-        {children}
-      </span>
-    </div>
-  );
-}
 
 export default function TodayCard({
   todayMealsWithRecipes,
@@ -103,7 +94,7 @@ export default function TodayCard({
               return (
                 <div key={meal.id} className={index > 0 ? 'pt-4' : ''}>
                   <h2
-                    className="text-[2rem] font-normal text-foreground mb-2"
+                    className="text-4xl font-normal text-foreground mb-2"
                     data-testid={index === 0 ? 'today-recipe-title' : `today-recipe-title-${index}`}
                   >
                     {recipe.title}
@@ -119,7 +110,7 @@ export default function TodayCard({
                   )}
                   <Button
                     variant="primary"
-                    className="w-full justify-start h-auto py-4 px-4 rounded-[16px] mt-2"
+                    className="w-full justify-start h-auto py-4 px-4 rounded-2xl mt-2"
                     data-testid={index === 0 ? 'today-view-recipe-btn' : `today-view-recipe-btn-${index}`}
                     onClick={() => router.push(recipeUrl)}
                   >
@@ -142,7 +133,7 @@ export default function TodayCard({
           <div className="mt-4">
             <Button
               variant="secondary"
-              className="w-full justify-start bg-muted h-auto py-4 px-4 rounded-[16px] text-primary border-primary"
+              className="w-full justify-start bg-muted h-auto py-4 px-4 rounded-2xl text-primary border-primary"
               data-testid="today-view-plan-btn"
               onClick={() => router.push('/plan/current')}
             >

@@ -5,8 +5,10 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { MetaChip, Button, PageHeader } from '@/components/ui';
+import { buttonVariants } from '@/components/ui/Button';
 import Drawer from '@/components/ui/Drawer';
 import { Clock, Users, ChefHat } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function UserRecipeDetail() {
   const params = useParams();
@@ -116,7 +118,7 @@ export default function UserRecipeDetail() {
               href={recipe.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full text-center py-4 rounded-lg bg-primary text-primary-foreground text-base font-normal"
+              className={cn(buttonVariants({ variant: 'primary' }), 'block w-full text-center')}
               data-testid="view-recipe-link"
             >
               View Recipe on {recipe.sourceName || 'Original Site'} →
@@ -150,19 +152,19 @@ export default function UserRecipeDetail() {
           <div className="flex flex-col gap-3">
             <Button
               variant="secondary"
-              onClick={handleDelete}
-              data-testid="confirm-delete-btn"
-              className="w-full border-destructive text-destructive"
-            >
-              Delete Recipe
-            </Button>
-            <Button
-              variant="secondary"
               onClick={() => setIsDeleteDrawerOpen(false)}
               data-testid="cancel-delete-btn"
               className="w-full"
             >
               Cancel
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleDelete}
+              data-testid="confirm-delete-btn"
+              className="w-full border-destructive text-destructive"
+            >
+              Delete Recipe
             </Button>
           </div>
         </div>
