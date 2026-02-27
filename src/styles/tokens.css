@@ -18,31 +18,31 @@
      Maps to Tailwind utility classes via @theme inline
      ========================================== */
 
-  --primary: #5b806e;
-  --primary-light: #d4e4dc;
+  --primary: #E07F5A;
+  --primary-light: #FCEAE0;
   --primary-foreground: #ffffff;
-  --background: #f4ece6;
-  --foreground: #111827;
-  --card: #f4ece6;
-  --card-foreground: #111827;
-  --progress-shopping: #c84b2f;
-  --secondary: #ede5dc;
-  --secondary-foreground: #111827;
-  --muted: #ede5dc;
-  --muted-foreground: #6b5e52;
-  --accent: #ede5dc;
-  --accent-foreground: #111827;
+  --background: #FAF7F2;
+  --foreground: #3A3530;
+  --card: #E8D7C3;
+  --card-foreground: #3A3530;
+  --progress-shopping: #D9785C;
+  --secondary: #E8D7C3;
+  --secondary-foreground: #3A3530;
+  --muted: #E8D7C3;
+  --muted-foreground: #6B5E52;
+  --accent: #E8D7C3;
+  --accent-foreground: #3A3530;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #ebcfbc;
+  --border: #D4C0AB;
   --input: transparent;
-  --input-background: #ede5dc;
-  --ring: #5b806e;
+  --input-background: #E8D7C3;
+  --ring: #E07F5A;
   --radius: 0.5rem;
 
   /* Semantic colors (Alert variants) */
-  --success: #5b806e;
-  --success-light: #d4e4d8;
+  --success: #6E966B;
+  --success-light: #C5D9C4;
   --success-foreground: #ffffff;
   --warning: #b45309;
   --warning-light: #fef3c7;
@@ -66,29 +66,29 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary: #5a7f62;
-    --primary-light: #2a3d2e;
+    --primary: #D97A52;
+    --primary-light: #4A2E1E;
     --primary-foreground: #ffffff;
-    --background: #221e18;
-    --foreground: #f8fafc;
-    --card: #221e18;
-    --card-foreground: #f8fafc;
-    --progress-shopping: #e05c3a;
-    --secondary: #2d2720;
-    --secondary-foreground: #f8fafc;
-    --muted: #2d2720;
-    --muted-foreground: #a89585;
-    --accent: #2d2720;
-    --accent-foreground: #f8fafc;
+    --background: #1E1A15;
+    --foreground: #FAF7F2;
+    --card: #2A2420;
+    --card-foreground: #FAF7F2;
+    --progress-shopping: #E08A6A;
+    --secondary: #2A2420;
+    --secondary-foreground: #FAF7F2;
+    --muted: #2A2420;
+    --muted-foreground: #A89585;
+    --accent: #2A2420;
+    --accent-foreground: #FAF7F2;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
-    --border: #334155;
+    --border: #4A3E32;
     --input: transparent;
-    --input-background: #1e293b;
-    --ring: #5a7f62;
+    --input-background: #332C25;
+    --ring: #D97A52;
 
-    --success: #5a7f62;
-    --success-light: #2a3d2e;
+    --success: #6E966B;
+    --success-light: #2A3D2E;
     --success-foreground: #ffffff;
     --warning: #f59e0b;
     --warning-light: #451a03;
