@@ -19,6 +19,8 @@ interface TodayCardProps {
   defaultMealType: MealType;
   /** Shopping list status for the status text */
   shoppingStatus: { checked: number; total: number };
+  /** Called when the user wants to add a meal for the given meal type */
+  onAddMeal?: (mealType: MealType) => void;
 }
 
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner'];
@@ -33,14 +35,10 @@ export default function TodayCard({
   todayMealsWithRecipes,
   defaultMealType,
   shoppingStatus,
+  onAddMeal,
 }: TodayCardProps) {
   const router = useRouter();
   const [selectedMealType, setSelectedMealType] = useState<MealType>(defaultMealType);
-
-  // Which meal types have meals today
-  const presentMealTypes = MEAL_ORDER.filter((mt) =>
-    todayMealsWithRecipes.some((m) => m.meal.mealType === mt)
-  );
 
   // Meals for the currently selected tab
   const selectedMeals = todayMealsWithRecipes.filter(
@@ -59,29 +57,27 @@ export default function TodayCard({
     <Card data-testid="today-card" className="relative pt-8">
       <SectionHeading>Today</SectionHeading>
 
-      {/* Meal type tabs */}
-      {presentMealTypes.length > 0 && (
-        <div className="flex gap-2 mb-4">
-          {presentMealTypes.map((mt) => {
-            const isSelected = mt === selectedMealType;
-            return (
-              <button
-                key={mt}
-                data-testid={`today-tab-${mt}`}
-                onClick={() => setSelectedMealType(mt)}
-                className={[
-                  'flex-1 py-2 rounded-full text-sm font-medium border transition-colors min-h-11 text-center',
-                  isSelected
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-muted text-primary border-primary',
-                ].join(' ')}
-              >
-                {MEAL_LABELS[mt]}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {/* Meal type tabs — always show all three */}
+      <div className="flex gap-2 mb-4">
+        {MEAL_ORDER.map((mt) => {
+          const isSelected = mt === selectedMealType;
+          return (
+            <button
+              key={mt}
+              data-testid={`today-tab-${mt}`}
+              onClick={() => setSelectedMealType(mt)}
+              className={[
+                'flex-1 py-2 rounded-full text-sm font-medium border transition-colors min-h-11 text-center',
+                isSelected
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-muted text-primary border-primary',
+              ].join(' ')}
+            >
+              {MEAL_LABELS[mt]}
+            </button>
+          );
+        })}
+      </div>
 
       {selectedMeals.length > 0 ? (
         <>
@@ -143,9 +139,21 @@ export default function TodayCard({
           </div>
         </>
       ) : (
-        <p className="text-sm text-muted-foreground">
-          No {MEAL_LABELS[selectedMealType].toLowerCase()} planned for today.
-        </p>
+        <div
+          className="flex flex-col items-center gap-4 py-6 text-center"
+          data-testid={`empty-meal-slot-${selectedMealType}`}
+        >
+          <p className="text-sm text-muted-foreground">Nothing planned yet</p>
+          {onAddMeal && (
+            <Button
+              variant="primary"
+              data-testid={`add-meal-button-${selectedMealType}`}
+              onClick={() => onAddMeal(selectedMealType)}
+            >
+              Add meal
+            </Button>
+          )}
+        </div>
       )}
     </Card>
   );
