@@ -54,7 +54,7 @@ export default function PageHeader({
       <div className="max-w-2xl mx-auto px-4 py-4">
         <div className="flex items-center gap-3">
           {BackButton}
-          <h1 className="flex-1 text-lg font-semibold" data-testid={titleTestId}>{title}</h1>
+          <h1 className="flex-1 text-lg font-display font-normal" data-testid={titleTestId}>{title}</h1>
           {actions && <div className="flex items-center gap-2">{actions}</div>}
         </div>
         {children}

@@ -319,7 +319,7 @@ export default function CurrentPlan() {
     return (
       <div className="min-h-screen bg-background" data-testid="meal-plan">
         <PageHeader title="Meal Plan" backHref="/" sticky />
-        <main className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
+        <main className="max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
           <div className="flex items-center justify-end">
             <div className="h-4 w-28 bg-muted animate-pulse rounded" />
           </div>
@@ -365,7 +365,7 @@ export default function CurrentPlan() {
           )
         }
       />
-      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
+      <main id="main-content" className="max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
         {planRole === 'member' ? (
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full" data-testid="shared-plan-badge">
@@ -381,7 +381,7 @@ export default function CurrentPlan() {
             </Button>
           </div>
         ) : (
-          <div className="flex items-center justify-end gap-3">
+          <div className="flex items-center justify-end gap-4">
             <Link href="/plan" className="text-sm text-primary">
               Reset plan
             </Link>
@@ -465,7 +465,7 @@ export default function CurrentPlan() {
                   {copied ? 'Copied ✓' : 'Copy'}
                 </Button>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <Button
                   variant="secondary"
                   className="flex-1"
@@ -514,7 +514,7 @@ export default function CurrentPlan() {
         <p className="text-sm text-muted-foreground mb-6">
           Leave this plan? You&apos;ll return to an empty plan.
         </p>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <Button
             variant="secondary"
             className="flex-1"
@@ -543,7 +543,7 @@ export default function CurrentPlan() {
         <p className="text-sm text-muted-foreground mb-6">
           Delete this plan? This is permanent and will remove it for all members.
         </p>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <Button
             variant="secondary"
             className="flex-1"

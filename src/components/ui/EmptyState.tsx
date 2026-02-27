@@ -20,7 +20,7 @@ export default function EmptyState({ icon, title, description, action }: EmptySt
           {icon}
         </div>
       )}
-      <h2 className={cn('text-base font-semibold text-foreground', description ? 'mb-2' : 'mb-4')}>
+      <h2 className={cn('text-base font-normal font-display text-foreground', description ? 'mb-2' : 'mb-4')}>
         {title}
       </h2>
       {description && <p className="text-sm text-muted-foreground mb-4">{description}</p>}

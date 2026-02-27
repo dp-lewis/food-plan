@@ -38,7 +38,7 @@ export default function DaySlot({
       data-testid={`day-${dayIndex}`}
       className={`scroll-mt-20 ${isToday ? 'border-2 border-primary' : ''}`}
     >
-      <div className="sticky top-[56px] z-10 px-4 py-2 bg-muted font-semibold text-base text-foreground rounded-t-lg border-b border-border">
+      <div className="sticky top-[56px] z-10 px-4 py-2 bg-muted font-normal font-display text-base text-foreground rounded-t-lg border-b border-border">
         <div className="flex items-center gap-2">
           {dayName}
           {isToday && (
@@ -56,13 +56,13 @@ export default function DaySlot({
           return (
             <div key={mealType} data-testid={`slot-${dayIndex}-${mealType}`}>
               {/* Meal type header */}
-              <div className="px-4 pt-3 pb-1 text-sm text-muted-foreground">
+              <div className="px-4 py-2 text-sm text-muted-foreground">
                 <span className="uppercase tracking-wide">{mealType}</span>
               </div>
 
               {/* Meals in this slot */}
               {meals.length === 0 ? (
-                <div className="px-4 pb-3 space-y-2">
+                <div className="px-4 pb-4 space-y-2">
                   <div className="p-3 border border-dashed border-border rounded-lg text-center text-sm text-muted-foreground">
                     No meals planned
                   </div>
@@ -73,7 +73,7 @@ export default function DaySlot({
                       onClick={() => onAddMeal(dayIndex, mealType, slotRecipeIds)}
                       data-testid={`add-meal-${dayIndex}-${mealType}`}
                       aria-label={`Add ${mealType}`}
-                      className="w-full"
+                      className="w-full justify-start"
                     >
                       + Add
                     </Button>
@@ -95,14 +95,14 @@ export default function DaySlot({
                   })}
                   {/* Add button after existing meals */}
                   {onAddMeal && (
-                    <div className="px-4 pb-3">
+                    <div className="px-4 pb-4">
                       <Button
                         variant="ghost"
                         size="small"
                         onClick={() => onAddMeal(dayIndex, mealType, slotRecipeIds)}
                         data-testid={`add-meal-${dayIndex}-${mealType}`}
                         aria-label={`Add ${mealType}`}
-                        className="text-primary"
+                        className="w-full justify-start text-primary"
                       >
                         + Add {mealType}
                       </Button>

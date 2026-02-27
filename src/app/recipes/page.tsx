@@ -106,7 +106,7 @@ export default function MyRecipes() {
                 <Card>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
-                      <h2 className="text-base font-semibold text-foreground">
+                      <h2 className="text-base font-normal font-display text-foreground">
                         {recipe.title}
                       </h2>
                       <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">

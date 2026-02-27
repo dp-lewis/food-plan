@@ -21,7 +21,7 @@ export default function MealCard({ meal, recipe, onRemove }: MealCardProps) {
       data-testid={`meal-${meal.id}`}
     >
       <Link href={recipeUrl} className="flex-1 transition-colors">
-        <p className="text-base text-foreground font-semibold">
+        <p className="text-base text-foreground font-normal font-display">
           {recipe.title}
         </p>
         <p className="text-sm text-muted-foreground">

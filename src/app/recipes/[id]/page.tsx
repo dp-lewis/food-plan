@@ -73,7 +73,7 @@ export default function UserRecipeDetail() {
 
         {/* Ingredients */}
         <section className="mb-6">
-          <h2 className="mb-3 text-base font-semibold text-foreground">
+          <h2 className="mb-3 text-base font-normal font-display text-foreground">
             Ingredients
           </h2>
           <ul className="space-y-2" data-testid="ingredients-list">
@@ -97,7 +97,7 @@ export default function UserRecipeDetail() {
         {/* Notes */}
         {recipe.notes && (
           <section className="mb-6">
-            <h2 className="mb-2 text-base font-semibold text-foreground">
+            <h2 className="mb-2 text-base font-normal font-display text-foreground">
               Notes
             </h2>
             <p
@@ -116,7 +116,7 @@ export default function UserRecipeDetail() {
               href={recipe.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full text-center py-4 rounded-lg bg-primary text-primary-foreground text-base font-semibold"
+              className="block w-full text-center py-4 rounded-lg bg-primary text-primary-foreground text-base font-normal"
               data-testid="view-recipe-link"
             >
               View Recipe on {recipe.sourceName || 'Original Site'} →

@@ -62,7 +62,7 @@ export default function RecipeDetail() {
 
         {/* Ingredients */}
         <section className="mb-6">
-          <h2 className="mb-3 text-base font-semibold text-foreground">
+          <h2 className="mb-3 text-base font-normal font-display text-foreground">
             Ingredients
           </h2>
           <ul className="space-y-2" data-testid="ingredients-list">
@@ -82,7 +82,7 @@ export default function RecipeDetail() {
 
         {/* Instructions */}
         <section>
-          <h2 className="mb-3 text-base font-semibold text-foreground">
+          <h2 className="mb-3 text-base font-normal font-display text-foreground">
             Instructions
           </h2>
           <ol className="space-y-4" data-testid="instructions-list">
