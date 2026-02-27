@@ -7,6 +7,62 @@
 
 :root {
   /* ==========================================
+     PRIMITIVES
+     Raw colour palette — all hex values used across
+     light and dark modes, grouped by hue family.
+     ========================================== */
+
+  /* Green */
+  --green-500: #5b806e;
+  --green-490: #5a7f62;
+  --green-200: #d4e4dc;
+  --green-190: #d4e4d8;
+  --green-800: #2a3d2e;
+
+  /* Warm / Sand */
+  --warm-50:  #f4ece6;
+  --warm-100: #ede5dc;
+  --warm-200: #ebcfbc;
+  --warm-900: #221e18;
+  --warm-850: #2d2720;
+  --warm-700: #6b5e52;
+  --warm-600: #a89585;
+
+  /* Red / Orange */
+  --red-600:  #dc2626;
+  --red-700:  #b91c1c;
+  --red-400:  #ef4444;
+  --red-300:  #f87171;
+  --red-100:  #fee2e2;
+  --red-950:  #450a0a;
+  --orange-600: #c84b2f;
+  --orange-500: #e05c3a;
+
+  /* Amber */
+  --amber-600: #b45309;
+  --amber-400: #f59e0b;
+  --amber-100: #fef3c7;
+  --amber-900: #78350f;
+  --amber-950: #451a03;
+
+  /* Blue */
+  --blue-700:  #1d4ed8;
+  --blue-400:  #60a5fa;
+  --blue-100:  #dbeafe;
+  --blue-950:  #1e3a5f;
+
+  /* Slate (dark-mode neutrals) */
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+
+  /* Neutral */
+  --neutral-900: #111827;
+  --neutral-50:  #f8fafc;
+
+  /* White / Black */
+  --white: #ffffff;
+
+  /* ==========================================
      TYPOGRAPHY
      ========================================== */
 
@@ -18,41 +74,41 @@
      Maps to Tailwind utility classes via @theme inline
      ========================================== */
 
-  --primary: #5b806e;
-  --primary-light: #d4e4dc;
-  --primary-foreground: #ffffff;
-  --background: #f4ece6;
-  --foreground: #111827;
-  --card: #f4ece6;
-  --card-foreground: #111827;
-  --progress-shopping: #c84b2f;
-  --secondary: #ede5dc;
-  --secondary-foreground: #111827;
-  --muted: #ede5dc;
-  --muted-foreground: #6b5e52;
-  --accent: #ede5dc;
-  --accent-foreground: #111827;
-  --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
-  --border: #ebcfbc;
+  --primary: var(--green-500);
+  --primary-light: var(--green-200);
+  --primary-foreground: var(--white);
+  --background: var(--warm-50);
+  --foreground: var(--neutral-900);
+  --card: var(--warm-50);
+  --card-foreground: var(--neutral-900);
+  --progress-shopping: var(--orange-600);
+  --secondary: var(--warm-100);
+  --secondary-foreground: var(--neutral-900);
+  --muted: var(--warm-100);
+  --muted-foreground: var(--warm-700);
+  --accent: var(--warm-100);
+  --accent-foreground: var(--neutral-900);
+  --destructive: var(--red-600);
+  --destructive-foreground: var(--white);
+  --border: var(--warm-200);
   --input: transparent;
-  --input-background: #ede5dc;
-  --ring: #5b806e;
+  --input-background: var(--warm-100);
+  --ring: var(--green-500);
   --radius: 0.5rem;
 
   /* Semantic colors (Alert variants) */
-  --success: #5b806e;
-  --success-light: #d4e4d8;
-  --success-foreground: #ffffff;
-  --warning: #b45309;
-  --warning-light: #fef3c7;
-  --warning-foreground: #78350f;
-  --error: #b91c1c;
-  --error-light: #fee2e2;
-  --error-foreground: #ffffff;
-  --info: #1d4ed8;
-  --info-light: #dbeafe;
-  --info-foreground: #ffffff;
+  --success: var(--green-500);
+  --success-light: var(--green-190);
+  --success-foreground: var(--white);
+  --warning: var(--amber-600);
+  --warning-light: var(--amber-100);
+  --warning-foreground: var(--amber-900);
+  --error: var(--red-700);
+  --error-light: var(--red-100);
+  --error-foreground: var(--white);
+  --info: var(--blue-700);
+  --info-light: var(--blue-100);
+  --info-foreground: var(--white);
 
   /* Interactive surface tokens */
   --on-primary-hover: rgba(255, 255, 255, 0.10);
@@ -66,39 +122,39 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary: #5a7f62;
-    --primary-light: #2a3d2e;
-    --primary-foreground: #ffffff;
-    --background: #221e18;
-    --foreground: #f8fafc;
-    --card: #221e18;
-    --card-foreground: #f8fafc;
-    --progress-shopping: #e05c3a;
-    --secondary: #2d2720;
-    --secondary-foreground: #f8fafc;
-    --muted: #2d2720;
-    --muted-foreground: #a89585;
-    --accent: #2d2720;
-    --accent-foreground: #f8fafc;
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-    --border: #334155;
+    --primary: var(--green-490);
+    --primary-light: var(--green-800);
+    --primary-foreground: var(--white);
+    --background: var(--warm-900);
+    --foreground: var(--neutral-50);
+    --card: var(--warm-900);
+    --card-foreground: var(--neutral-50);
+    --progress-shopping: var(--orange-500);
+    --secondary: var(--warm-850);
+    --secondary-foreground: var(--neutral-50);
+    --muted: var(--warm-850);
+    --muted-foreground: var(--warm-600);
+    --accent: var(--warm-850);
+    --accent-foreground: var(--neutral-50);
+    --destructive: var(--red-400);
+    --destructive-foreground: var(--white);
+    --border: var(--slate-700);
     --input: transparent;
-    --input-background: #1e293b;
-    --ring: #5a7f62;
+    --input-background: var(--slate-800);
+    --ring: var(--green-490);
 
-    --success: #5a7f62;
-    --success-light: #2a3d2e;
-    --success-foreground: #ffffff;
-    --warning: #f59e0b;
-    --warning-light: #451a03;
-    --warning-foreground: #fef3c7;
-    --error: #f87171;
-    --error-light: #450a0a;
-    --error-foreground: #ffffff;
-    --info: #60a5fa;
-    --info-light: #1e3a5f;
-    --info-foreground: #ffffff;
+    --success: var(--green-490);
+    --success-light: var(--green-800);
+    --success-foreground: var(--white);
+    --warning: var(--amber-400);
+    --warning-light: var(--amber-950);
+    --warning-foreground: var(--amber-100);
+    --error: var(--red-300);
+    --error-light: var(--red-950);
+    --error-foreground: var(--white);
+    --info: var(--blue-400);
+    --info-light: var(--blue-950);
+    --info-foreground: var(--white);
 
     --on-primary-hover: rgba(255, 255, 255, 0.10);
     --scrim: rgba(0, 0, 0, 0.60);
