@@ -7,7 +7,7 @@
 
 ## Design Token Conventions
 - Replace arbitrary Tailwind values with standard utilities: `rounded-[16px]` -> `rounded-2xl`, `text-[2rem]` -> `text-4xl`, `text-[10px]` -> `text-xs`
-- Touch targets: `min-h-[44px] min-w-[44px] flex items-center justify-center` for icon-only/small buttons
+- Touch targets: `min-h-11 min-w-11 flex items-center justify-center` for icon-only/small buttons (44px via --space-11 token, NOT arbitrary `[44px]`)
 - Display font for h1: `font-display font-normal` (NOT `font-semibold`)
 - Confirmation drawers: Cancel button always FIRST, destructive action SECOND
 - External links styled as buttons: `cn(buttonVariants({ variant: 'primary' }), 'additional-classes')`
