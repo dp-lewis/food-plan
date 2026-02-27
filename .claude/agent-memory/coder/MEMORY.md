@@ -82,10 +82,13 @@ BottomNav back button testid is `bottom-nav-back` (not `back-link`).
 Props: `primaryAction`, `secondaryAction`, `tertiaryAction` — each is `{ label, href?, onClick?, testId? }`.
 No `actions` array prop exists. Test IDs use `testId` field (not `data-testid`).
 
-## Environment: No node_modules
+## Environment: Build Notes
 
-The sandbox has no network. `npm run build` / `tsc --noEmit` produce "Cannot find module" errors for ALL files.
-These are pre-existing. Filter tsc output for your specific file to confirm no NEW errors were introduced.
+The sandbox has no network access. `npm run build` fails because Next.js cannot fetch Google Fonts over HTTPS (TLS error). This is a pre-existing infrastructure issue, not a code error.
+
+Use `npx tsc --noEmit` to verify TypeScript correctness instead — this runs without network and produces clean output on valid code.
+
+If `node_modules` is missing (next binary not found), run `npm install` first — it works offline for local packages.
 
 ## Sign-out Flow (SignOutDialog component)
 
