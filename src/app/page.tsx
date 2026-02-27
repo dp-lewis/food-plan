@@ -32,6 +32,7 @@ export default function Dashboard() {
   const checkedItems = useStore((state) => state.checkedItems);
   const customShoppingItems = useStore((state) => state.customShoppingItems);
   const swapMeal = useStore((state) => state.swapMeal);
+  const addMeal = useStore((state) => state.addMeal);
   const { user, loading: authLoading } = useAuth();
 
   const isReadOnly = planRole === 'member';
@@ -42,19 +43,43 @@ export default function Dashboard() {
     mealType: null,
     currentRecipeId: null,
   });
+  const [addMealType, setAddMealType] = useState<MealType | null>(null);
 
   const closeDrawer = () => {
     setDrawerState({ isOpen: false, mealId: null, mealType: null, currentRecipeId: null });
+    setAddMealType(null);
+  };
+
+  const handleAddMeal = (mealType: MealType) => {
+    setAddMealType(mealType);
+    setDrawerState({
+      isOpen: true,
+      mealId: null,
+      mealType,
+      currentRecipeId: null,
+    });
   };
 
   const handleSelectRecipe = (recipeId: string) => {
-    if (drawerState.mealId) {
+    if (addMealType !== null && currentPlan) {
+      const todayIndex = getTodayPlanIndex(currentPlan.preferences.startDay);
+      addMeal(todayIndex, addMealType, recipeId);
+      setAddMealType(null);
+    } else if (drawerState.mealId) {
       swapMeal(drawerState.mealId, recipeId);
     }
   };
 
   const handleSurpriseMe = () => {
-    if (drawerState.mealId) {
+    if (addMealType !== null && currentPlan) {
+      const todayIndex = getTodayPlanIndex(currentPlan.preferences.startDay);
+      const mealTypeRecipes = getRecipesByMealType(addMealType, userRecipes);
+      if (mealTypeRecipes.length > 0) {
+        const randomRecipe = mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
+        addMeal(todayIndex, addMealType, randomRecipe.id);
+      }
+      setAddMealType(null);
+    } else if (drawerState.mealId) {
       swapMeal(drawerState.mealId);
     }
   };
@@ -109,26 +134,23 @@ export default function Dashboard() {
           item.recipe !== undefined
       );
 
-    const hasTodayMeals = todayMealsWithRecipes.length > 0;
-
-    // Default tab: prefer the up-next slot's meal type, else first present meal type
+    // Default tab: prefer the up-next slot's meal type, else first present meal type, else 'breakfast'
     const defaultMealType: MealType =
       upNextSlot && upNextSlot.label !== 'Tomorrow'
         ? upNextSlot.mealType
-        : todayMealsWithRecipes[0]?.meal.mealType ?? 'dinner';
+        : todayMealsWithRecipes[0]?.meal.mealType ?? 'breakfast';
 
     return (
       <div className="min-h-screen bg-primary" data-testid="dashboard">
         {pageHeader}
         <main id="main-content" className="bg-background rounded-t-3xl min-h-screen max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
 
-          {hasTodayMeals && (
-            <TodayCard
-              todayMealsWithRecipes={todayMealsWithRecipes}
-              defaultMealType={defaultMealType}
-              shoppingStatus={shoppingStatus ?? { checked: 0, total: 0 }}
-            />
-          )}
+          <TodayCard
+            todayMealsWithRecipes={todayMealsWithRecipes}
+            defaultMealType={defaultMealType}
+            shoppingStatus={shoppingStatus ?? { checked: 0, total: 0 }}
+            onAddMeal={handleAddMeal}
+          />
 
           {shoppingStatus && shoppingStatus.total > 0 && (
             <ShoppingStatusCard shoppingStatus={shoppingStatus} />
@@ -144,6 +166,7 @@ export default function Dashboard() {
           recipes={drawerRecipes}
           onSelectRecipe={handleSelectRecipe}
           onSurpriseMe={handleSurpriseMe}
+          mode={addMealType !== null ? 'add' : 'swap'}
         />
 
         <BottomNav hideFab />
