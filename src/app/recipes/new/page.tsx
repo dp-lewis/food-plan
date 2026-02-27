@@ -205,7 +205,7 @@ export default function NewRecipe() {
                 onChange={(e) => setNewIngredient(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="e.g., 2 chicken schnitzels"
-                className="flex-1 px-3 py-2 rounded-lg bg-background border border-border text-base text-foreground"
+                className="flex-1 px-3 py-2 rounded-sm bg-background border border-border text-base text-foreground"
                 data-testid="new-ingredient-input"
                 aria-describedby="ingredient-hint"
               />
@@ -240,7 +240,7 @@ export default function NewRecipe() {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any brief reminders for this recipe..."
               rows={2}
-              className="w-full px-3 py-2 rounded-lg resize-none bg-background border border-border text-base text-foreground"
+              className="w-full px-3 py-2 rounded-sm resize-none bg-background border border-border text-base text-foreground"
               data-testid="notes-input"
             />
           </div>

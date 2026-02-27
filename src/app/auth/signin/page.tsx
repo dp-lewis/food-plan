@@ -87,7 +87,7 @@ function SignInForm() {
     return (
       <>
         <Card data-testid="signin-success">
-          <h1 className="mb-2 text-2xl font-semibold text-foreground">
+          <h1 className="mb-2 text-2xl font-display font-normal text-foreground">
             Check your email
           </h1>
           <p className="mb-4 text-base text-muted-foreground">
@@ -152,7 +152,7 @@ function SignInForm() {
 
   return (
     <>
-      <h1 className="mb-6 text-2xl font-semibold text-foreground">
+      <h1 className="mb-6 text-2xl font-display font-normal text-foreground">
         Sign in
       </h1>
 

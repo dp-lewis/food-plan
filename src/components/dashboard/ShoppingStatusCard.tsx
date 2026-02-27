@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Card, Button, ProgressBar } from '@/components/ui';
 import { ShoppingCart } from 'lucide-react';
+import SectionHeading from './SectionHeading';
 
 interface ShoppingStatus {
   total: number;
@@ -11,16 +12,6 @@ interface ShoppingStatus {
 
 interface ShoppingStatusCardProps {
   shoppingStatus: ShoppingStatus;
-}
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <span className="bg-card px-4 text-xl font-normal text-foreground whitespace-nowrap font-display">
-        {children}
-      </span>
-    </div>
-  );
 }
 
 function getProgressCommentary(checked: number, total: number): string | null {
@@ -70,7 +61,7 @@ export default function ShoppingStatusCard({ shoppingStatus }: ShoppingStatusCar
       {/* CTA button */}
       <Button
         variant="primary"
-        className="w-full justify-start h-auto py-4 px-4 rounded-[16px]"
+        className="w-full justify-start h-auto py-4 px-4 rounded-2xl"
         data-testid="shopping-status-link"
         onClick={() => router.push('/shopping-list')}
       >

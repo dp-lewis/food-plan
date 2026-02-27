@@ -1,9 +1,17 @@
 # Coder Agent Memory
 
 ## Environment Notes
-- `node_modules` may not be installed; run `/opt/node22/bin/npm install` first, then `/opt/node22/bin/npm run build`
-- Node/npm are at `/opt/node22/bin/` (not in PATH by default)
-- `npm run build` fully works after install — TypeScript compilation included in Next.js build
+- `node_modules` may not be installed; run `npm install` first (npm is in PATH)
+- `npm run build` fails in sandbox due to TLS errors fetching Google Fonts — this is a sandbox networking limitation, not a code error
+- Use `npx tsc --noEmit` to verify TypeScript correctness without needing network access
+
+## Design Token Conventions
+- Replace arbitrary Tailwind values with standard utilities: `rounded-[16px]` -> `rounded-2xl`, `text-[2rem]` -> `text-4xl`, `text-[10px]` -> `text-xs`
+- Touch targets: `min-h-[44px] min-w-[44px] flex items-center justify-center` for icon-only/small buttons
+- Display font for h1: `font-display font-normal` (NOT `font-semibold`)
+- Confirmation drawers: Cancel button always FIRST, destructive action SECOND
+- External links styled as buttons: `cn(buttonVariants({ variant: 'primary' }), 'additional-classes')`
+- `SectionHeading` shared component: `src/components/dashboard/SectionHeading.tsx` (used in UpNextCard and ShoppingStatusCard)
 
 ## Store shape
 - `currentPlan: MealPlan | null` — meals nested inside (no top-level `meals` field in AppState)

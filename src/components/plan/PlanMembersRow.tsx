@@ -29,7 +29,7 @@ export default function PlanMembersRow({ members }: PlanMembersRowProps) {
           >
             {member.email ? getInitials(member.email) : '?'}
           </div>
-          <span className="text-[10px] text-muted-foreground leading-none">
+          <span className="text-xs text-muted-foreground leading-none">
             {member.role === 'owner' ? 'Owner' : 'Member'}
           </span>
         </div>
