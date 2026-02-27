@@ -12,7 +12,7 @@ import SignOutDialog from '@/components/SignOutDialog';
 import { BottomNav, PageHeader } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
 import { useAuth } from '@/components/AuthProvider';
-import { Utensils } from 'lucide-react';
+import { Utensils, CalendarPlus } from 'lucide-react';
 import TodayCard from '@/components/dashboard/UpNextCard';
 import ShoppingStatusCard from '@/components/dashboard/ShoppingStatusCard';
 
@@ -120,7 +120,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-primary" data-testid="dashboard">
         {pageHeader}
-        <main id="main-content" className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
+        <main id="main-content" className="bg-background rounded-t-3xl min-h-screen max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
 
           {hasTodayMeals && (
             <TodayCard
@@ -155,7 +155,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-primary" data-testid="empty-state">
       {pageHeader}
-      <main id="main-content" className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
+      <main id="main-content" className="bg-background rounded-t-3xl min-h-screen max-w-2xl mx-auto px-4 py-8 pb-40 space-y-8">
         <div className="text-center py-12">
           <h2 className="mb-2 text-2xl font-semibold text-foreground">
             What&apos;s for dinner this week?
@@ -168,6 +168,7 @@ export default function Dashboard() {
             data-testid="create-first-plan-btn"
             className={buttonVariants({ variant: 'primary' }) + ' w-full'}
           >
+            <CalendarPlus className="w-4 h-4 mr-2" aria-hidden="true" />
             Create Your Plan
           </Link>
         </div>

@@ -38,11 +38,11 @@ export default function DaySlot({
       data-testid={`day-${dayIndex}`}
       className={`scroll-mt-20 ${isToday ? 'border-2 border-primary' : ''}`}
     >
-      <div className="sticky top-[56px] z-10 px-4 py-2 bg-muted font-normal font-display text-base text-foreground rounded-t-lg border-b border-border">
+      <div className="sticky top-[56px] z-10 px-4 py-2 bg-background font-normal font-display text-base text-foreground rounded-t-2xl border-b border-border">
         <div className="flex items-center gap-2">
           {dayName}
           {isToday && (
-            <span className="text-xs font-medium bg-primary-foreground text-primary px-2 py-0.5 rounded">Today</span>
+            <span className="text-xs font-medium bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Today</span>
           )}
         </div>
         <div className="text-xs font-normal text-muted-foreground">
@@ -73,7 +73,7 @@ export default function DaySlot({
                       onClick={() => onAddMeal(dayIndex, mealType, slotRecipeIds)}
                       data-testid={`add-meal-${dayIndex}-${mealType}`}
                       aria-label={`Add ${mealType}`}
-                      className="w-full justify-start"
+                      className="w-full justify-start text-primary border-primary"
                     >
                       + Add
                     </Button>

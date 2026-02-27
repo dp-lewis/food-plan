@@ -56,14 +56,6 @@ export default function TodayCard({
     (m) => m.meal.mealType === selectedMealType
   );
 
-  const primaryRecipe = selectedMeals[0]?.recipe ?? null;
-
-  const recipeUrl = primaryRecipe
-    ? primaryRecipe.isUserRecipe
-      ? `/recipes/${primaryRecipe.id}`
-      : `/recipe/${primaryRecipe.id}`
-    : null;
-
   // Shopping status text
   let shoppingStatusText: string | null = null;
   if (shoppingStatus.total > 0 && shoppingStatus.checked === shoppingStatus.total) {
@@ -90,7 +82,7 @@ export default function TodayCard({
                   'flex-1 py-2 rounded-full text-sm font-medium border transition-colors min-h-[44px] text-center',
                   isSelected
                     ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-transparent text-primary border-primary',
+                    : 'bg-muted text-primary border-primary',
                 ].join(' ')}
               >
                 {MEAL_LABELS[mt]}
@@ -100,49 +92,57 @@ export default function TodayCard({
         </div>
       )}
 
-      {primaryRecipe ? (
+      {selectedMeals.length > 0 ? (
         <>
-          {/* Recipe name */}
-          <h2 className="text-[2rem] font-normal text-foreground mb-2" data-testid="today-recipe-title">
-            {primaryRecipe.title}
-          </h2>
-
-          {/* Metadata */}
-          <p className="text-sm text-muted-foreground mb-2">
-            {primaryRecipe.prepTime + primaryRecipe.cookTime} minutes
-            {primaryRecipe.servings ? ` | serves ${primaryRecipe.servings}` : ''}
-          </p>
-
-          {/* Description */}
-          {primaryRecipe.description && (
-            <p className="text-sm text-muted-foreground mb-2">
-              {primaryRecipe.description}
-            </p>
-          )}
+          {/* One block per meal */}
+          <div className="divide-y divide-border">
+            {selectedMeals.map(({ meal, recipe }, index) => {
+              const recipeUrl = recipe.isUserRecipe
+                ? `/recipes/${recipe.id}`
+                : `/recipe/${recipe.id}`;
+              return (
+                <div key={meal.id} className={index > 0 ? 'pt-4' : ''}>
+                  <h2
+                    className="text-[2rem] font-normal text-foreground mb-2"
+                    data-testid={index === 0 ? 'today-recipe-title' : `today-recipe-title-${index}`}
+                  >
+                    {recipe.title}
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {recipe.prepTime + recipe.cookTime} minutes
+                    {recipe.servings ? ` | serves ${recipe.servings}` : ''}
+                  </p>
+                  {recipe.description && (
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {recipe.description}
+                    </p>
+                  )}
+                  <Button
+                    variant="primary"
+                    className="w-full justify-start h-auto py-4 px-4 rounded-[16px] mt-2"
+                    data-testid={index === 0 ? 'today-view-recipe-btn' : `today-view-recipe-btn-${index}`}
+                    onClick={() => router.push(recipeUrl)}
+                  >
+                    <BookOpen className="w-4 h-4 mr-2" aria-hidden="true" />
+                    View recipe
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
 
           {/* Shopping status */}
           {shoppingStatusText && (
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-muted-foreground mt-4">
               {shoppingStatusText}
             </p>
           )}
 
-          {/* CTAs */}
-          <div className="flex flex-col gap-2 mt-4">
-            {recipeUrl && (
-              <Button
-                variant="primary"
-                className="w-full justify-start h-auto py-4 px-4 rounded-[16px]"
-                data-testid="today-view-recipe-btn"
-                onClick={() => router.push(recipeUrl)}
-              >
-                <BookOpen className="w-4 h-4 mr-2" aria-hidden="true" />
-                View recipe
-              </Button>
-            )}
+          {/* View full plan */}
+          <div className="mt-4">
             <Button
               variant="secondary"
-              className="w-full justify-start bg-background h-auto py-4 px-4 rounded-[16px]"
+              className="w-full justify-start bg-muted h-auto py-4 px-4 rounded-[16px] text-primary border-primary"
               data-testid="today-view-plan-btn"
               onClick={() => router.push('/plan/current')}
             >
