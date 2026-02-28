@@ -3,7 +3,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
-import { LoadingScreen } from '@/components/LoadingScreen';
 
 type AuthContextType = {
   user: User | null;
@@ -45,7 +44,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ user, loading }}>
-      <LoadingScreen visible={loading} />
       {children}
     </AuthContext.Provider>
   );
