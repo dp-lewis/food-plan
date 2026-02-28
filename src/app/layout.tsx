@@ -30,6 +30,12 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "Did we get...?",
+    startupImage: [
+      {
+        url: '/splash-screen.png',
+        media: '(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+    ],
   },
   icons: {
     apple: "/icons/apple-touch-icon.png",
