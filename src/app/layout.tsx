@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: "Did we get...?",
     startupImage: [
       {
-        url: '/splash-screen.png',
+        url: '/splash-iphone16-v2.png',
         media: '(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
       },
     ],
