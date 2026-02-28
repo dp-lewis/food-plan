@@ -13,16 +13,16 @@
      ========================================== */
 
   /* Green */
-  --green-500: #5b806e;
+  --green-500: #4c7561;
   --green-490: #5a7f62;
   --green-200: #d4e4dc;
   --green-190: #d4e4d8;
   --green-800: #2a3d2e;
 
   /* Warm / Sand */
-  --warm-50:  #f4ece6;
-  --warm-100: #ede5dc;
-  --warm-200: #ebcfbc;
+  --warm-50:  #faf3ee;
+  --warm-100: #f6ede3;
+  --warm-200: #eac8b1;
   --warm-900: #221e18;
   --warm-850: #2d2720;
   --warm-700: #6b5e52;
