@@ -105,8 +105,16 @@ Date/day helpers live in `src/lib/dates.ts`:
 - `getTodayPlanIndex(startDay)` — plan-relative index for today
 - `getDayName(startDay, dayIndex)` — day name for a plan slot
 - `getOrderedDays(startDay)` — 7-element array of day names from startDay
-- `getDateForDayIndex(startDay, dayIndex)` — formatted date string e.g. "Feb 15"
+- `getDateForDayIndex(startDay, dayIndex, weekStart?)` — formatted date string e.g. "Feb 15"; when `weekStart` is provided, dates are anchored to that fixed ISO date instead of computed from today
 - `getUpNextSlot(todayIndex, meals, hour)` — returns the next meal slot to cook (or null)
+
+**`weekStart` pattern** (plan reset date fix):
+- `MealPlanPreferences.weekStart?: string` (ISO "YYYY-MM-DD") stored when a plan is created by `createEmptyPlan`
+- Represents day 0 of the plan week; computed as next occurrence of `startDay` from today (inclusive)
+- `DaySlot` accepts `weekStart?: string` prop and passes it to `getDateForDayIndex`
+- `todayIndex` in `plan/current/page.tsx`: when `weekStart` is set, compute from diff between today and `weekStart`; return -1 if today is outside the 7-day window
+- Always use `weekStart + 'T12:00:00'` when constructing a Date to avoid DST edge cases
+- Tests for `weekStart`-anchored behavior do NOT need `vi.useFakeTimers()` (fixed anchor, not today-relative)
 
 ## Component Architecture (Phase 6 refactor)
 
