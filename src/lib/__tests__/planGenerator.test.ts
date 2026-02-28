@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createEmptyPlan, swapMeal } from '../planGenerator';
 import type { MealPlan, MealPlanPreferences, Recipe, Meal } from '@/types';
 
@@ -36,11 +36,11 @@ function makeMeal(id: string, recipeId: string, mealType: Meal['mealType'] = 'di
 // ---------------------------------------------------------------------------
 
 describe('createEmptyPlan', () => {
-  it('returns a plan with the provided preferences', () => {
+  it('returns a plan with the provided startDay in preferences', () => {
     // Arrange / Act
     const plan = createEmptyPlan(prefs);
-    // Assert
-    expect(plan.preferences).toEqual(prefs);
+    // Assert: preferences contains at least the provided fields (weekStart is added)
+    expect(plan.preferences).toMatchObject(prefs);
   });
 
   it('returns a plan with an empty meals array', () => {
@@ -64,6 +64,43 @@ describe('createEmptyPlan', () => {
     const plan1 = createEmptyPlan(prefs);
     const plan2 = createEmptyPlan(prefs);
     expect(plan1.id).not.toBe(plan2.id);
+  });
+
+  describe('weekStart computation', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('sets weekStart to today when today is the startDay', () => {
+      // Fix to Monday (startDay=0)
+      vi.setSystemTime(new Date('2025-01-06T12:00:00Z')); // Monday
+      const plan = createEmptyPlan({ startDay: 0 });
+      expect(plan.preferences.weekStart).toBe('2025-01-06');
+    });
+
+    it('sets weekStart to the next occurrence of startDay when today is not the startDay', () => {
+      // Fix to Tuesday (startDay=0 => next Monday is 5 days away)
+      vi.setSystemTime(new Date('2025-01-07T12:00:00Z')); // Tuesday
+      const plan = createEmptyPlan({ startDay: 0 }); // startDay = Monday
+      expect(plan.preferences.weekStart).toBe('2025-01-13'); // next Monday
+    });
+
+    it('sets weekStart correctly when startDay is mid-week (Wednesday)', () => {
+      // Fix to Monday; next Wednesday is 2 days away
+      vi.setSystemTime(new Date('2025-01-06T12:00:00Z')); // Monday
+      const plan = createEmptyPlan({ startDay: 2 }); // startDay = Wednesday
+      expect(plan.preferences.weekStart).toBe('2025-01-08'); // next Wednesday
+    });
+
+    it('sets weekStart as a valid ISO date string (YYYY-MM-DD format)', () => {
+      vi.setSystemTime(new Date('2025-01-06T12:00:00Z'));
+      const plan = createEmptyPlan({ startDay: 0 });
+      expect(plan.preferences.weekStart).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    });
   });
 });
 

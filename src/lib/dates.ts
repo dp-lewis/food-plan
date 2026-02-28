@@ -90,8 +90,17 @@ export function getOrderedDays(startDay: number): string[] {
 
 /**
  * Get the formatted date string (e.g. "Feb 15") for a given dayIndex in the plan.
+ * When weekStart is provided, dates are anchored to that fixed date instead of today.
  */
-export function getDateForDayIndex(startDay: number, dayIndex: number): string {
+export function getDateForDayIndex(startDay: number, dayIndex: number, weekStart?: string): string {
+  if (weekStart) {
+    // Anchor to the plan's fixed week start date
+    const start = new Date(weekStart + 'T12:00:00'); // noon avoids DST edge cases
+    const date = new Date(start);
+    date.setDate(start.getDate() + dayIndex);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  // Fallback: original behavior (relative to today)
   const now = new Date();
   const jsDay = now.getDay();
   const todayWeekday = jsDay === 0 ? 6 : jsDay - 1; // 0=Mon...6=Sun

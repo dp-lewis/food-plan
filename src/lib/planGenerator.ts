@@ -7,10 +7,20 @@ function generateId(): string {
 }
 
 export function createEmptyPlan(preferences: MealPlanPreferences): MealPlan {
+  const { startDay } = preferences;
+  // Compute weekStart: next occurrence of startDay from today (inclusive)
+  const today = new Date();
+  const jsToday = today.getDay(); // 0=Sun...6=Sat
+  const todayWeekday = jsToday === 0 ? 6 : jsToday - 1; // convert to 0=Mon...6=Sun
+  const daysUntilStartDay = (startDay - todayWeekday + 7) % 7;
+  const weekStartDate = new Date(today);
+  weekStartDate.setDate(today.getDate() + daysUntilStartDay);
+  const weekStart = weekStartDate.toISOString().split('T')[0];
+
   return {
     id: generateId(),
     createdAt: new Date().toISOString(),
-    preferences,
+    preferences: { ...preferences, weekStart },
     meals: [],
   };
 }

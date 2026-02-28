@@ -42,6 +42,7 @@ export interface Meal {
 
 export interface MealPlanPreferences {
   startDay: number; // 0=Monday, 1=Tuesday, ... 6=Sunday
+  weekStart?: string; // ISO date "YYYY-MM-DD" of plan's day 0 (computed on creation)
 }
 
 export interface MealPlan {
