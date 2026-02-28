@@ -30,6 +30,7 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "Did we get...?",
+    startupImage: '/loading-screen.png',
   },
   icons: {
     apple: "/icons/apple-touch-icon.png",
