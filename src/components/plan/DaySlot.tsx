@@ -16,6 +16,7 @@ interface DaySlotProps {
   dayIndex: number;
   isToday: boolean;
   startDay: number;
+  weekStart?: string;
   slots: MealSlot[];
   userRecipes: Recipe[];
   onAddMeal?: (dayIndex: number, mealType: MealType, excludeRecipeIds: string[]) => void;
@@ -27,6 +28,7 @@ export default function DaySlot({
   dayIndex,
   isToday,
   startDay,
+  weekStart,
   slots,
   userRecipes,
   onAddMeal,
@@ -46,7 +48,7 @@ export default function DaySlot({
           )}
         </div>
         <div className="text-xs font-normal text-muted-foreground">
-          {getDateForDayIndex(startDay, dayIndex)}
+          {getDateForDayIndex(startDay, dayIndex, weekStart)}
         </div>
       </div>
       <div className="divide-y divide-border">

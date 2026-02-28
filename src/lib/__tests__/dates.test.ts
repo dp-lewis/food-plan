@@ -197,6 +197,36 @@ describe('getDateForDayIndex', () => {
 });
 
 // ---------------------------------------------------------------------------
+// getDateForDayIndex with weekStart
+// ---------------------------------------------------------------------------
+
+describe('getDateForDayIndex with weekStart', () => {
+  it('uses weekStart as the anchor for day 0', () => {
+    const dateStr = getDateForDayIndex(0, 0, '2025-03-01');
+    expect(dateStr).toContain('Mar');
+    expect(dateStr).toContain('1');
+  });
+
+  it('returns correct date for dayIndex 1 with weekStart', () => {
+    const dateStr = getDateForDayIndex(0, 1, '2025-03-01');
+    expect(dateStr).toContain('Mar');
+    expect(dateStr).toContain('2');
+  });
+
+  it('returns correct date for dayIndex 6 with weekStart', () => {
+    const dateStr = getDateForDayIndex(0, 6, '2025-03-01');
+    expect(dateStr).toContain('Mar');
+    expect(dateStr).toContain('7');
+  });
+
+  it('handles month boundary correctly with weekStart', () => {
+    const dateStr = getDateForDayIndex(0, 3, '2025-01-30');
+    expect(dateStr).toContain('Feb');
+    expect(dateStr).toContain('2');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // getUpNextSlot
 // ---------------------------------------------------------------------------
 

@@ -310,10 +310,19 @@ export default function CurrentPlan() {
     });
   }, [planRole, currentPlan]);
 
-  const todayIndex = useMemo(
-    () => currentPlan ? getTodayPlanIndex(currentPlan.preferences.startDay) : 0,
-    [currentPlan]
-  );
+  const todayIndex = useMemo(() => {
+    if (!currentPlan) return 0;
+    const { weekStart, startDay } = currentPlan.preferences;
+    if (weekStart) {
+      const today = new Date();
+      const start = new Date(weekStart + 'T12:00:00');
+      const diffMs = today.getTime() - start.getTime();
+      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+      // Return day index if today is within the plan week, else -1 (no day highlighted)
+      return (diffDays >= 0 && diffDays < 7) ? diffDays : -1;
+    }
+    return getTodayPlanIndex(startDay);
+  }, [currentPlan]);
 
   if (!hasHydrated || !currentPlan) {
     return (
@@ -410,6 +419,7 @@ export default function CurrentPlan() {
               dayIndex={dayIndex}
               isToday={dayIndex === todayIndex}
               startDay={currentPlan.preferences.startDay}
+              weekStart={currentPlan.preferences.weekStart}
               slots={slots}
               userRecipes={userRecipes}
               onAddMeal={openAddDrawer}
