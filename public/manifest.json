@@ -4,8 +4,8 @@
   "description": "Weekly meal planning made simple",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f4ece6",
-  "theme_color": "#5b806e",
+  "background_color": "#4c7561",
+  "theme_color": "#4c7561",
   "icons": [
     {
       "src": "/icons/icon-192.png",
