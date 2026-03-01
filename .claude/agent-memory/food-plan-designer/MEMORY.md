@@ -12,7 +12,7 @@ All main pages use: `<div class="min-h-screen bg-primary">` + `<PageHeader>` + `
 - Main content max-width is `max-w-2xl` for list/dashboard pages, `max-w-md` for form/detail pages
 - Bottom padding on main: `pb-40` on pages with BottomNav, `pb-6` on pages without
 
-## Component Inconsistencies Found (2026-02-27 audit)
+## Component Inconsistencies Found (updated 2026-03-01 full audit)
 
 ### Radius inconsistency
 - Button: `rounded-2xl`; Card: `rounded-2xl`; Input/Select: `rounded-sm`; Stepper/ToggleGroup: `rounded-sm`
@@ -57,3 +57,24 @@ No hardcoded hex colors in component/page TSX files. All color references go thr
 - BottomNav FAB: route-aware, only shows when callback prop is provided by page
 - Drawer is used correctly for confirmations and quick inputs throughout
 - BackLink component appears to be largely unused — PageHeader handles back navigation in most places
+- `onTodayClick` prop on BottomNav is wired in stories but never consumed inside the component — dead prop
+
+## Confirmed Destructive-Action Pattern Issue
+- Delete confirm in `/recipes/[id]/page.tsx` line 161 uses `variant="secondary"` with className overrides — confirm delete should use a true destructive variant or at minimum the `bg-destructive` token directly, not secondary + override
+- Delete Plan confirm in plan/current uses `className="flex-1 bg-destructive text-destructive-foreground"` override on a primary button — inconsistent approach across the two deletion flows
+
+## Button Size Violation (P0)
+- `Button` `size="small"` renders at `h-9` (36px) — below 44px WCAG minimum
+- Used in: DaySlot.tsx lines 74 and 103, MealCard.tsx line 34, plan/current/page.tsx lines 385, 400, 470
+- All "Add meal", "Remove meal", "Leave Plan", "Delete Plan" buttons are too small
+
+## ProgressBar Inline Style
+- `ProgressBar` accepts `colorVar` as a string passed to `style={{ backgroundColor: colorVar }}`
+- The shopping-list PageHeader passes `"var(--primary-foreground)"` as colorVar — valid token ref
+- ShoppingStatusCard passes `"var(--progress-shopping)"` — valid token ref
+- Pattern is intentional but bypasses Tailwind — acceptable if documented
+
+## Import Recipe Duplication
+- `/recipes/add/page.tsx` contains a full URL-input step that duplicates the import drawer in `/recipes/page.tsx`
+- The flow from the drawer navigates to /recipes/add with the parsed recipe in store — this is the intended path
+- The step='url' branch of /recipes/add is a fallback/legacy path — consider removing or clearly marking it
