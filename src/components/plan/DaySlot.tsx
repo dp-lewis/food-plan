@@ -40,7 +40,7 @@ export default function DaySlot({
       data-testid={`day-${dayIndex}`}
       className={`scroll-mt-20 ${isToday ? 'border-2 border-primary' : ''}`}
     >
-      <div className="sticky top-[56px] z-10 px-4 py-2 bg-background font-normal font-display text-base text-foreground rounded-t-2xl border-b border-border">
+      <div className="sticky top-[76px] z-10 px-4 py-2 bg-background font-normal font-display text-base text-foreground rounded-t-2xl border-b border-border">
         <div className="flex items-center gap-2">
           {dayName}
           {isToday && (
