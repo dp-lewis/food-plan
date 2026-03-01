@@ -22,6 +22,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { DevTestSeam } from "@/components/DevTestSeam";
 import { IOSDynamicSplashScreen } from "@/components/IOSDynamicSplashScreen";
+import { PWASplashScreen } from "@/components/PWASplashScreen";
 
 export const metadata: Metadata = {
   title: "Did we get...?",
@@ -48,11 +49,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${castoro.variable} ${inter.variable}`}>
+    <html lang="en" className={`${castoro.variable} ${inter.variable} bg-primary text-primary-foreground`}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </head>
-      <body className="antialiased">
+      <body className="antialiased bg-primary">
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
@@ -63,6 +64,7 @@ export default function RootLayout({
           <RealtimeSync />
           <DevTestSeam />
           <IOSDynamicSplashScreen />
+          <PWASplashScreen />
           {children}
         </AuthProvider>
         <ServiceWorkerRegistration />
