@@ -35,10 +35,6 @@ export const metadata: Metadata = {
         url: '/splash-iphone16-v2.png',
         media: '(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
       },
-      {
-        url: '/splash-iphone16-v2-1.png',
-        media: '(device-width: 393px) and (device-height: 912px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
-      },
     ],
   },
   icons: {
