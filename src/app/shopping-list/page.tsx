@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { generateShoppingList, groupByCategory, mergeShoppingLists, CATEGORY_LABELS } from '@/lib/shoppingList';
 import { parseIngredient } from '@/lib/ingredientParser';
-import { BottomNav, ProgressBar, Checkbox, Button, Drawer, Input, PageHeader } from '@/components/ui';
+import { BottomNav, ProgressBar, Checkbox, Button, Drawer, Input, PageHeader, EmptyState } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
 
 function getInitials(email: string): string {
@@ -74,7 +74,7 @@ export default function ShoppingList() {
   const openDrawer = () => setIsDrawerOpen(true);
 
   return (
-    <div className="min-h-screen bg-primary" data-testid={isEmpty ? undefined : 'shopping-list'}>
+    <div className="min-h-screen flex flex-col bg-primary" data-testid={isEmpty ? undefined : 'shopping-list'}>
       <PageHeader
         title="Shopping List"
         backHref="/"
@@ -102,21 +102,28 @@ export default function ShoppingList() {
       </PageHeader>
 
       {isEmpty ? (
-        <main id="main-content" className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
-          <div className="text-center py-8">
-            <p className="text-muted-foreground mb-4">
-              No meal plan found. Create one to generate a shopping list, or add items manually.
-            </p>
-            <Link
-              href="/plan"
-              className={buttonVariants({ variant: 'primary' }) + ' w-full'}
-            >
-              Create Meal Plan
-            </Link>
-          </div>
+        <main id="main-content" className="flex-1 w-full bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
+          <EmptyState
+            icon="🛒"
+            title="Your shopping list is empty"
+            description="Create a meal plan to auto-generate your list, or add items manually."
+            action={
+              <div className="flex flex-col gap-3">
+                <Link
+                  href="/plan"
+                  className={buttonVariants({ variant: 'primary' }) + ' w-full'}
+                >
+                  Create Meal Plan
+                </Link>
+                <Button variant="secondary" onClick={openDrawer} className="w-full">
+                  Add Items Manually
+                </Button>
+              </div>
+            }
+          />
         </main>
       ) : (
-        <main id="main-content" className="bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
+        <main id="main-content" className="flex-1 w-full bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
           <div className="space-y-6">
             {Array.from(groupedItems.entries()).map(([category, items]) => (
               <section key={category} data-testid={`category-${category}`}>
