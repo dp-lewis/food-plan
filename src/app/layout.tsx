@@ -21,6 +21,7 @@ import { RealtimeSync } from "@/components/RealtimeSync";
 import { AuthProvider } from "@/components/AuthProvider";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { DevTestSeam } from "@/components/DevTestSeam";
+import { IOSDynamicSplashScreen } from "@/components/IOSDynamicSplashScreen";
 
 export const metadata: Metadata = {
   title: "Did we get...?",
@@ -30,12 +31,6 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "Did we get...?",
-    startupImage: [
-      {
-        url: '/splash-iphone16-v2.png',
-        media: '(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
-      },
-    ],
   },
   icons: {
     apple: "/icons/apple-touch-icon.png",
@@ -64,6 +59,7 @@ export default function RootLayout({
           <StoreSync />
           <RealtimeSync />
           <DevTestSeam />
+          <IOSDynamicSplashScreen />
           {children}
         </AuthProvider>
         <ServiceWorkerRegistration />
