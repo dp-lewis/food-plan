@@ -31,9 +31,9 @@ export default function CreatePlan() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-primary">
       <PageHeader title="New Plan" backHref="/" sticky />
-      <main id="main-content" className="max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+      <main id="main-content" className="flex-1 w-full bg-background rounded-t-3xl max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
         <p className="text-base text-muted-foreground">
           Pick the day your week starts and we&apos;ll set up a blank week for you to fill.
         </p>

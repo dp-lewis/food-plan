@@ -54,7 +54,7 @@ export default function TodayCard({
   }
 
   return (
-    <Card data-testid="today-card" className="relative pt-8">
+    <Card data-testid="today-card">
       <SectionHeading>Today</SectionHeading>
 
       {/* Meal type tabs — always show all three */}

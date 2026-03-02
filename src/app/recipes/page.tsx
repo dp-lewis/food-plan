@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/store';
 import { BottomNav, Button, Card, EmptyState, Drawer, Input, PageHeader } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
-import { LinkIcon } from 'lucide-react';
+import { ChevronRight, LinkIcon } from 'lucide-react';
 
 export default function MyRecipes() {
   const router = useRouter();
@@ -104,7 +104,7 @@ export default function MyRecipes() {
                 className="block"
               >
                 <Card>
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center justify-between gap-3">
                     <div className="flex-1">
                       <h2 className="text-base font-normal font-display text-foreground">
                         {recipe.title}
@@ -115,9 +115,12 @@ export default function MyRecipes() {
                         <span>{recipe.sourceName ? `from ${recipe.sourceName}` : 'Your recipe'}</span>
                       </div>
                     </div>
-                    {recipe.sourceUrl && (
-                      <LinkIcon className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
-                    )}
+                    <div className="flex items-center gap-1 shrink-0">
+                      {recipe.sourceUrl && (
+                        <LinkIcon className="w-4 h-4 text-muted-foreground" />
+                      )}
+                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    </div>
                   </div>
                 </Card>
               </Link>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
-import { MetaChip, Button, PageHeader } from '@/components/ui';
+import { BottomNav, MetaChip, Button, PageHeader } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
 import Drawer from '@/components/ui/Drawer';
 import { Clock, Users, ChefHat } from 'lucide-react';
@@ -50,7 +50,7 @@ export default function UserRecipeDetail() {
   return (
     <div className="min-h-screen bg-primary" data-testid="user-recipe-page">
       <PageHeader title={recipe.title} backHref="/recipes" titleTestId="recipe-title" sticky />
-      <main className="bg-background rounded-t-3xl max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+      <main className="bg-background rounded-t-3xl max-w-md mx-auto px-4 py-6 pb-40 space-y-6">
         <p
           data-testid="recipe-source"
           className="text-sm text-muted-foreground"
@@ -140,6 +140,8 @@ export default function UserRecipeDetail() {
         </Button>
       </main>
 
+      <BottomNav />
+
       <Drawer
         isOpen={isDeleteDrawerOpen}
         onClose={() => setIsDeleteDrawerOpen(false)}
@@ -159,10 +161,10 @@ export default function UserRecipeDetail() {
               Cancel
             </Button>
             <Button
-              variant="secondary"
+              variant="primary"
               onClick={handleDelete}
               data-testid="confirm-delete-btn"
-              className="w-full border-destructive text-destructive"
+              className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete Recipe
             </Button>

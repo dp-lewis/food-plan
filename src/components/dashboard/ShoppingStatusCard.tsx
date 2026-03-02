@@ -32,7 +32,7 @@ export default function ShoppingStatusCard({ shoppingStatus }: ShoppingStatusCar
   const commentary = getProgressCommentary(shoppingStatus.checked, shoppingStatus.total);
 
   return (
-    <Card data-testid="shopping-status-card" className="relative pt-8">
+    <Card data-testid="shopping-status-card">
       <SectionHeading>Shopping list</SectionHeading>
 
       {/* Large number display */}
@@ -48,7 +48,7 @@ export default function ShoppingStatusCard({ shoppingStatus }: ShoppingStatusCar
         <ProgressBar
           value={shoppingStatus.checked}
           max={shoppingStatus.total}
-          colorVar="var(--progress-shopping)"
+          variant="shopping"
           label={`Shopping progress: ${shoppingStatus.checked} of ${shoppingStatus.total} items`}
         />
       </div>

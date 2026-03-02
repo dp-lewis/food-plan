@@ -87,9 +87,9 @@ export default function SharedPlanView({ data, shareCode }: { data: SharedPlanDa
   const groupedItems = useMemo(() => groupByCategory(shoppingList), [shoppingList]);
 
   return (
-    <div className="min-h-screen bg-background" data-testid="shared-plan">
+    <div className="min-h-screen bg-primary" data-testid="shared-plan">
       <PageHeader title="Shared Meal Plan" backHref="/" sticky />
-      <main id="main-content" className="max-w-2xl mx-auto px-4 py-6 pb-6 space-y-6">
+      <main id="main-content" className="flex-1 w-full bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-6 space-y-6">
         {/* Join CTA for unauthenticated users */}
         {!user && (
           <Card data-testid="join-plan-cta">

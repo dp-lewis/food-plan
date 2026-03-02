@@ -96,7 +96,7 @@ export default function ShoppingList() {
                 </button>
               )}
             </div>
-            <ProgressBar value={checkedCount} max={totalItems} colorVar="var(--primary-foreground)" />
+            <ProgressBar value={checkedCount} max={totalItems} variant="inverted" />
           </div>
         )}
       </PageHeader>

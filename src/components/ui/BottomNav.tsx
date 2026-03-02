@@ -6,7 +6,6 @@ import { Home, Calendar, ShoppingCart, BookOpen, Plus, MapPin, LinkIcon, Share2 
 import { clsx } from 'clsx';
 
 export interface BottomNavProps {
-  onTodayClick?: () => void;
   onAddItemClick?: () => void;
   onImportClick?: () => void;
   onShareClick?: () => void;
@@ -26,7 +25,6 @@ function isActive(pathname: string, href: string): boolean {
 }
 
 export default function BottomNav({
-  onTodayClick,
   onAddItemClick,
   onImportClick,
   onShareClick,

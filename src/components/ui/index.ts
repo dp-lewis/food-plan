@@ -10,9 +10,6 @@ export type { SelectProps, SelectOption } from './Select';
 export { default as Card, cardVariants } from './Card';
 export type { CardProps } from './Card';
 
-export { default as BackLink } from './BackLink';
-export type { BackLinkProps } from './BackLink';
-
 export { default as Stepper } from './Stepper';
 export type { StepperProps } from './Stepper';
 

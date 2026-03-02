@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getRecipeById } from '@/data/recipes';
-import { MetaChip, PageHeader } from '@/components/ui';
+import { BottomNav, MetaChip, PageHeader } from '@/components/ui';
 import { Clock, Users, ChefHat, DollarSign } from 'lucide-react';
 
 export default function RecipeDetail() {
@@ -35,7 +35,7 @@ export default function RecipeDetail() {
   return (
     <div className="min-h-screen bg-primary" data-testid="recipe-page">
       <PageHeader title={recipe.title} onBack={() => router.back()} titleTestId="recipe-title" sticky />
-      <main className="bg-background rounded-t-3xl max-w-md mx-auto px-4 py-6 pb-6 space-y-6">
+      <main className="bg-background rounded-t-3xl max-w-md mx-auto px-4 py-6 pb-40 space-y-6">
         <p className="text-base text-muted-foreground">
           {recipe.description}
         </p>
@@ -99,6 +99,8 @@ export default function RecipeDetail() {
           </ol>
         </section>
       </main>
+
+      <BottomNav />
     </div>
   );
 }

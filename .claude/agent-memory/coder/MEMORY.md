@@ -234,6 +234,21 @@ Share button stays owner-only: `planRole === 'owner' && user` guards `onShareCli
 Type cast: DB `meal_type` is `string`, must cast to `MealType` with `as MealType`.
 Migration: `supabase/migrations/00007_enable_realtime_meals.sql` — enables realtime on `meals` and `custom_shopping_items`.
 
+## Button Component
+
+- `Button` in `src/components/ui/Button.tsx` uses CVA. Variants: `primary`, `secondary`, `ghost` — no `destructive` variant exists.
+- For destructive confirm actions, use `variant="primary"` with `className="bg-destructive text-destructive-foreground hover:bg-destructive/90"` (matches plan/current/page.tsx pattern).
+- `size="small"` uses `min-h-11` (44px min) for WCAG touch target compliance — not `h-9`.
+
+## Design Tokens
+
+- `border-warning` is fragile — `--warning` is a text/accent token, not a border color token.
+- Prefer `border-current` when an element already has warning-colored text so the border color inherits automatically.
+
+## BottomNav Dead Props
+
+- `onTodayClick` prop was removed (dead code) in March 2026. Current active callback props: `onAddItemClick`, `onImportClick`, `onShareClick`, `hideFab`.
+
 ## Playwright WebSocket Mock (Supabase Realtime)
 
 See `realtime-mock.md` for full details. Critical points:

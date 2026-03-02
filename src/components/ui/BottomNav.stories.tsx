@@ -37,9 +37,6 @@ export const PlanPage: Story = {
       },
     },
   },
-  args: {
-    onTodayClick: () => alert('Today clicked'),
-  },
 };
 
 export const ShoppingPage: Story = {
