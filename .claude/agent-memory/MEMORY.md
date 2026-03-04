@@ -2,8 +2,17 @@
 
 ## Environment Notes
 - `node_modules` may not be installed; run `npm install` first (npm is in PATH)
-- `npm run build` fails in sandbox due to TLS errors fetching Google Fonts — this is a sandbox networking limitation, not a code error
+- `npm run build` fails in sandbox — "next: not found" when node_modules absent, or TLS errors fetching Google Fonts — these are sandbox limitations, not code errors
 - Use `npx tsc --noEmit` to verify TypeScript correctness without needing network access
+- Pre-existing tsc errors exist in `e2e/` (missing @playwright/test types) and some `src/` files (missing react/next/* types) — do not treat as regressions
+
+## Shopping List Filter Feature (US-4.4)
+- `hideChecked` field and `toggleHideChecked` action already in store (committed 161c3de), included in `partialize`
+- Filter toggle in `src/app/shopping-list/page.tsx` PageHeader `actions` prop with `data-testid="filter-checked-toggle"` and `aria-pressed`
+- `filteredGroupedItems` memo filters categories when `hideChecked` is true
+- Hidden count summary: `data-testid="hidden-count-summary"`, tapping it calls `toggleHideChecked`
+- "All done!" EmptyState shown when `allDone` (all items checked AND filter on)
+- E2E tests: `e2e/us-4.4-filter-shopping-list.spec.ts`
 
 ## Design Token Conventions
 - Replace arbitrary Tailwind values with standard utilities: `rounded-[16px]` -> `rounded-2xl`, `text-[2rem]` -> `text-4xl`, `text-[10px]` -> `text-xs`
