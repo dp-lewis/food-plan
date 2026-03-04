@@ -90,6 +90,16 @@ Use `npx tsc --noEmit` to verify TypeScript correctness instead — this runs wi
 
 If `node_modules` is missing (next binary not found), run `npm install` first — it works offline for local packages.
 
+## Shopping List Filter (US-4.4)
+
+The "Hide checked" filter is implemented in `src/app/shopping-list/page.tsx`:
+- `hideChecked` useState (session-only, not persisted)
+- `visibleGroupedItems` useMemo filters `groupedItems`, excludes empty categories
+- Toggle button: `data-testid="hide-checked-toggle"`, `aria-pressed={hideChecked}`
+- Progress bar/counter use full `shoppingList.length` and `checkedCount` (unaffected by filter)
+- Toggle only shown when `checkedCount > 0`
+- E2e tests: `e2e/us-4.4-filter-shopping-list.spec.ts`
+
 ## Sign-out Flow (SignOutDialog component)
 
 Sign-out is encapsulated in `src/components/SignOutDialog.tsx`.
