@@ -4,6 +4,7 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { generateShoppingList, groupByCategory, mergeShoppingLists, CATEGORY_LABELS } from '@/lib/shoppingList';
+import { IngredientCategory, ShoppingListItem } from '@/types';
 import { parseIngredient } from '@/lib/ingredientParser';
 import { BottomNav, ProgressBar, Checkbox, Button, Drawer, Input, PageHeader, EmptyState } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
@@ -30,6 +31,7 @@ export default function ShoppingList() {
   const [newItemText, setNewItemText] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isConfirmClearOpen, setIsConfirmClearOpen] = useState(false);
+  const [hideChecked, setHideChecked] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus input when drawer opens
@@ -48,6 +50,18 @@ export default function ShoppingList() {
   const groupedItems = useMemo(() => {
     return groupByCategory(shoppingList);
   }, [shoppingList]);
+
+  const visibleGroupedItems = useMemo<Map<IngredientCategory, ShoppingListItem[]>>(() => {
+    if (!hideChecked) return groupedItems;
+    const filtered = new Map<IngredientCategory, ShoppingListItem[]>();
+    for (const [category, items] of groupedItems.entries()) {
+      const unchecked = items.filter((item) => !(item.id in checkedItems));
+      if (unchecked.length > 0) {
+        filtered.set(category, unchecked);
+      }
+    }
+    return filtered;
+  }, [groupedItems, hideChecked, checkedItems]);
 
   const handleAddItem = () => {
     if (!newItemText.trim()) return;
@@ -86,15 +100,27 @@ export default function ShoppingList() {
               <span className="text-xs text-primary-foreground" data-testid="progress-counter">
                 {checkedCount} / {totalItems} items
               </span>
-              {checkedCount > 0 && (
-                <button
-                  onClick={planRole ? () => setIsConfirmClearOpen(true) : clearCheckedItems}
-                  className="text-xs text-primary-foreground hover:text-primary-foreground min-h-11 px-2"
-                  data-testid="clear-checked-btn"
-                >
-                  Clear checked
-                </button>
-              )}
+              <div className="flex items-center gap-1">
+                {checkedCount > 0 && (
+                  <button
+                    onClick={() => setHideChecked((prev) => !prev)}
+                    className="text-xs text-primary-foreground hover:text-primary-foreground min-h-11 px-2"
+                    data-testid="hide-checked-toggle"
+                    aria-pressed={hideChecked}
+                  >
+                    {hideChecked ? 'Show all' : 'Hide checked'}
+                  </button>
+                )}
+                {checkedCount > 0 && (
+                  <button
+                    onClick={planRole ? () => setIsConfirmClearOpen(true) : clearCheckedItems}
+                    className="text-xs text-primary-foreground hover:text-primary-foreground min-h-11 px-2"
+                    data-testid="clear-checked-btn"
+                  >
+                    Clear checked
+                  </button>
+                )}
+              </div>
             </div>
             <ProgressBar value={checkedCount} max={totalItems} colorVar="var(--primary-foreground)" />
           </div>
@@ -125,7 +151,7 @@ export default function ShoppingList() {
       ) : (
         <main id="main-content" className="flex-1 w-full bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
           <div className="space-y-6">
-            {Array.from(groupedItems.entries()).map(([category, items]) => (
+            {Array.from(visibleGroupedItems.entries()).map(([category, items]) => (
               <section key={category} data-testid={`category-${category}`}>
                 <h2 className="mb-3 pb-2 text-base font-semibold text-foreground border-b border-border">
                   {CATEGORY_LABELS[category]}
