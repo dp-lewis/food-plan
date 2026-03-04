@@ -22,6 +22,8 @@ export default function ShoppingList() {
   const customShoppingItems = useStore((state) => state.customShoppingItems);
   const addCustomItem = useStore((state) => state.addCustomItem);
   const removeCustomItem = useStore((state) => state.removeCustomItem);
+  const hideChecked = useStore((state) => state.hideChecked);
+  const toggleHideChecked = useStore((state) => state.toggleHideChecked);
 
   const userId = useStore((state) => state._userId);
   const userEmail = useStore((state) => state._userEmail);
@@ -49,6 +51,18 @@ export default function ShoppingList() {
     return groupByCategory(shoppingList);
   }, [shoppingList]);
 
+  const filteredGroupedItems = useMemo(() => {
+    if (!hideChecked) return groupedItems;
+    const filtered = new Map<string, typeof shoppingList>();
+    for (const [category, items] of groupedItems.entries()) {
+      const visibleItems = items.filter((item) => !(item.id in checkedItems));
+      if (visibleItems.length > 0) {
+        filtered.set(category, visibleItems);
+      }
+    }
+    return filtered;
+  }, [groupedItems, hideChecked, checkedItems]);
+
   const handleAddItem = () => {
     if (!newItemText.trim()) return;
 
@@ -70,8 +84,13 @@ export default function ShoppingList() {
   const totalItems = shoppingList.length;
   const checkedCount = Object.keys(checkedItems).length;
   const isEmpty = !currentPlan && customShoppingItems.length === 0;
+  const hiddenCount = hideChecked ? checkedCount : 0;
+  const allDone = hideChecked && totalItems > 0 && checkedCount === totalItems;
 
   const openDrawer = () => setIsDrawerOpen(true);
+
+  // Suppress unused variable warning — userId is used implicitly via planRole checks elsewhere
+  void userId;
 
   return (
     <div className="min-h-screen flex flex-col bg-primary" data-testid={isEmpty ? undefined : 'shopping-list'}>
@@ -79,6 +98,29 @@ export default function ShoppingList() {
         title="Shopping List"
         backHref="/"
         sticky
+        actions={
+          !isEmpty && totalItems > 0 ? (
+            <button
+              type="button"
+              onClick={toggleHideChecked}
+              data-testid="filter-checked-toggle"
+              aria-pressed={hideChecked}
+              className="min-h-11 px-3 flex items-center gap-1.5 rounded-md text-sm font-medium text-primary-foreground hover:bg-on-primary-hover transition-colors"
+            >
+              <span
+                className="w-4 h-4 rounded border border-primary-foreground flex items-center justify-center flex-shrink-0"
+                aria-hidden="true"
+              >
+                {hideChecked && (
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="2 6 5 9 10 3" />
+                  </svg>
+                )}
+              </span>
+              Hide checked
+            </button>
+          ) : undefined
+        }
       >
         {!isEmpty && totalItems > 0 && (
           <div className="mt-3">
@@ -124,59 +166,80 @@ export default function ShoppingList() {
         </main>
       ) : (
         <main id="main-content" className="flex-1 w-full bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
-          <div className="space-y-6">
-            {Array.from(groupedItems.entries()).map(([category, items]) => (
-              <section key={category} data-testid={`category-${category}`}>
-                <h2 className="mb-3 pb-2 text-base font-semibold text-foreground border-b border-border">
-                  {CATEGORY_LABELS[category]}
-                </h2>
-                <ul className="space-y-1">
-                  {items.map((item) => {
-                    const isChecked = item.id in checkedItems;
-                    const isCustom = item.id.startsWith('custom-');
-                    return (
-                      <li
-                        key={item.id}
-                        data-testid={`item-${item.id}`}
-                        className="flex items-center"
-                      >
-                        <div className="flex-1 flex items-center min-w-0">
-                          <div className="flex-1 min-w-0">
-                            <Checkbox
-                              checked={isChecked}
-                              onChange={() => toggleCheckedItem(item.id)}
-                              label={`${item.quantity} ${item.unit} ${item.ingredient}`}
-                              id={item.id}
-                            >
-                              <span className="text-muted-foreground">
-                                {item.quantity} {item.unit}
-                              </span>{' '}
-                              {item.ingredient}
-                            </Checkbox>
+          {allDone ? (
+            <EmptyState
+              icon="✅"
+              title="All done!"
+              description="Every item has been checked off. Tap 'Hide checked' to see your full list."
+            />
+          ) : (
+            <div className="space-y-6">
+              {hiddenCount > 0 && (
+                <button
+                  type="button"
+                  onClick={toggleHideChecked}
+                  data-testid="hidden-count-summary"
+                  className="w-full min-h-11 flex items-center justify-center gap-2 rounded-lg border border-border bg-muted text-muted-foreground text-sm hover:bg-accent transition-colors px-4 py-2"
+                >
+                  <span aria-live="polite">
+                    {hiddenCount} checked {hiddenCount === 1 ? 'item' : 'items'} hidden
+                  </span>
+                  <span className="text-xs underline">Show all</span>
+                </button>
+              )}
+              {Array.from(filteredGroupedItems.entries()).map(([category, items]) => (
+                <section key={category} data-testid={`category-${category}`}>
+                  <h2 className="mb-3 pb-2 text-base font-semibold text-foreground border-b border-border">
+                    {CATEGORY_LABELS[category]}
+                  </h2>
+                  <ul className="space-y-1">
+                    {items.map((item) => {
+                      const isChecked = item.id in checkedItems;
+                      const isCustom = item.id.startsWith('custom-');
+                      return (
+                        <li
+                          key={item.id}
+                          data-testid={`item-${item.id}`}
+                          className="flex items-center"
+                        >
+                          <div className="flex-1 flex items-center min-w-0">
+                            <div className="flex-1 min-w-0">
+                              <Checkbox
+                                checked={isChecked}
+                                onChange={() => toggleCheckedItem(item.id)}
+                                label={`${item.quantity} ${item.unit} ${item.ingredient}`}
+                                id={item.id}
+                              >
+                                <span className="text-muted-foreground">
+                                  {item.quantity} {item.unit}
+                                </span>{' '}
+                                {item.ingredient}
+                              </Checkbox>
+                            </div>
+                            {isChecked && checkedItems[item.id] && (
+                              <span className="ml-2 text-xs bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 flex-shrink-0">
+                                {checkedItems[item.id] === userEmail ? 'you' : getInitials(checkedItems[item.id])}
+                              </span>
+                            )}
                           </div>
-                          {isChecked && checkedItems[item.id] && (
-                            <span className="ml-2 text-xs bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 flex-shrink-0">
-                              {checkedItems[item.id] === userEmail ? 'you' : getInitials(checkedItems[item.id])}
-                            </span>
+                          {isCustom && (
+                            <button
+                              onClick={() => removeCustomItem(item.id)}
+                              className="min-h-11 min-w-11 flex items-center justify-center ml-1 text-destructive text-base bg-transparent border-none cursor-pointer"
+                              data-testid={`delete-${item.id}`}
+                              aria-label={`Remove ${item.ingredient}`}
+                            >
+                              <span aria-hidden="true">×</span>
+                            </button>
                           )}
-                        </div>
-                        {isCustom && (
-                          <button
-                            onClick={() => removeCustomItem(item.id)}
-                            className="min-h-11 min-w-11 flex items-center justify-center ml-1 text-destructive text-base bg-transparent border-none cursor-pointer"
-                            data-testid={`delete-${item.id}`}
-                            aria-label={`Remove ${item.ingredient}`}
-                          >
-                            <span aria-hidden="true">×</span>
-                          </button>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
-            ))}
-          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              ))}
+            </div>
+          )}
         </main>
       )}
 
