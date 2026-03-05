@@ -162,6 +162,24 @@
 
 ---
 
+### US-4.4: Filter out checked items
+
+**As a** grocery shopper
+**I want to** filter out checked items from the shopping list
+**So that** I can focus on what I still need to buy without the visual clutter of completed items
+
+**Acceptance Criteria:**
+- [ ] A toggle/filter control is available on the shopping list when items exist
+- [ ] By default, all items are shown (checked and unchecked)
+- [ ] When the filter is active, checked items are hidden from the list
+- [ ] The progress counter still reflects total items (checked and unchecked) even when filtered
+- [ ] Toggling the filter back to "all" reveals checked items again
+- [ ] The filter preference persists across page reloads (localStorage)
+- [ ] Empty categories are hidden when all their items are filtered out
+- [ ] Works correctly alongside the "Clear checked" functionality
+
+---
+
 ## Epic 5: Dashboard
 
 ### US-5.1: View current plan summary
@@ -432,7 +450,7 @@
 |----------|---------|-----------|
 | **P0 - Must have** | US-1.1, US-2.1, US-3.1, US-4.1, US-5.1, US-6.1, US-8.1 | Core loop: create → view → shop + auth |
 | **P1 - Should have** | US-1.2, US-2.2, US-2.3, US-4.2, US-5.2, US-5.3, US-7.1, US-7.2 | Polish and usability |
-| **P2 - Nice to have** | US-4.3 | Enhancements |
+| **P2 - Nice to have** | US-4.3, US-4.4 | Enhancements |
 
 ---
 

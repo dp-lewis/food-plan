@@ -46,6 +46,8 @@ interface AppState {
   removeCustomItem: (itemId: string) => void;
   pendingImportedRecipe: ParsedRecipe | null;
   setPendingImportedRecipe: (recipe: ParsedRecipe | null) => void;
+  hideCheckedItems: boolean;
+  toggleHideCheckedItems: () => void;
   // Sync fields — NOT persisted (excluded by partialize)
   _planRole: PlanRole | null;
   _setPlanRole: (role: PlanRole | null) => void;
@@ -219,6 +221,8 @@ export const useStore = create<AppState>()(
       },
       pendingImportedRecipe: null,
       setPendingImportedRecipe: (recipe) => set({ pendingImportedRecipe: recipe }),
+      hideCheckedItems: false,
+      toggleHideCheckedItems: () => set((state) => ({ hideCheckedItems: !state.hideCheckedItems })),
       // Sync state
       _planRole: null,
       _setPlanRole: (role) => set({ _planRole: role }),
@@ -351,6 +355,7 @@ export const useStore = create<AppState>()(
         checkedItems: state.checkedItems,
         userRecipes: state.userRecipes,
         customShoppingItems: state.customShoppingItems,
+        hideCheckedItems: state.hideCheckedItems,
         _syncQueue: state._syncQueue,
         // Note: pendingImportedRecipe, _userId, _userEmail, _isSyncing, _isOnline are intentionally NOT persisted
       }),
