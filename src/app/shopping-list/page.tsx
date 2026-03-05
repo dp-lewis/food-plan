@@ -30,6 +30,7 @@ export default function ShoppingList() {
   const [newItemText, setNewItemText] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isConfirmClearOpen, setIsConfirmClearOpen] = useState(false);
+  const [hideChecked, setHideChecked] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus input when drawer opens
@@ -87,13 +88,23 @@ export default function ShoppingList() {
                 {checkedCount} / {totalItems} items
               </span>
               {checkedCount > 0 && (
-                <button
-                  onClick={planRole ? () => setIsConfirmClearOpen(true) : clearCheckedItems}
-                  className="text-xs text-primary-foreground hover:text-primary-foreground min-h-11 px-2"
-                  data-testid="clear-checked-btn"
-                >
-                  Clear checked
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setHideChecked((v) => !v)}
+                    className="text-xs text-primary-foreground hover:text-primary-foreground min-h-11 px-2"
+                    data-testid="hide-shopped-toggle"
+                    aria-pressed={hideChecked}
+                  >
+                    {hideChecked ? 'Show shopped' : 'Hide shopped'}
+                  </button>
+                  <button
+                    onClick={planRole ? () => setIsConfirmClearOpen(true) : clearCheckedItems}
+                    className="text-xs text-primary-foreground hover:text-primary-foreground min-h-11 px-2"
+                    data-testid="clear-checked-btn"
+                  >
+                    Clear checked
+                  </button>
+                </div>
               )}
             </div>
             <ProgressBar value={checkedCount} max={totalItems} colorVar="var(--primary-foreground)" />
@@ -125,13 +136,16 @@ export default function ShoppingList() {
       ) : (
         <main id="main-content" className="flex-1 w-full bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
           <div className="space-y-6">
-            {Array.from(groupedItems.entries()).map(([category, items]) => (
+            {Array.from(groupedItems.entries()).map(([category, items]) => {
+              const visibleItems = hideChecked ? items.filter((item) => !(item.id in checkedItems)) : items;
+              if (visibleItems.length === 0) return null;
+              return (
               <section key={category} data-testid={`category-${category}`}>
                 <h2 className="mb-3 pb-2 text-base font-semibold text-foreground border-b border-border">
                   {CATEGORY_LABELS[category]}
                 </h2>
                 <ul className="space-y-1">
-                  {items.map((item) => {
+                  {visibleItems.map((item) => {
                     const isChecked = item.id in checkedItems;
                     const isCustom = item.id.startsWith('custom-');
                     return (
@@ -175,7 +189,8 @@ export default function ShoppingList() {
                   })}
                 </ul>
               </section>
-            ))}
+              );
+            })}
           </div>
         </main>
       )}

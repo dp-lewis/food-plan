@@ -162,6 +162,23 @@
 
 ---
 
+### US-4.4: Filter out shopped items
+
+**As a** grocery shopper in the store
+**I want to** hide items I've already checked off
+**So that** I can focus on what I still need to find without scrolling past completed items
+
+**Acceptance Criteria:**
+- [ ] A "Hide shopped" toggle is visible on the shopping list page when checked items exist
+- [ ] When activated, all checked items are hidden from view
+- [ ] When deactivated, checked items reappear in their original category groups
+- [ ] The progress bar continues to reflect totals including hidden items
+- [ ] If all items in a category are checked and hidden, that category heading is also hidden
+- [ ] The toggle has a minimum 44px touch target
+- [ ] Filter state resets on page reload (session-only)
+
+---
+
 ## Epic 5: Dashboard
 
 ### US-5.1: View current plan summary
@@ -432,7 +449,7 @@
 |----------|---------|-----------|
 | **P0 - Must have** | US-1.1, US-2.1, US-3.1, US-4.1, US-5.1, US-6.1, US-8.1 | Core loop: create → view → shop + auth |
 | **P1 - Should have** | US-1.2, US-2.2, US-2.3, US-4.2, US-5.2, US-5.3, US-7.1, US-7.2 | Polish and usability |
-| **P2 - Nice to have** | US-4.3 | Enhancements |
+| **P2 - Nice to have** | US-4.3, US-4.4 | Enhancements |
 
 ---
 
