@@ -4,6 +4,7 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { generateShoppingList, groupByCategory, mergeShoppingLists, CATEGORY_LABELS } from '@/lib/shoppingList';
+import { IngredientCategory } from '@/types';
 import { parseIngredient } from '@/lib/ingredientParser';
 import { BottomNav, ProgressBar, Checkbox, Button, Drawer, Input, PageHeader, EmptyState } from '@/components/ui';
 import { buttonVariants } from '@/components/ui/Button';
@@ -48,7 +49,7 @@ export default function ShoppingList() {
 
   const filteredGroupedItems = useMemo(() => {
     if (!showRemaining) return groupedItems;
-    const filtered = new Map<string, typeof shoppingList>();
+    const filtered = new Map<IngredientCategory, typeof shoppingList>();
     for (const [category, items] of groupedItems.entries()) {
       const unchecked = items.filter((item) => !(item.id in checkedItems));
       if (unchecked.length > 0) {

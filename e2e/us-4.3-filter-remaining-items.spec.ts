@@ -133,7 +133,7 @@ test.describe('US-4.3: Filter to show remaining items', () => {
 
   test('Works for custom items — checked custom items are hidden when filter is on', async ({ page }) => {
     // Add a custom item via the drawer
-    await page.getByTestId('bottom-nav-add').click();
+    await page.getByTestId('open-add-drawer-btn').click();
     await page.getByTestId('add-item-input').fill('test custom item');
     await page.getByTestId('add-item-btn').click();
 
