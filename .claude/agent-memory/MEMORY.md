@@ -61,6 +61,14 @@
 - State: `loading` (email submit), `verifying` (OTP verify), `submitted` (OTP form shown)
 - `data-testid` values: `signin-page`, `email-input`, `send-magic-link-btn`, `otp-input`, `verify-btn`, `resend-btn`, `signin-success`, `signin-error`
 
+## Shopping List – US-4.3 (Show Remaining toggle)
+- Implemented in `src/app/shopping-list/page.tsx`; toggle lives in the PageHeader alongside the progress bar
+- `showRemaining` is local component state (no persistence — resets on navigation)
+- Filtering via `filteredGroupedItems` useMemo — key type must be `Map<IngredientCategory, ...>` (not `string`) to satisfy strict TS
+- "Clear checked" button and its confirmation drawer were removed entirely
+- `clearCheckedItems` store action is still used in plan lifecycle (setCurrentPlan, swapMeal, addMeal, removeMeal) — do NOT remove it from the store
+- e2e: `e2e/us-4.3-filter-remaining-items.spec.ts`; correct FAB testId is `open-add-drawer-btn` (not `bottom-nav-add`)
+
 ## Storybook Patterns
 - Stories file: `src/components/ui/Button.stories.tsx`
 - Add new props to `argTypes` with appropriate control type
