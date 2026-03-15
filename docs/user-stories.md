@@ -147,18 +147,24 @@
 
 ---
 
-### US-4.3: Clear checked items
+### US-4.3: Filter to show remaining items
 
-**As a** grocery shopper
-**I want to** clear all checked items from the list
-**So that** I can see only what's remaining
+**As a** grocery shopper working through my list
+**I want to** filter the shopping list to show only unchecked items
+**So that** I can focus on what's left to get without being distracted by what's already in my basket
 
 **Acceptance Criteria:**
-- [ ] "Clear checked" button available
-- [ ] Removes or hides all checked items
-- [ ] Solo users: no confirmation required (can regenerate list if needed)
-- [ ] Shared plan users: confirmation drawer shown before clearing ("This will uncheck all items for everyone on the plan")
-- [ ] Confirming clears all checked items for all members in real time
+- [ ] A "Show remaining" toggle replaces the existing "Clear checked" button in the bottom action area
+- [ ] The toggle is off by default — all items visible when the page loads
+- [ ] When toggled on, checked items are hidden from the list
+- [ ] When a category has all items checked and the filter is on, the category heading is also hidden
+- [ ] The progress bar remains visible at all times so overall progress is still clear
+- [ ] The filter resets to off when navigating away from the page
+- [ ] Works for both meal plan items and custom items
+
+**Out of Scope:**
+- "Clear checked" functionality is removed entirely (replaced by this toggle)
+- No persistence of filter state across sessions or page navigations
 
 ---
 
@@ -432,7 +438,7 @@
 |----------|---------|-----------|
 | **P0 - Must have** | US-1.1, US-2.1, US-3.1, US-4.1, US-5.1, US-6.1, US-8.1 | Core loop: create → view → shop + auth |
 | **P1 - Should have** | US-1.2, US-2.2, US-2.3, US-4.2, US-5.2, US-5.3, US-7.1, US-7.2 | Polish and usability |
-| **P2 - Nice to have** | US-4.3 | Enhancements |
+| **P2 - Nice to have** | US-4.3 | Shopping list usability |
 
 ---
 
