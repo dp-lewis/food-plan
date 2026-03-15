@@ -17,19 +17,16 @@ export default function ShoppingList() {
   const currentPlan = useStore((state) => state.currentPlan);
   const checkedItems = useStore((state) => state.checkedItems);
   const toggleCheckedItem = useStore((state) => state.toggleCheckedItem);
-  const clearCheckedItems = useStore((state) => state.clearCheckedItems);
   const userRecipes = useStore((state) => state.userRecipes);
   const customShoppingItems = useStore((state) => state.customShoppingItems);
   const addCustomItem = useStore((state) => state.addCustomItem);
   const removeCustomItem = useStore((state) => state.removeCustomItem);
 
-  const userId = useStore((state) => state._userId);
   const userEmail = useStore((state) => state._userEmail);
-  const planRole = useStore((state) => state._planRole);
 
   const [newItemText, setNewItemText] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isConfirmClearOpen, setIsConfirmClearOpen] = useState(false);
+  const [showRemaining, setShowRemaining] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus input when drawer opens
@@ -48,6 +45,18 @@ export default function ShoppingList() {
   const groupedItems = useMemo(() => {
     return groupByCategory(shoppingList);
   }, [shoppingList]);
+
+  const filteredGroupedItems = useMemo(() => {
+    if (!showRemaining) return groupedItems;
+    const filtered = new Map<string, typeof shoppingList>();
+    for (const [category, items] of groupedItems.entries()) {
+      const unchecked = items.filter((item) => !(item.id in checkedItems));
+      if (unchecked.length > 0) {
+        filtered.set(category, unchecked);
+      }
+    }
+    return filtered;
+  }, [groupedItems, checkedItems, showRemaining]);
 
   const handleAddItem = () => {
     if (!newItemText.trim()) return;
@@ -86,15 +95,15 @@ export default function ShoppingList() {
               <span className="text-xs text-primary-foreground" data-testid="progress-counter">
                 {checkedCount} / {totalItems} items
               </span>
-              {checkedCount > 0 && (
-                <button
-                  onClick={planRole ? () => setIsConfirmClearOpen(true) : clearCheckedItems}
-                  className="text-xs text-primary-foreground hover:text-primary-foreground min-h-11 px-2"
-                  data-testid="clear-checked-btn"
-                >
-                  Clear checked
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setShowRemaining((prev) => !prev)}
+                aria-pressed={showRemaining}
+                data-testid="show-remaining-toggle"
+                className={`text-xs min-h-11 px-3 rounded-sm border transition-all ${showRemaining ? 'bg-primary-foreground text-primary border-primary-foreground' : 'bg-transparent text-primary-foreground border-primary-foreground/50 hover:border-primary-foreground'}`}
+              >
+                Show remaining
+              </button>
             </div>
             <ProgressBar value={checkedCount} max={totalItems} colorVar="var(--primary-foreground)" />
           </div>
@@ -125,7 +134,7 @@ export default function ShoppingList() {
       ) : (
         <main id="main-content" className="flex-1 w-full bg-background rounded-t-3xl max-w-2xl mx-auto px-4 py-6 pb-40 space-y-6">
           <div className="space-y-6">
-            {Array.from(groupedItems.entries()).map(([category, items]) => (
+            {Array.from(filteredGroupedItems.entries()).map(([category, items]) => (
               <section key={category} data-testid={`category-${category}`}>
                 <h2 className="mb-3 pb-2 text-base font-semibold text-foreground border-b border-border">
                   {CATEGORY_LABELS[category]}
@@ -214,36 +223,6 @@ export default function ShoppingList() {
             className="w-full"
           >
             Add to List
-          </Button>
-        </div>
-      </Drawer>
-
-      <Drawer
-        isOpen={isConfirmClearOpen}
-        onClose={() => setIsConfirmClearOpen(false)}
-        title="Clear all checked items?"
-      >
-        <p className="text-sm text-muted-foreground mb-6">
-          This will uncheck all items for everyone on the plan.
-        </p>
-        <div className="flex gap-3">
-          <Button
-            variant="secondary"
-            className="flex-1"
-            onClick={() => setIsConfirmClearOpen(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            className="flex-1"
-            data-testid="confirm-clear-checked"
-            onClick={() => {
-              clearCheckedItems();
-              setIsConfirmClearOpen(false);
-            }}
-          >
-            Confirm
           </Button>
         </div>
       </Drawer>
