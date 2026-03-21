@@ -88,3 +88,15 @@ The workflow I landed on isn't a framework. I wouldn't give it a manifesto or a 
 ### What's next
 
 In [Part 3](#), I'll talk about what happened when the app met real life — not just my own usage, but collaborating with my partner. That's where the real lessons came from: standing in a supermarket with patchy signal, watching someone else try to join a shared plan for the first time, and discovering that real-time sync is easy to describe and hard to get right.
+
+---
+
+### Diagram: The feedback loop
+
+```mermaid
+graph LR
+    A["Use the app"] --> B["Identify a goal"]
+    B --> C["Discuss with Claude"]
+    C --> D["Coder agent implements"]
+    D --> A
+```
