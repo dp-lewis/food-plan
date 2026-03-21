@@ -44,7 +44,7 @@ About a week in, I started splitting the work across different agents. Claude Co
 
 **The design reviewer** evaluated visual consistency — whether new UI followed the design tokens, whether spacing and typography matched existing patterns, whether the mobile layout worked at 375px.
 
-The key insight was running the coder on a more capable model (Sonnet) and the auditors on a cheaper, faster one (Haiku). The coder needed to understand complex systems and write good code. The auditors were checking established rules against known standards — a less demanding task. This kept costs reasonable without sacrificing quality where it mattered.
+The key insight was matching capability to task. The coder needed to understand complex systems and write good code — that justified a more capable model. The auditors were checking established rules against known standards — important work, but less demanding, so a cheaper, faster model worked fine. It's the same principle as staffing a team: you don't put your most senior engineer on every lint check. You match the skill level to the complexity of the job.
 
 ### Agent memory
 
@@ -53,6 +53,12 @@ One of the things that surprised me most was how much value came from agent memo
 Over five weeks, the coder's memory file grew to cover dozens of patterns: how authentication works in the app, the sync queue architecture, how to handle iOS Safari killing WebSocket connections when the phone locks, the correct way to write Playwright tests that wait for Zustand hydration. It became a genuine knowledge base — the kind of institutional memory that usually lives in a senior developer's head.
 
 I also kept my own memory at the project level, particularly around the hard-won Supabase Realtime lessons. Things like: never mix broadcast listeners with postgres_changes on the same channel. Use consistent filtering on all subscriptions for the same table. These were painful to discover and I wanted to make sure they were never forgotten.
+
+### When the workflow broke down
+
+It wasn't all smooth. A few weeks in, over fourteen of my end-to-end tests started failing intermittently. The coder agent would fix one, and another would break. It turned out the issue was a race condition between Zustand's state hydration and Next.js rendering — the tests were running before the store had finished loading from localStorage. The agent kept treating each failure as an isolated bug rather than seeing the systemic pattern.
+
+I had to step in, understand the root cause myself, and describe the actual problem clearly enough for the agent to implement the right fix. That's when I learned that delegating implementation doesn't mean disengaging. You still need to recognise when the AI is going in circles and redirect it. The workflow works best when you're paying attention to the shape of the problems, even if you're not writing the code.
 
 ### The feedback loop
 
@@ -67,13 +73,15 @@ The thing that made this workflow feel different from just "using AI to write co
 
 The whole loop might take a few hours for a substantial feature. For smaller things — a bug I noticed while shopping, a touch target that was too small — it could be minutes.
 
-This speed meant that I could hold the full context of what I was building in my head. I never had the experience of coming back to the project after a week and having to re-orient myself. The gap between idea and implementation was small enough that my understanding stayed fresh.
+This speed meant that even working part-time — picking this up for a few hours every couple of days — I could hold the full context of what I was building in my head. The gap between idea and implementation was small enough that my understanding stayed fresh, even across breaks.
 
 ### What agile got right
 
 Looking back, the agile practices that survived weren't the process ones — they were the philosophical ones. Build working software early. Get real feedback. Iterate based on what you learn. Stay close to the user (in this case, I was the user).
 
 The coordination mechanisms changed the most. Sprints, story points, velocity — gone. But the purposes behind the ceremonies — context, reflection, direction — those persisted. They just found new forms that fit the way I was actually working.
+
+This was a solo project, and I'm not going to pretend the workflow transfers directly to a team of six. But I think the underlying questions do: which agile practices are you following because they serve a purpose, and which because they're just the format you're used to? What would your ceremonies look like if you redesigned them around the purpose rather than the ritual?
 
 The workflow I landed on isn't a framework. I wouldn't give it a manifesto or a certification programme. It's just: know your problem, describe your goals clearly, insist on engineering quality, let the AI explore solutions, use the thing you're building, repeat.
 
